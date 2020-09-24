@@ -1,0 +1,51 @@
+#Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text {
+    display: flex;
+    align-items: center;
+}
+
+#Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
+    margin-right: 10px;
+}
+
+#Accept-Payment > .Polaris-Button__Content > .Polaris-Button__Text {
+    display: flex;
+    align-items: center;
+}
+
+#Accept-Payment > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
+    margin-right: 10px;
+}
+
+.actions-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* .accept-hovered,
+.decline-hovered {
+    transform: scale(1.2);
+    transition: all 0.3 ease-out;
+} */
+
+.accept:hover {
+    color: green;
+    transform: scale(1.7);
+    transition: all 0.1s ease-in;
+}
+
+.decline:hover {
+    color: red;
+    transform: scale(1.7);
+    transition: all 0.1s ease-in;
+}
+
+.product-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.product-header > .Polaris-Thumbnail {
+    margin-right: 10px;
+}
