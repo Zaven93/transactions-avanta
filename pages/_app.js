@@ -23,7 +23,7 @@ class MyApp extends App {
         const config = {
             apiKey: '3b01063bac3031d13101100ef3e44fd5',
             shopOrigin: Cookies.get('shopOrigin'),
-            forceRedirect: true
+            forceRedirect: false
         }
         return (
             <React.Fragment>

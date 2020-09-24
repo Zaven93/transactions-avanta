@@ -16,16 +16,16 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-// const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY } = process.env
+const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY } = process.env
 
 app.prepare().then(() => {
     const server = new Koa()
     server.use(session({ secure: true, sameSite: 'none' }, server))
-    server.keys = ['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']
+    server.keys = [SHOPIFY_API_SECRET_KEY]
     server.use(
         createShopifyAuth({
-            apiKey: '3b01063bac3031d13101100ef3e44fd5',
-            secret: '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',
+            apiKey: SHOPIFY_API_KEY,
+            secret: SHOPIFY_API_SECRET_KEY,
             scopes: [
                 'read_products',
                 'write_products',
