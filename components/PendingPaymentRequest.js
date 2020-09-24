@@ -70,7 +70,7 @@ const PendingPaymentRequest = ({ createUpdatePaymentSubscription }) => {
 
     const fetchAcceptedPayments = useCallback(async () => {
         try {
-            const res = await API.graphql(graphqlOperation(listPaymentRequest, { limit: 3 }))
+            const res = await API.graphql(graphqlOperation(listPaymentRequest))
             setPaymentRequestItems(res.data.listPaymentRequests.items)
             console.log('Accepted payments', res.data)
         } catch (error) {

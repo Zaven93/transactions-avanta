@@ -172,10 +172,10 @@ const paymentSubscription = gql`
     }
 `
 
-const AcceptPayment = ({ paymentRequests }) => {
-    const [paymentRequestItems, setPaymentRequestItems] = useState(
-        paymentRequests.listPaymentRequests.items
-    )
+const AcceptPayment = () => {
+    // const [paymentRequestItems, setPaymentRequestItems] = useState(
+    //     paymentRequests.listPaymentRequests.items
+    // )
     const [openPicker, setOpenPicker] = useState(false)
     const [rowId, setRowId] = useState([])
     const [searchValue, setSearchValue] = useState(null)
@@ -269,23 +269,23 @@ const AcceptPayment = ({ paymentRequests }) => {
     )
 }
 
-export async function getStaticProps() {
-    let result
-    try {
-        result = await API.graphql(graphqlOperation(listPaymentRequest))
-    } catch (error) {
-        console.log(error)
-    }
+// export async function getStaticProps() {
+//     let result
+//     try {
+//         result = await API.graphql(graphqlOperation(listPaymentRequest))
+//     } catch (error) {
+//         console.log(error)
+//     }
 
-    if (result.errors) {
-        console.warn('Failed to fetch payment requests.', result.errors)
-        return { props: { paymentRequests: [] } }
-    }
-    if (result.data !== null) {
-        return {
-            props: { paymentRequests: result.data }
-        }
-    }
-}
+//     if (result.errors) {
+//         console.warn('Failed to fetch payment requests.', result.errors)
+//         return { props: { paymentRequests: [] } }
+//     }
+//     if (result.data !== null) {
+//         return {
+//             props: { paymentRequests: result.data }
+//         }
+//     }
+// }
 
 export default AcceptPayment

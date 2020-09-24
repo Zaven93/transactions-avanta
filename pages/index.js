@@ -114,8 +114,6 @@ const Index = ({ transactions }) => {
         shopOrigin: 'transactions-avanta.myshopify.com'
     })
 
-    console.log('Transactions from main page', transactions)
-
     const redirect = Redirect.create(app)
 
     const paginateNext = async () => {
