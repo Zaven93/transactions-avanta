@@ -1,63 +1,15 @@
 import React, { useState, useCallback } from 'react'
-import axios from 'axios'
 import { API, graphqlOperation } from 'aws-amplify'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/client'
 import { Modal, Thumbnail, Checkbox, TextStyle } from '@shopify/polaris'
 import { Table, Header } from 'semantic-ui-react'
-import { toCurrency, formatDate } from '../utils/helper'
+import { toCurrency } from '../utils/helper'
 import config from '../aws-exports'
+import {listProducts} from "../graphql/queries"
+import {updatePaymentRequest} from "../graphql/mutation"
 
 API.configure(config)
-
-const listProducts = gql`
-    query Products {
-        products(first: 100) {
-            edges {
-                node {
-                    id
-                    title
-                    tags
-                    description(truncateAt: 100)
-                    variants(first: 1) {
-                        edges {
-                            node {
-                                id
-                                price
-                            }
-                        }
-                    }
-                    images(first: 1) {
-                        edges {
-                            node {
-                                originalSrc
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`
-
-const updatePaymentRequest = gql`
-    mutation updatePaymentRequest($input: UpdatePaymentRequestInput!) {
-        updatePaymentRequest(input: $input) {
-            bonusAmount
-            customerId
-            id
-            orderId
-            status
-            products {
-                originalUnitPrice
-                quantity
-                variantId
-            }
-            createdAt
-            updatedAt
-        }
-    }
-`
 
 const ProductsList = ({ active, handleChange, paymentRequestId }) => {
     const { loading, error, data } = useQuery(listProducts)
@@ -65,19 +17,14 @@ const ProductsList = ({ active, handleChange, paymentRequestId }) => {
     const [state, setState] = useState({
         products: []
     })
-    const [searchValue, setSearchValue] = useState(null)
-    const handleSearchInput = useCallback((newValue) => setSearchValue(newValue), [])
-
+  
     if (loading) {
         return <div>Loading products...</div>
     }
 
     if (error) {
-        console.log('Some error Zaven', error)
         return <div>Some error occured</div>
     }
-
-    console.log('State data from product list', state)
 
     const acceptPayment = async () => {
         try {
@@ -125,17 +72,6 @@ const ProductsList = ({ active, handleChange, paymentRequestId }) => {
                     <Table.Body>
                         {data &&
                             data.products.edges
-                                .filter((product) => {
-                                    if (searchValue == null) {
-                                        return product
-                                    } else if (
-                                        product.node.title
-                                            .toLowerCase()
-                                            .includes(searchValue.toLowerCase())
-                                    ) {
-                                        return product
-                                    }
-                                })
                                 .map((product) => (
                                     <Table.Row
                                         key={product.node.id}

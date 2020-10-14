@@ -10,6 +10,11 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { createHttpLink } from 'apollo-link-http'
 import '../styles/style.css'
 
+import { Amplify } from 'aws-amplify'
+import config from '../src/aws-exports'
+
+Amplify.configure({ ...config, ssr: true })
+
 const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: createHttpLink({
@@ -23,7 +28,7 @@ class MyApp extends App {
         const config = {
             apiKey: '3b01063bac3031d13101100ef3e44fd5',
             shopOrigin: Cookies.get('shopOrigin'),
-            forceRedirect: true
+            forceRedirect: false
         }
         return (
             <React.Fragment>

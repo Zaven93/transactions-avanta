@@ -29,8 +29,8 @@ const updatePaymentRequest = gql`
 `
 
 const listPaymentRequest = gql`
-    query listPaymentRequest {
-        listPaymentRequests(filter: { status: { eq: PENDING } }) {
+    query listPaymentRequest($branchId: ID) {
+        listPaymentRequests(filter: { status: { eq: PENDING }, branchId: { eq: $branchId } }) {
             items {
                 bonusAmount
                 createdAt
@@ -59,7 +59,7 @@ const paymentSubscription = gql`
     }
 `
 
-const PendingPaymentRequest = ({ createUpdatePaymentSubscription }) => {
+const PendingPaymentRequest = ({ createUpdatePaymentSubscription, branchId }) => {
     const [paymentRequestId, setPaymentRequestId] = useState('')
     const [active, setActive] = useState(false)
     const [paymentRequestItems, setPaymentRequestItems] = useState([])
@@ -70,7 +70,7 @@ const PendingPaymentRequest = ({ createUpdatePaymentSubscription }) => {
 
     const fetchAcceptedPayments = useCallback(async () => {
         try {
-            const res = await API.graphql(graphqlOperation(listPaymentRequest))
+            const res = await API.graphql(graphqlOperation(listPaymentRequest, { branchId }))
             setPaymentRequestItems(res.data.listPaymentRequests.items)
             console.log('Accepted payments', res.data)
         } catch (error) {

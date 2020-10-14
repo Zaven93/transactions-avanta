@@ -16,9 +16,24 @@
     margin-right: 10px;
 }
 
+#Logout > .Polaris-Button__Content > .Polaris-Button__Text {
+    display: flex;
+    align-items: center;
+}
+
+#Logout > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
+    margin-right: 10px;
+}
+
 .actions-cell {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.branch-actions {
+    display: flex;
+    justify-content: space-around;
     align-items: center;
 }
 
@@ -40,6 +55,20 @@
     transition: all 0.1s ease-in;
 }
 
+.edit-branch:hover {
+    color: green;
+    transform: scale(1.7);
+    transition: all 0.1s ease-in;
+    cursor: pointer;
+}
+
+.remove-branch:hover {
+    color: red;
+    transform: scale(1.7);
+    transition: all 0.1s ease-in;
+    cursor: pointer;
+}
+
 .product-header {
     display: flex !important;
     align-items: center;
@@ -48,4 +77,13 @@
 
 .product-header > .Polaris-Thumbnail {
     margin-right: 10px;
+}
+
+.authentication-container {
+}
+
+.authentication-container > .Polaris-Card {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
 }

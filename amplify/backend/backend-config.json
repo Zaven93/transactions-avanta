@@ -1,33 +1,10 @@
 {
-	"hosting": {
-		"amplifyhosting": {
-			"service": "amplifyhosting",
+	"auth": {
+		"authtransactionsd9cbc301": {
+			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
-			"type": "manual"
-		}
-	},
-	"function": {
-		"awsAvantaTrans": {
-			"build": true,
-			"providerPlugin": "awscloudformation",
-			"service": "Lambda",
-			"dependsOn": []
-		}
-	},
-	"api": {
-		"awsAvantaTrans": {
-			"service": "API Gateway",
-			"providerPlugin": "awscloudformation",
-			"dependsOn": [
-				{
-					"category": "function",
-					"resourceName": "awsAvantaTrans",
-					"attributes": [
-						"Name",
-						"Arn"
-					]
-				}
-			]
+			"dependsOn": [],
+			"customAuth": false
 		}
 	}
 }
