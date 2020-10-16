@@ -88,2530 +88,345 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./pages/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "0W++":
-/***/ (function(module, exports) {
-
-module.exports = require("@shopify/app-bridge/actions");
-
-/***/ }),
-
-/***/ 2:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__("RNiq");
-
-
-/***/ }),
-
-/***/ "4Q3z":
-/***/ (function(module, exports) {
-
-module.exports = require("next/router");
-
-/***/ }),
-
-/***/ "7Xrt":
+/***/ "./aws-exports.js":
+/*!************************!*\
+  !*** ./aws-exports.js ***!
+  \************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("cDcd");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("txk1");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("fAuv");
-/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("FfxO");
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("nj/N");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("FVIk");
-/* harmony import */ var _ProductsList__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("Vixo");
-/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__("uI6m");
-var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
-
-
-
-
-
-
-
-
-aws_amplify__WEBPACK_IMPORTED_MODULE_2__["API"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_7__[/* default */ "a"]);
-const updatePaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_1___default.a`
-    mutation updatePaymentRequest($input: UpdatePaymentRequestInput!) {
-        updatePaymentRequest(input: $input) {
-            bonusAmount
-            customerId
-            id
-            orderId
-            status
-            products {
-                originalUnitPrice
-                quantity
-                variantId
-            }
-            createdAt
-            updatedAt
-        }
-    }
-`;
-const listPaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_1___default.a`
-    query listPaymentRequest($branchId: ID) {
-        listPaymentRequests(filter: { status: { eq: PENDING }, branchId: { eq: $branchId } }) {
-            items {
-                bonusAmount
-                createdAt
-                customerId
-                id
-                orderId
-                status
-                updatedAt
-            }
-            nextToken
-        }
-    }
-`;
-const paymentSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_1___default.a`
-    subscription paymentRequest {
-        onCreatePaymentRequest {
-            bonusAmount
-            createdAt
-            customerId
-            id
-            orderId
-            status
-            updatedAt
-        }
-    }
-`;
-
-const PendingPaymentRequest = ({
-  createUpdatePaymentSubscription,
-  branchId
-}) => {
-  const {
-    0: paymentRequestId,
-    1: setPaymentRequestId
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const {
-    0: active,
-    1: setActive
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
-  const {
-    0: paymentRequestItems,
-    1: setPaymentRequestItems
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
-  const handleChange = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(() => setActive(!active), [active]);
-  console.log('Payment request id for decline', paymentRequestId);
-  const fetchAcceptedPayments = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(async () => {
-    try {
-      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__["API"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__["graphqlOperation"])(listPaymentRequest, {
-        branchId
-      }));
-      setPaymentRequestItems(res.data.listPaymentRequests.items);
-      console.log('Accepted payments', res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [createUpdatePaymentSubscription]);
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    fetchAcceptedPayments();
-  }, [fetchAcceptedPayments]);
-
-  const declinePayment = async paymentId => {
-    try {
-      const paymentResponse = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__["API"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__["graphqlOperation"])(updatePaymentRequest, {
-        input: {
-          id: paymentId,
-          status: 'DECLINED'
-        }
-      }));
-      console.log('Declined Payment data from lambda', paymentResponse.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"], {
-    selectable: true,
-    celled: true
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Customer Id"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Bonus Amount"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Created At"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Updated At"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Status"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Action"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Body, null, paymentRequestItems && paymentRequestItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Row, {
-    key: item.id
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small"
-  }, item.customerId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* toCurrency */ "c"])(item.bonusAmount)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* formatDate */ "b"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* formatDate */ "b"])(item.updatedAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small",
-    progress: "partiallyComplete",
-    status: "attention"
-  }, item.status)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, {
-    className: "actions-cell"
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Popup"], {
-    content: "Approve payment",
-    trigger: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Icon"], {
-      className: "accept",
-      name: "check",
-      onClick: () => {
-        setPaymentRequestId(item.id);
-        handleChange();
-      }
-    })
-  }), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Popup"], {
-    content: "Decline payment",
-    trigger: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Icon"], {
-      className: "decline",
-      name: "remove",
-      onClick: async () => {
-        declinePayment(item.id);
-      }
-    })
-  })))))), __jsx(_ProductsList__WEBPACK_IMPORTED_MODULE_6__[/* default */ "a"], {
-    paymentRequestId: paymentRequestId,
-    active: active,
-    handleChange: handleChange
-  }));
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (PendingPaymentRequest);
+eval("__webpack_require__.r(__webpack_exports__);\n// WARNING: DO NOT EDIT. This file is automatically generated by AWS Amplify. It will be overwritten.\nconst awsmobile = {\n  \"aws_appsync_graphqlEndpoint\": \"https://kytejmxrrrgahiikcodklhf6rq.appsync-api.us-east-1.amazonaws.com/graphql\",\n  \"aws_appsync_region\": \"us-east-1\",\n  \"aws_appsync_authenticationType\": \"API_KEY\",\n  \"aws_appsync_apiKey\": \"da2-iwznaxe3h5bxznagzuctrhqekm\"\n};\n/* harmony default export */ __webpack_exports__[\"default\"] = (awsmobile);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9hd3MtZXhwb3J0cy5qcz9iODhlIl0sIm5hbWVzIjpbImF3c21vYmlsZSJdLCJtYXBwaW5ncyI6IkFBQUE7QUFBQTtBQUVBLE1BQU1BLFNBQVMsR0FBSTtBQUNmLGlDQUErQixnRkFEaEI7QUFFZix3QkFBc0IsV0FGUDtBQUdmLG9DQUFrQyxTQUhuQjtBQUlmLHdCQUFzQjtBQUpQLENBQW5CO0FBT2VBLHdFQUFmIiwiZmlsZSI6Ii4vYXdzLWV4cG9ydHMuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBXQVJOSU5HOiBETyBOT1QgRURJVC4gVGhpcyBmaWxlIGlzIGF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGJ5IEFXUyBBbXBsaWZ5LiBJdCB3aWxsIGJlIG92ZXJ3cml0dGVuLlxuXG5jb25zdCBhd3Ntb2JpbGUgPSAge1xuICAgIFwiYXdzX2FwcHN5bmNfZ3JhcGhxbEVuZHBvaW50XCI6IFwiaHR0cHM6Ly9reXRlam14cnJyZ2FoaWlrY29ka2xoZjZycS5hcHBzeW5jLWFwaS51cy1lYXN0LTEuYW1hem9uYXdzLmNvbS9ncmFwaHFsXCIsXG4gICAgXCJhd3NfYXBwc3luY19yZWdpb25cIjogXCJ1cy1lYXN0LTFcIixcbiAgICBcImF3c19hcHBzeW5jX2F1dGhlbnRpY2F0aW9uVHlwZVwiOiBcIkFQSV9LRVlcIixcbiAgICBcImF3c19hcHBzeW5jX2FwaUtleVwiOiBcImRhMi1pd3puYXhlM2g1Ynh6bmFnenVjdHJocWVrbVwiLFxufTtcblxuZXhwb3J0IGRlZmF1bHQgYXdzbW9iaWxlOyJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./aws-exports.js\n");
 
 /***/ }),
 
-/***/ "DaQf":
-/***/ (function(module, exports) {
-
-module.exports = require("aws-sdk");
-
-/***/ }),
-
-/***/ "E1HW":
+/***/ "./components/AcceptedPaymentRequest.js":
+/*!**********************************************!*\
+  !*** ./components/AcceptedPaymentRequest.js ***!
+  \**********************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export listTransactions */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return listProducts; });
-/* unused harmony export branchByAdminId */
-/* unused harmony export listPaymentRequest */
-/* unused harmony export getBranchById */
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("txk1");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_0__);
-
-const listTransactions = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    query listTransactions($limit: Int, $nextToken: String) {
-        listTransactions(limit: $limit, nextToken: $nextToken) {
-            nextToken
-            items {
-                id
-                totalPrice
-                totalBonusAmount
-                note
-                currency
-                products {
-                    id
-                    title
-                    bonusPercentage
-                    priceAmount
-                    priceCurrency
-                    image
-                }
-                customer {
-                    id
-                    firstName
-                    lastName
-                    phone
-                    email
-                }
-                createdAt
-            }
-        }
-    }
-`;
-const listProducts = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    query Products {
-        products(first: 100) {
-            edges {
-                node {
-                    id
-                    title
-                    tags
-                    description(truncateAt: 100)
-                    variants(first: 1) {
-                        edges {
-                            node {
-                                id
-                                price
-                            }
-                        }
-                    }
-                    images(first: 1) {
-                        edges {
-                            node {
-                                originalSrc
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-const branchByAdminId = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    query branchByAdminId($adminId: ID!) {
-        branchByAdminId(adminId: $adminId) {
-            items {
-                adminId
-                branchName
-                id
-                branchProducts {
-                    items {
-                        branchId
-                        createdAt
-                        id
-                        productId
-                        tags
-                    }
-                }
-            }
-        }
-    }
-`;
-const listPaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    query listPaymentRequest {
-        listPaymentRequests {
-            items {
-                bonusAmount
-                createdAt
-                customerId
-                id
-                orderId
-                status
-                updatedAt
-            }
-        }
-    }
-`;
-const getBranchById = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    query getBranch($id: ID!) {
-        getBranch(id: $id) {
-            transactions(sortDirection: DESC) {
-                items {
-                    branchId
-                    createdAt
-                    currency
-                    note
-                    customer {
-                        email
-                        id
-                        firstName
-                        lastName
-                        phone
-                    }
-                    totalBonusAmount
-                    totalPrice
-                    updatedAt
-                    sortDate
-                }
-            }
-            branchName
-            adminId
-            id
-            branchProducts {
-                items {
-                    branchId
-                    createdAt
-                    id
-                    productId
-                    tags
-                    updatedAt
-                }
-            }
-        }
-    }
-`;
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_5__[\"default\"]);\n\nconst AcceptedPaymentRequest = ({\n  branchId\n}) => {\n  const {\n    0: nextPaginateToken,\n    1: setNextPaginateToken\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: paymentRequestItems,\n    1: setPaymentRequestItems\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])([]);\n  const fetchAcceptedPayments = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(async () => {\n    try {\n      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_6__[\"listPaymentRequest\"], {\n        limit: 20,\n        branchId,\n        status: \"APPROVED\"\n      }));\n      setNextPaginateToken(res.data.listPaymentRequests.nextToken);\n      setPaymentRequestItems(res.data.listPaymentRequests.items);\n    } catch (error) {\n      console.log(error);\n    }\n  }, []);\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    fetchAcceptedPayments();\n  }, [fetchAcceptedPayments]);\n\n  const loadMore = async () => {\n    try {\n      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_6__[\"listPaymentRequest\"], {\n        limit: 20,\n        nextToken: nextPaginateToken,\n        branchId,\n        status: \"APPROVED\"\n      }));\n      setNextPaginateToken(res.data.listPaymentRequests.nextToken);\n      setPaymentRequestItems([...paymentRequestItems, ...res.data.listPaymentRequests.items]);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"], {\n    celled: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Customer Id\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Order Id\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Bonus Amount\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Created At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Updated At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Status\"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Body, null, paymentRequestItems && paymentRequestItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Row, {\n    key: item.id\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\"\n  }, item.customerId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\"\n  }, item.orderId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"toCurrency\"])(item.bonusAmount)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(item.updatedAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\",\n    progress: \"complete\",\n    status: \"success\"\n  }, item.status)))))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Button\"], {\n    disabled: !nextPaginateToken,\n    primary: true,\n    onClick: loadMore\n  }, \"Load more\"));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (AcceptedPaymentRequest);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0FjY2VwdGVkUGF5bWVudFJlcXVlc3QuanM/YWU1OCJdLCJuYW1lcyI6WyJBUEkiLCJjb25maWd1cmUiLCJjb25maWciLCJBY2NlcHRlZFBheW1lbnRSZXF1ZXN0IiwiYnJhbmNoSWQiLCJuZXh0UGFnaW5hdGVUb2tlbiIsInNldE5leHRQYWdpbmF0ZVRva2VuIiwidXNlU3RhdGUiLCJwYXltZW50UmVxdWVzdEl0ZW1zIiwic2V0UGF5bWVudFJlcXVlc3RJdGVtcyIsImZldGNoQWNjZXB0ZWRQYXltZW50cyIsInVzZUNhbGxiYWNrIiwicmVzIiwiZ3JhcGhxbCIsImdyYXBocWxPcGVyYXRpb24iLCJsaXN0UGF5bWVudFJlcXVlc3QiLCJsaW1pdCIsInN0YXR1cyIsImRhdGEiLCJsaXN0UGF5bWVudFJlcXVlc3RzIiwibmV4dFRva2VuIiwiaXRlbXMiLCJlcnJvciIsImNvbnNvbGUiLCJsb2ciLCJ1c2VFZmZlY3QiLCJsb2FkTW9yZSIsInNvcnQiLCJhIiwiYiIsIkRhdGUiLCJ1cGRhdGVkQXQiLCJtYXAiLCJpdGVtIiwiaWQiLCJjdXN0b21lcklkIiwib3JkZXJJZCIsInRvQ3VycmVuY3kiLCJib251c0Ftb3VudCIsImZvcm1hdERhdGUiLCJjcmVhdGVkQXQiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUVBQSwrQ0FBRyxDQUFDQyxTQUFKLENBQWNDLG9EQUFkOztBQUVBLE1BQU1DLHNCQUFzQixHQUFHLENBQUM7QUFBRUM7QUFBRixDQUFELEtBQWtCO0FBQy9DLFFBQU07QUFBQSxPQUFDQyxpQkFBRDtBQUFBLE9BQW9CQztBQUFwQixNQUE0Q0Msc0RBQVEsQ0FBQyxFQUFELENBQTFEO0FBQ0EsUUFBTTtBQUFBLE9BQUNDLG1CQUFEO0FBQUEsT0FBc0JDO0FBQXRCLE1BQWdERixzREFBUSxDQUFDLEVBQUQsQ0FBOUQ7QUFFQSxRQUFNRyxxQkFB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Z0VBQVUsQ0FBQ04sSUFBSSxDQUFDTyxTQUFOLENBQXZCLENBUkYsRUFTRSxNQUFDLHVEQUFELENBQU8sSUFBUCxRQUFhRCxnRUFBVSxDQUFDTixJQUFJLENBQUNGLFNBQU4sQ0FBdkIsQ0FURixFQVVFLE1BQUMsdURBQUQsQ0FBTyxJQUFQLFFBQ0UsTUFBQyxzREFBRDtBQUFPLFFBQUksRUFBQyxPQUFaO0FBQW9CLFlBQVEsRUFBQyxVQUE3QjtBQUF3QyxVQUFNLEVBQUM7QUFBL0MsS0FDR0UsSUFBSSxDQUFDaEIsTUFEUixDQURGLENBVkYsQ0FISixDQUZKLENBWEYsQ0FERixFQW9DRSxNQUFDLHVEQUFEO0FBQVEsWUFBUSxFQUFFLENBQUNaLGlCQUFuQjtBQUFzQyxXQUFPLE1BQTdDO0FBQThDLFdBQU8sRUFBRXFCO0FBQXZELGlCQXBDRixDQURGO0FBMENELENBL0VEOztBQWlGZXZCLHFGQUFmIiwiZmlsZSI6Ii4vY29tcG9uZW50cy9BY2NlcHRlZFBheW1lbnRSZXF1ZXN0LmpzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlLCB1c2VFZmZlY3QsIHVzZUNhbGxiYWNrIH0gZnJvbSBcInJlYWN0XCJcbmltcG9ydCB7IEFQSSwgZ3JhcGhxbE9wZXJhdGlvbiB9IGZyb20gXCJhd3MtYW1wbGlmeVwiXG5pbXBvcnQgeyBUYWJsZSB9IGZyb20gXCJzZW1hbnRpYy11aS1yZWFjdFwiXG5pbXBvcnQgeyBCYWRnZSwgQnV0dG9uIH0gZnJvbSBcIkBzaG9waWZ5L3BvbGFyaXNcIlxuaW1wb3J0IHsgdG9DdXJyZW5jeSwgZm9ybWF0RGF0ZSB9IGZyb20gXCIuLi91dGlscy9oZWxwZXJcIlxuaW1wb3J0IGNvbmZpZyBmcm9tIFwiLi4vYXdzLWV4cG9ydHNcIlxuaW1wb3J0IHsgbGlzdFBheW1lbnRSZXF1ZXN0IH0gZnJvbSBcIi4uL2dyYXBocWwvcXVlcmllc1wiXG5cbkFQSS5jb25maWd1cmUoY29uZmlnKVxuXG5jb25zdCBBY2NlcHRlZFBheW1lbnRSZXF1ZXN0ID0gKHsgYnJhbmNoSWQgfSkgPT4ge1xuICBjb25zdCBbbmV4dFBhZ2luYXRlVG9rZW4sIHNldE5leHRQYWdpbmF0ZVRva2VuXSA9IHVzZVN0YXRlKFwiXCIpXG4gIGNvbnN0IFtwYXltZW50UmVxdWVzdEl0ZW1zLCBzZXRQYXltZW50UmVxdWVzdEl0ZW1zXSA9IHVzZVN0YXRlKFtdKVxuXG4gIGNvbnN0IGZldGNoQWNjZXB0ZWRQYXltZW50cyA9IHVzZUNhbGxiYWNrKGFzeW5jICgpID0+IHtcbiAgICB0cnkge1xuICAgICAgY29uc3QgcmVzID0gYXdhaXQgQVBJLmdyYXBocWwoXG4gICAgICAgIGdyYXBocWxPcGVyYXRpb24obGlzdFBheW1lbnRSZXF1ZXN0LCB7IGxpbWl0OiAyMCwgYnJhbmNoSWQsIHN0YXR1czogXCJBUFBST1ZFRFwiIH0pXG4gICAgICApXG4gICAgICBzZXROZXh0UGFnaW5hdGVUb2tlbihyZXMuZGF0YS5saXN0UGF5bWVudFJlcXVlc3RzLm5leHRUb2tlbilcbiAgICAgIHNldFBheW1lbnRSZXF1ZXN0SXRlbXMocmVzLmRhdGEubGlzdFBheW1lbnRSZXF1ZXN0cy5pdGVtcylcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5sb2coZXJyb3IpXG4gICAgfVxuICB9LCBbXSlcblxuICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgIGZldGNoQWNjZXB0ZWRQYXltZW50cygpXG4gIH0sIFtmZXRjaEFjY2VwdGVkUGF5bWVudHNdKVxuXG4gIGNvbnN0IGxvYWRNb3JlID0gYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCByZXMgPSBhd2FpdCBBUEkuZ3JhcGhxbChcbiAgICAgICAgZ3JhcGhxbE9wZXJhdGlvbihsaXN0UGF5bWVudFJlcXVlc3QsIHtcbiAgICAgICAgICBsaW1pdDogMjAsXG4gICAgICAgICAgbmV4dFRva2VuOiBuZXh0UGFnaW5hdGVUb2tlbixcbiAgICAgICAgICBicmFuY2hJZCxcbiAgICAgICAgICBzdGF0dXM6IFwiQVBQUk9WRURcIixcbiAgICAgICAgfSlcbiAgICAgIClcbiAgICAgIHNldE5leHRQYWdpbmF0ZVRva2VuKHJlcy5kYXRhLmxpc3RQYXltZW50UmVxdWVzdHMubmV4dFRva2VuKVxuICAgICAgc2V0UGF5bWVudFJlcXVlc3RJdGVtcyhbLi4ucGF5bWVudFJlcXVlc3RJdGVtcywgLi4ucmVzLmRhdGEubGlzdFBheW1lbnRSZXF1ZXN0cy5pdGVtc10pXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgIH1cbiAgfVxuXG4gIHJldHVybiAoXG4gICAgPD5cbiAgICAgIDxUYWJsZSBjZWxsZWQ+XG4gICAgICAgIDxUYWJsZS5IZWFkZXI+XG4gICAgICAgICAgPFRhYmxlLlJvdz5cbiAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPkN1c3RvbWVyIElkPC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+T3JkZXIgSWQ8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5Cb251cyBBbW91bnQ8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5DcmVhdGVkIEF0PC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+VXBkYXRlZCBBdDwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPlN0YXR1czwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICA8L1RhYmxlLlJvdz5cbiAgICAgICAgPC9UYWJsZS5IZWFkZXI+XG4gICAgICAgIDxUYWJsZS5Cb2R5PlxuICAgICAgICAgIHtwYXltZW50UmVxdWVzdEl0ZW1zICYmXG4gICAgICAgICAgICBwYXltZW50UmVxdWVzdEl0ZW1zXG4gICAgICAgICAgICAgIC5zb3J0KChhLCBiKSA9PiBuZXcgRGF0ZShiLnVwZGF0ZWRBdCkgLSBuZXcgRGF0ZShhLnVwZGF0ZWRBdCkpXG4gICAgICAgICAgICAgIC5tYXAoKGl0ZW0pID0+IChcbiAgICAgICAgICAgICAgICA8VGFibGUuUm93IGtleT17aXRlbS5pZH0+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgPEJhZGdlIHNpemU9XCJzbWFsbFwiPntpdGVtLmN1c3RvbWVySWR9PC9CYWRnZT5cbiAgICAgICAgICAgICAgICAgIDwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgICA8QmFkZ2Ugc2l6ZT1cInNtYWxsXCI+e2l0ZW0ub3JkZXJJZH08L0JhZGdlPlxuICAgICAgICAgICAgICAgICAgPC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgPFRhYmxlLkNlbGw+e3RvQ3VycmVuY3koaXRlbS5ib251c0Ftb3VudCl9PC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgPFRhYmxlLkNlbGw+e2Zvcm1hdERhdGUoaXRlbS5jcmVhdGVkQXQpfTwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZS5DZWxsPntmb3JtYXREYXRlKGl0ZW0udXBkYXRlZEF0KX08L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgPEJhZGdlIHNpemU9XCJzbWFsbFwiIHByb2dyZXNzPVwiY29tcGxldGVcIiBzdGF0dXM9XCJzdWNjZXNzXCI+XG4gICAgICAgICAgICAgICAgICAgICAge2l0ZW0uc3RhdHVzfVxuICAgICAgICAgICAgICAgICAgICA8L0JhZGdlPlxuICAgICAgICAgICAgICAgICAgPC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgIDwvVGFibGUuUm93PlxuICAgICAgICAgICAgICApKX1cbiAgICAgICAgPC9UYWJsZS5Cb2R5PlxuICAgICAgPC9UYWJsZT5cbiAgICAgIDxCdXR0b24gZGlzYWJsZWQ9eyFuZXh0UGFnaW5hdGVUb2tlbn0gcHJpbWFyeSBvbkNsaWNrPXtsb2FkTW9yZX0+XG4gICAgICAgIExvYWQgbW9yZVxuICAgICAgPC9CdXR0b24+XG4gICAgPC8+XG4gIClcbn1cblxuZXhwb3J0IGRlZmF1bHQgQWNjZXB0ZWRQYXltZW50UmVxdWVzdFxuIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/AcceptedPaymentRequest.js\n");
 
 /***/ }),
 
-/***/ "FVIk":
+/***/ "./components/AdminBranchInfo.js":
+/*!***************************************!*\
+  !*** ./components/AdminBranchInfo.js ***!
+  \***************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return toCurrency; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return formatDate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return extractNumbersFromString; });
-const toCurrency = price => {
-  return new Intl.NumberFormat('hy-AM', {
-    currency: 'AMD',
-    style: 'currency'
-  }).format(price);
-};
-const formatDate = rowDate => {
-  const date = new Date(rowDate);
-  const year = new Intl.DateTimeFormat('en', {
-    year: 'numeric'
-  }).format(date);
-  const month = new Intl.DateTimeFormat('en', {
-    month: 'short'
-  }).format(date);
-  const day = new Intl.DateTimeFormat('en', {
-    day: '2-digit'
-  }).format(date);
-  return `${day}-${month}-${year}`;
-};
-const extractNumbersFromString = string => {
-  return Number(string.match(/\d+/g));
-};
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris-icons */ \"@shopify/polaris-icons\");\n/* harmony import */ var _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_5__[\"default\"]);\n\nconst AdminBranchInfo = ({\n  branchId,\n  setBranchId\n}) => {\n  const {\n    0: branchInfo,\n    1: setBranchInfo\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: searchValue,\n    1: setSearchValue\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(null);\n  const handleSearchInput = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => setSearchValue(newValue), []);\n\n  const getBranch = async () => {\n    try {\n      const branch = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_6__[\"getBranchById\"], {\n        id: branchId\n      }));\n      setBranchInfo(branch.data.getBranch);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    getBranch();\n  }, []);\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, branchInfo && __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Button\"], {\n    onClick: () => setBranchId(null),\n    primary: true\n  }, \"Go back\"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"TextField\"], {\n    label: \"Search Product\",\n    value: searchValue,\n    onChange: handleSearchInput,\n    prefix: __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Icon\"], {\n      source: _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_3__[\"SearchMajorMonotone\"]\n    }),\n    placeholder: \"Search by Customer phone number\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Card\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"DataTable\"], {\n    columnContentTypes: [\"text\", \"text\", \"text\", \"text\"],\n    headings: [\"Customer phone number\", \"TotalPrice\", \"TotalBonusAmount\", \"Minus from Bonus Amount\", \"CreatedAt\"],\n    rows: branchInfo && branchInfo.transactions.items.filter(transaction => {\n      if (searchValue == null) {\n        return transaction;\n      } else if (transaction.customer[0].phone.toLowerCase().includes(searchValue.toLowerCase())) {\n        return transaction;\n      }\n    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(transaction => [__jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Button\"], {\n      primary: true,\n      onClick: () => redirect.dispatch(Redirect.Action.ADMIN_PATH, {\n        path: `/customers/${transaction.customer[0].id}`,\n        newContext: true\n      })\n    }, transaction.customer[0].phone), Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"toCurrency\"])(Number(transaction.totalPrice)), Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"toCurrency\"])(Number(transaction.totalBonusAmount)), transaction.note === null ? \"\" : Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"toCurrency\"])(extractNumbersFromString(transaction.note)), Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(transaction.createdAt)])\n  }))));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (AdminBranchInfo);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0FkbWluQnJhbmNoSW5mby5qcz80Mzg0Il0sIm5hbWVzIjpbIkFQSSIsImNvbmZpZ3VyZSIsImNvbmZpZyIsIkFkbWluQnJhbmNoSW5mbyIsImJyYW5jaElkIiwic2V0QnJhbmNoSWQiLCJicmFuY2hJbmZvIiwic2V0QnJhbmNoSW5mbyIsInVzZVN0YXRlIiwic2VhcmNoVmFsdWUiLCJzZXRTZWFyY2hWYWx1ZSIsImhhbmRsZVNlYXJjaElucHV0IiwidXNlQ2FsbGJhY2siLCJuZXdWYWx1ZSIsImdldEJyYW5jaCIsImJyYW5jaCIsImdyYXBocWwiLCJncmFwaHFsT3BlcmF0aW9uIiwiZ2V0QnJhbmNoQnlJZCIsImlkIiwiZGF0YSIsImVycm9yIiwiY29uc29sZSIsImxvZyIsInVzZUVmZmVjdCIsIlNlYXJjaE1ham9yTW9ub3RvbmUiLCJ0cmFuc2FjdGlvbnMiLCJpdGVtcyIsImZpbHRlciIsInRyYW5zYWN0aW9uIiwiY3VzdG9tZXIiLCJwaG9uZSIsInRvTG93ZXJDYXNlIiwiaW5jbHVkZXMiLCJzb3J0IiwiYSIsImIiLCJEYXRlIiwiY3JlYXRlZEF0IiwibWFwIiwicmVkaXJlY3QiLCJkaXNwYXRjaCIsIlJlZGlyZWN0IiwiQWN0aW9uIiwiQURNSU5fUEFUSCIsInBhdGgiLCJuZXdDb250ZXh0IiwidG9DdXJyZW5jeSIsIk51bWJlciIsInRvdGFsUHJpY2UiLCJ0b3RhbEJvbnVzQW1vdW50Iiwibm90ZSIsImV4dHJhY3ROdW1iZXJzRnJvbVN0cmluZyIsImZvcm1hdERhdGUiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUVBQSwrQ0FBRyxDQUFDQyxTQUFKLENBQWNDLG9EQUFkOztBQUVBLE1BQU1DLGVBQWUsR0FBRyxDQUFDO0FBQUVDLFVBQUY7QUFBWUM7QUFBWixDQUFELEtBQStCO0FBQ3JELFFBQU07QUFBQSxPQUFDQyxVQUFEO0FBQUEs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Z0JBQWIsQ0FBUCxDQVpVLEVBYXBCckIsV0FBVyxDQUFDc0IsSUFBWixLQUFxQixJQUFyQixHQUNJLEVBREosR0FFSUosZ0VBQVUsQ0FBQ0ssd0JBQXdCLENBQUN2QixXQUFXLENBQUNzQixJQUFiLENBQXpCLENBZk0sRUFnQnBCRSxnRUFBVSxDQUFDeEIsV0FBVyxDQUFDUyxTQUFiLENBaEJVLENBYnhCO0FBWEosSUFERixDQVhGLENBRkosQ0FERjtBQWdFRCxDQW5GRDs7QUFxRmVuQyw4RUFBZiIsImZpbGUiOiIuL2NvbXBvbmVudHMvQWRtaW5CcmFuY2hJbmZvLmpzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlLCB1c2VFZmZlY3QsIHVzZUNhbGxiYWNrIH0gZnJvbSBcInJlYWN0XCJcbmltcG9ydCB7IEFQSSwgZ3JhcGhxbE9wZXJhdGlvbiB9IGZyb20gXCJhd3MtYW1wbGlmeVwiXG5pbXBvcnQgeyBCdXR0b24sIEljb24sIENhcmQsIERhdGFUYWJsZSwgVGV4dEZpZWxkIH0gZnJvbSBcIkBzaG9waWZ5L3BvbGFyaXNcIlxuaW1wb3J0IHsgU2VhcmNoTWFqb3JNb25vdG9uZSB9IGZyb20gXCJAc2hvcGlmeS9wb2xhcmlzLWljb25zXCJcbmltcG9ydCB7IHRvQ3VycmVuY3ksIGZvcm1hdERhdGUgfSBmcm9tIFwiLi4vdXRpbHMvaGVscGVyXCJcbmltcG9ydCBjb25maWcgZnJvbSBcIi4uL2F3cy1leHBvcnRzXCJcbmltcG9ydCB7IGdldEJyYW5jaEJ5SWQgfSBmcm9tIFwiLi4vZ3JhcGhxbC9xdWVyaWVzXCJcblxuQVBJLmNvbmZpZ3VyZShjb25maWcpXG5cbmNvbnN0IEFkbWluQnJhbmNoSW5mbyA9ICh7IGJyYW5jaElkLCBzZXRCcmFuY2hJZCB9KSA9PiB7XG4gIGNvbnN0IFticmFuY2hJbmZvLCBzZXRCcmFuY2hJbmZvXSA9IHVzZVN0YXRlKFwiXCIpXG4gIGNvbnN0IFtzZWFyY2hWYWx1ZSwgc2V0U2VhcmNoVmFsdWVdID0gdXNlU3RhdGUobnVsbClcblxuICBjb25zdCBoYW5kbGVTZWFyY2hJbnB1dCA9IHVzZUNhbGxiYWNrKChuZXdWYWx1ZSkgPT4gc2V0U2VhcmNoVmFsdWUobmV3VmFsdWUpLCBbXSlcblxuICBjb25zdCBnZXRCcmFuY2ggPSBhc3luYyAoKSA9PiB7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IGJyYW5jaCA9IGF3YWl0IEFQSS5ncmFwaHFsKGdyYXBocWxPcGVyYXRpb24oZ2V0QnJhbmNoQnlJZCwgeyBpZDogYnJhbmNoSWQgfSkpXG4gICAgICBzZXRCcmFuY2hJbmZvKGJyYW5jaC5kYXRhLmdldEJyYW5jaClcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5sb2coZXJyb3IpXG4gICAgfVxuICB9XG5cbiAgdXNlRWZmZWN0KCgpID0+IHtcbiAgICBnZXRCcmFuY2goKVxuICB9LCBbXSlcblxuICByZXR1cm4gKFxuICAgIDw+XG4gICAgICB7YnJhbmNoSW5mbyAmJiAoXG4gICAgICAgIDw+XG4gICAgICAgICAgPEJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBzZXRCcmFuY2hJZChudWxsKX0gcHJpbWFyeT5cbiAgICAgICAgICAgIEdvIGJhY2tcbiAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICA8VGV4dEZpZWxkXG4gICAgICAgICAgICBsYWJlbD1cIlNlYXJjaCBQcm9kdWN0XCJcbiAgICAgICAgICAgIHZhbHVlPXtzZWFyY2hWYWx1ZX1cbiAgICAgICAgICAgIG9uQ2hhbmdlPXtoYW5kbGVTZWFyY2hJbnB1dH1cbiAgICAgICAgICAgIHByZWZpeD17PEljb24gc291cmNlPXtTZWFyY2hNYWpvck1vbm90b25lfSAvPn1cbiAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiU2VhcmNoIGJ5IEN1c3RvbWVyIHBob25lIG51bWJlclwiXG4gICAgICAgICAgLz5cbiAgICAgICAgICA8Q2FyZD5cbiAgICAgICAgICAgIDxEYXRhVGFibGVcbiAgICAgICAgICAgICAgY29sdW1uQ29udGVudFR5cGVzPXtbXCJ0ZXh0XCIsIFwidGV4dFwiLCBcInRleHRcIiwgXCJ0ZXh0XCJdfVxuICAgICAgICAgICAgICBoZWFkaW5ncz17W1xuICAgICAgICAgICAgICAgIFwiQ3VzdG9tZXIgcGhvbmUgbnVtYmVyXCIsXG4gICAgICAgICAgICAgICAgXCJUb3RhbFByaWNlXCIsXG4gICAgICAgICAgICAgICAgXCJUb3RhbEJvbnVzQW1vdW50XCIsXG4gICAgICAgICAgICAgICAgXCJNaW51cyBmcm9tIEJvbnVzIEFtb3VudFwiLFxuICAgICAgICAgICAgICAgIFwiQ3JlYXRlZEF0XCIsXG4gICAgICAgICAgICAgIF19XG4gICAgICAgICAgICAgIHJvd3M9e1xuICAgICAgICAgICAgICAgIGJyYW5jaEluZm8gJiZcbiAgICAgICAgICAgICAgICBicmFuY2hJbmZvLnRyYW5zYWN0aW9ucy5pdGVtc1xuICAgICAgICAgICAgICAgICAgLmZpbHRlcigodHJhbnNhY3Rpb24pID0+IHtcbiAgICAgICAgICAgICAgICAgICAgaWYgKHNlYXJjaFZhbHVlID09IG51bGwpIHtcbiAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gdHJhbnNhY3Rpb25cbiAgICAgICAgICAgICAgICAgICAgfSBlbHNlIGlmIChcbiAgICAgICAgICAgICAgICAgICAgICB0cmFuc2FjdGlvbi5jdXN0b21lclswXS5waG9uZVxuICAgICAgICAgICAgICAgICAgICAgICAgLnRvTG93ZXJDYXNlKClcbiAgICAgICAgICAgICAgICAgICAgICAgIC5pbmNsdWRlcyhzZWFyY2hWYWx1ZS50b0xvd2VyQ2FzZSgpKVxuICAgICAgICAgICAgICAgICAgICApIHtcbiAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gdHJhbnNhY3Rpb25cbiAgICAgICAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgICAgICAgfSlcbiAgICAgICAgICAgICAgICAgIC5zb3J0KChhLCBiKSA9PiBuZXcgRGF0ZShiLmNyZWF0ZWRBdCkgLSBuZXcgRGF0ZShhLmNyZWF0ZWRBdCkpXG4gICAgICAgICAgICAgICAgICAubWFwKCh0cmFuc2FjdGlvbikgPT4gW1xuICAgICAgICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgICAgICAgcHJpbWFyeVxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+XG4gICAgICAgICAgICAgICAgICAgICAgICByZWRpcmVjdC5kaXNwYXRjaChSZWRpcmVjdC5BY3Rpb24uQURNSU5fUEFUSCwge1xuICAgICAgICAgICAgICAgICAgICAgICAgICBwYXRoOiBgL2N1c3RvbWVycy8ke3RyYW5zYWN0aW9uLmN1c3RvbWVyWzBdLmlkfWAsXG4gICAgICAgICAgICAgICAgICAgICAgICAgIG5ld0NvbnRleHQ6IHRydWUsXG4gICAgICAgICAgICAgICAgICAgICAgICB9KVxuICAgICAgICAgICAgICAgICAgICAgIH0+XG4gICAgICAgICAgICAgICAgICAgICAge3RyYW5zYWN0aW9uLmN1c3RvbWVyWzBdLnBob25lfVxuICAgICAgICAgICAgICAgICAgICA8L0J1dHRvbj4sXG4gICAgICAgICAgICAgICAgICAgIHRvQ3VycmVuY3koTnVtYmVyKHRyYW5zYWN0aW9uLnRvdGFsUHJpY2UpKSxcbiAgICAgICAgICAgICAgICAgICAgdG9DdXJyZW5jeShOdW1iZXIodHJhbnNhY3Rpb24udG90YWxCb251c0Ftb3VudCkpLFxuICAgICAgICAgICAgICAgICAgICB0cmFuc2FjdGlvbi5ub3RlID09PSBudWxsXG4gICAgICAgICAgICAgICAgICAgICAgPyBcIlwiXG4gICAgICAgICAgICAgICAgICAgICAgOiB0b0N1cnJlbmN5KGV4dHJhY3ROdW1iZXJzRnJvbVN0cmluZyh0cmFuc2FjdGlvbi5ub3RlKSksXG4gICAgICAgICAgICAgICAgICAgIGZvcm1hdERhdGUodHJhbnNhY3Rpb24uY3JlYXRlZEF0KSxcbiAgICAgICAgICAgICAgICAgIF0pXG4gICAgICAgICAgICAgIH1cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgPC9DYXJkPlxuICAgICAgICA8Lz5cbiAgICAgICl9XG4gICAgPC8+XG4gIClcbn1cblxuZXhwb3J0IGRlZmF1bHQgQWRtaW5CcmFuY2hJbmZvXG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/AdminBranchInfo.js\n");
 
 /***/ }),
 
-/***/ "FfxO":
-/***/ (function(module, exports) {
-
-module.exports = require("semantic-ui-react");
-
-/***/ }),
-
-/***/ "GbwQ":
-/***/ (function(module, exports) {
-
-module.exports = require("@shopify/polaris-icons");
-
-/***/ }),
-
-/***/ "RNiq":
+/***/ "./components/BranchConsole.js":
+/*!*************************************!*\
+  !*** ./components/BranchConsole.js ***!
+  \*************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: external "react"
-var external_react_ = __webpack_require__("cDcd");
-var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
-
-// EXTERNAL MODULE: external "aws-amplify"
-var external_aws_amplify_ = __webpack_require__("fAuv");
-
-// EXTERNAL MODULE: ./aws-exports.js
-var aws_exports = __webpack_require__("uI6m");
-
-// EXTERNAL MODULE: external "@shopify/polaris"
-var polaris_ = __webpack_require__("nj/N");
-
-// CONCATENATED MODULE: ./components/Login.js
-
-var __jsx = external_react_default.a.createElement;
-
-
-
-
-
-const Profile = ({
-  setUser
-}) => {
-  const {
-    0: username,
-    1: setUsername
-  } = Object(external_react_["useState"])('');
-  const {
-    0: password,
-    1: setPassword
-  } = Object(external_react_["useState"])('');
-  const onChangeUsername = Object(external_react_["useCallback"])(newValue => {
-    setUsername(newValue);
-    console.log('Value username', newValue);
-  }, []);
-  const onChangePassword = Object(external_react_["useCallback"])(newValue => {
-    setPassword(newValue);
-    console.log('Value password', newValue);
-  }, []);
-
-  const signIn = async e => {
-    e.preventDefault();
-    const signedInUser = await external_aws_amplify_["Auth"].signIn(username, password);
-    setUser(signedInUser);
-  };
-
-  return __jsx("div", {
-    className: "authentication-container"
-  }, __jsx(polaris_["Card"], {
-    title: "Log into your branch",
-    sectioned: true
-  }, __jsx(polaris_["Form"], {
-    onSubmit: signIn
-  }, __jsx(polaris_["FormLayout"], null, __jsx(polaris_["TextField"], {
-    value: username,
-    onChange: onChangeUsername,
-    label: "Username"
-  }), __jsx(polaris_["TextField"], {
-    type: "password",
-    value: password,
-    onChange: onChangePassword,
-    label: "Password"
-  }), __jsx(polaris_["Button"], {
-    primary: true,
-    submit: true
-  }, "Login")))));
-};
-
-/* harmony default export */ var Login = (Profile);
-// EXTERNAL MODULE: external "graphql-tag"
-var external_graphql_tag_ = __webpack_require__("txk1");
-var external_graphql_tag_default = /*#__PURE__*/__webpack_require__.n(external_graphql_tag_);
-
-// EXTERNAL MODULE: external "uuid"
-var external_uuid_ = __webpack_require__("kNaX");
-
-// EXTERNAL MODULE: external "semantic-ui-react"
-var external_semantic_ui_react_ = __webpack_require__("FfxO");
-
-// EXTERNAL MODULE: ./components/ProductsList.js + 1 modules
-var ProductsList = __webpack_require__("Vixo");
-
-// EXTERNAL MODULE: ./utils/helper.js
-var helper = __webpack_require__("FVIk");
-
-// EXTERNAL MODULE: external "axios"
-var external_axios_ = __webpack_require__("zr5I");
-
-// EXTERNAL MODULE: external "@apollo/client"
-var client_ = __webpack_require__("z+8S");
-
-// EXTERNAL MODULE: ./graphql/queries.js
-var queries = __webpack_require__("E1HW");
-
-// CONCATENATED MODULE: ./components/BranchRow.js
-var BranchRow_jsx = external_react_default.a.createElement;
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-
-const BranchRow = ({
-  product,
-  state,
-  setState,
-  branchId,
-  branchInfo,
-  rowId,
-  setRowId
-}) => {
-  const {
-    0: fetchedProduct,
-    1: setFetchedProduct
-  } = Object(external_react_["useState"])({
-    description: product.node.description,
-    id: product.node.id,
-    image: product.node.images.edges[0] ? product.node.images.edges[0].node.originalSrc : '',
-    tags: product.node.tags,
-    title: product.node.title,
-    variants: {
-      id: product.node.variants.edges[0].node.id,
-      price: product.node.variants.edges[0].node.price
-    }
-  }); // const [branchInfo, setBranchInfo] = useState('')
-  // const [rowId, setRowId] = useState('')
-
-  const {
-    0: searchValue,
-    1: setSearchValue
-  } = Object(external_react_["useState"])(null);
-  const {
-    0: bonus,
-    1: setBonus
-  } = Object(external_react_["useState"])('');
-  const {
-    0: checked,
-    1: setChecked
-  } = Object(external_react_["useState"])(false);
-  const handleSearchInput = Object(external_react_["useCallback"])(newValue => setSearchValue(newValue), []);
-  const handleBonus = Object(external_react_["useCallback"])(value => {
-    setBonus(value);
-    fetchedProduct.tags = [value];
-    setFetchedProduct(fetchedProduct);
-  }, []);
-
-  const compareProduct = () => {
-    const comparedProduct = branchInfo.branchProducts.items.filter(branchProduct => branchProduct.productId === fetchedProduct.id);
-    console.log('Here is your compared product', comparedProduct);
-
-    if (!comparedProduct || comparedProduct === undefined) {
-      return;
-    }
-
-    setBonus(comparedProduct[0] ? comparedProduct[0].tags[0] : '');
-    return;
-  }; // const getBranch = async () => {
-  //     try {
-  //         const branch = await API.graphql(graphqlOperation(getBranchById, { id: branchId }))
-  //         setBranchInfo(branch.data.getBranch)
-  //         setRowId(
-  //             branch.data.getBranch.branchProducts.items
-  //                 .map((item) => item.productId)
-  //                 .filter((productId) => productId === fetchedProduct.id)[0]
-  //         )
-  //         setState({
-  //             products: [
-  //                 ...state.products,
-  //                 ...branch.data.getBranch.branchProducts.items.filter(
-  //                     (product) => product.productId === fetchedProduct.id
-  //                 )[0]
-  //             ]
-  //         })
-  //         compareProduct(branch.data.getBranch.branchProducts)
-  //     } catch (error) {
-  //         console.log(error)
-  //     }
-  // }
-
-
-  Object(external_react_["useEffect"])(() => {
-    console.log('Row id from useEffect', branchInfo.branchProducts.items.map(item => item.productId).filter(productId => productId === fetchedProduct.id)[0]); // setRowId([...rowId, branchInfo.branchProducts.items
-    //         .map((item) => item.productId)
-    //         .filter((productId) => productId === fetchedProduct.id)[0]])
-
-    compareProduct();
-  }, [product, branchInfo]);
-  console.log('Fetched product', fetchedProduct);
-  console.log('State from BranchRow', state);
-  console.log('Row id from BranchRow', rowId);
-  return BranchRow_jsx(external_semantic_ui_react_["Table"].Row, {
-    key: fetchedProduct.id
-  }, BranchRow_jsx(external_semantic_ui_react_["Table"].Cell, null, BranchRow_jsx(external_semantic_ui_react_["Header"], {
-    as: "h4",
-    image: true,
-    className: "product-header"
-  }, BranchRow_jsx(polaris_["Checkbox"], {
-    checked: rowId.includes(fetchedProduct.id) && true,
-    onChange: () => {
-      if (rowId.includes(fetchedProduct.id)) {
-        setRowId(rowId.filter(id => id !== fetchedProduct.id));
-        setState({
-          products: state.products.filter(filteredProduct => filteredProduct.id !== fetchedProduct.id)
-        });
-      } else {
-        setRowId([...rowId, fetchedProduct.id]);
-        setState(_objectSpread(_objectSpread({}, state), {}, {
-          products: [...state.products, fetchedProduct]
-        }));
-      }
-    }
-  }), BranchRow_jsx(polaris_["Thumbnail"], {
-    source: fetchedProduct.image,
-    size: "small",
-    alt: ""
-  }), BranchRow_jsx(external_semantic_ui_react_["Header"].Content, null, fetchedProduct.title))), BranchRow_jsx(external_semantic_ui_react_["Table"].Cell, {
-    textAlign: "center"
-  }, BranchRow_jsx(polaris_["TextStyle"], {
-    variation: "subdued"
-  }, fetchedProduct.variants && Object(helper["c" /* toCurrency */])(fetchedProduct.variants.price))), BranchRow_jsx(external_semantic_ui_react_["Table"].Cell, null, BranchRow_jsx(polaris_["TextField"], {
-    id: "percentage-input",
-    placeholder: "Bonus Percentage",
-    value: bonus,
-    onChange: handleBonus,
-    prefix: BranchRow_jsx(external_semantic_ui_react_["Icon"], {
-      name: "percent"
-    }),
-    disabled: !rowId.includes(fetchedProduct.id)
-  })));
-};
-
-/* harmony default export */ var components_BranchRow = (BranchRow);
-// EXTERNAL MODULE: external "graphql"
-var external_graphql_ = __webpack_require__("T7Fc");
-
-// CONCATENATED MODULE: ./components/BranchProducts.js
-var BranchProducts_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-const listProducts = external_graphql_tag_default.a`
-    query Products {
-        products(first: 100) {
-            edges {
-                node {
-                    id
-                    title
-                    tags
-                    description(truncateAt: 100)
-                    variants(first: 1) {
-                        edges {
-                            node {
-                                id
-                                price
-                            }
-                        }
-                    }
-                    images(first: 1) {
-                        edges {
-                            node {
-                                originalSrc
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-const createBranchProduct = external_graphql_tag_default.a`
-    mutation createBranchProduct($input: CreateBranchProductInput!) {
-        createBranchProduct(input: $input) {
-            id
-            branchId
-            productId
-            tags
-        }
-    }
-`;
-const productUpdate = external_graphql_tag_default.a`
-    mutation productUpdate($input: ProductInput!) {
-        productUpdate(input: $input) {
-            product {
-                id
-                metafields(first: 100) {
-                    edges {
-                        node {
-                            namespace
-                            key
-                            value
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-const getBranchById = external_graphql_tag_default.a`
-    query getBranch($id: ID!) {
-        getBranch(id: $id) {
-            transactions(sortDirection: DESC) {
-                items {
-                    branchId
-                    createdAt
-                    currency
-                    note
-                    customer {
-                        email
-                        id
-                        firstName
-                        lastName
-                        phone
-                    }
-                    totalBonusAmount
-                    totalPrice
-                    updatedAt
-                    sortDate
-                }
-            }
-            branchName
-            adminId
-            id
-            branchProducts {
-                items {
-                    branchId
-                    createdAt
-                    id
-                    productId
-                    tags
-                    updatedAt
-                }
-            }
-        }
-    }
-`;
-const updateBranchProduct = external_graphql_tag_default.a`
-    mutation updateBranchProduct($input: UpdateBranchProductInput!) {
-        updateBranchProduct(input: $input) {
-            id
-            tags
-            branchId
-            productId
-        }
-    }
-`;
-const deleteBranchProduct = external_graphql_tag_default.a`
-    mutation deleteBranchProduct($input: DeleteBranchProductInput!) {
-        deleteBranchProduct(input: $input) {
-            id
-        }
-    }
-`;
-const onCreateBranchProduct = external_graphql_tag_default.a`
-    subscription onCreateBranchProduct {
-        onCreateBranchProduct {
-            id
-        }
-    }
-`;
-const onUpdateBranchProduct = external_graphql_tag_default.a`
-    subscription onUpdateBranchProduct {
-        onUpdateBranchProduct {
-            id
-        }
-    }
-`;
-const onDeleteBranchProduct = external_graphql_tag_default.a`
-    subscription onDeleteBranchProduct {
-        onDeleteBranchProduct {
-            id
-        }
-    }
-`;
-
-const BranchProducts_ProductsList = ({
-  active,
-  handleChange,
-  branchId,
-  branchName
-}) => {
-  const {
-    loading,
-    error,
-    data
-  } = Object(client_["useQuery"])(listProducts);
-  const {
-    0: branchProductSubscription,
-    1: setBranchProductSubscription
-  } = Object(external_react_["useState"])('');
-  const {
-    0: rowId,
-    1: setRowId
-  } = Object(external_react_["useState"])([]);
-  const {
-    0: state,
-    1: setState
-  } = Object(external_react_["useState"])({
-    products: []
-  });
-  const {
-    0: searchValue,
-    1: setSearchValue
-  } = Object(external_react_["useState"])(null);
-  const {
-    0: branchInfo,
-    1: setBranchInfo
-  } = Object(external_react_["useState"])('');
-  const handleSearchInput = Object(external_react_["useCallback"])(newValue => setSearchValue(newValue), []);
-
-  const getBranch = async () => {
-    try {
-      const branch = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(getBranchById, {
-        id: branchId
-      }));
-      setBranchInfo(branch.data.getBranch);
-      setRowId([...rowId, ...branch.data.getBranch.branchProducts.items.map(item => item.productId)]);
-      setState({
-        products: [...state.products, ...branch.data.getBranch.branchProducts.items.map(product => ({
-          id: product.productId
-        }))]
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  Object(external_react_["useEffect"])(() => {
-    getBranch();
-    const createListener = external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(onCreateBranchProduct)).subscribe({
-      next: createdBranchProduct => setBranchProductSubscription(createdBranchProduct)
-    });
-    const updateListener = external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(onUpdateBranchProduct)).subscribe({
-      next: updatedBranchProduct => setBranchProductSubscription(updatedBranchProduct)
-    });
-    const deleteListener = external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(onDeleteBranchProduct)).subscribe({
-      next: deletedBranchProduct => setBranchProductSubscription(deletedBranchProduct)
-    });
-    return () => {
-      createListener.unsubscribe();
-      updateListener.unsubscribe();
-      deleteListener.unsubscribe();
-    };
-  }, [branchId, branchProductSubscription]);
-
-  if (loading) {
-    return BranchProducts_jsx("div", null, "Loading products...");
-  }
-
-  if (error) {
-    return BranchProducts_jsx("div", null, "Some error occured");
-  }
-
-  console.log('Branch info from BranchProducts', branchInfo);
-  console.log('Products from state in BranchProducts', state.products);
-
-  const deleteProductsFromBranch = () => {
-    const productsToDeleteFromBranch = branchInfo.branchProducts.items.filter(branchProduct => !state.products.map(product => product.id).includes(branchProduct.productId));
-    console.log('Products that are not included in products array', productsToDeleteFromBranch);
-    Promise.all(productsToDeleteFromBranch.map(deleteProduct => {
-      external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(deleteBranchProduct, {
-        input: {
-          id: deleteProduct.id
-        }
-      }));
-    })).catch(err => console.log(err));
-    return;
-  };
-
-  const addProductsToBranch = () => {
-    Promise.all(state.products.map(product => {
-      const updatedProduct = branchInfo.branchProducts.items.filter(branchProduct => branchProduct.productId === product.id)[0];
-
-      if (updatedProduct) {
-        console.log('Yes it containes products that should be updated', updatedProduct);
-        external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(updateBranchProduct, {
-          input: {
-            id: updatedProduct.id,
-            tags: product.tags
-          }
-        }));
-      } else {
-        console.log("No it doesn't contain the product that should be updated");
-        external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(createBranchProduct, {
-          input: {
-            id: Object(external_uuid_["v4"])(),
-            branchId: branchId,
-            productId: product.id,
-            tags: product.tags
-          }
-        }));
-      }
-    })).catch(err => console.log(err));
-    return;
-  }; // const updateProducts = async () => {
-  //     try {
-  //         await axios({
-  //             url: 'http://localhost:3000/updateProduct',
-  //             method: 'POST',
-  //             data: {
-  //                 products: state.products
-  //             }
-  //         })
-  //     } catch (error) {
-  //         console.log(error)
-  //     }
-  // }
-
-
-  console.log('State data from product list', state);
-  console.log('BranchInfo from modalZaven jan', branchInfo);
-  return BranchProducts_jsx(polaris_["Modal"], {
-    open: active,
-    onClose: () => handleChange(),
-    title: "Choose products",
-    primaryAction: {
-      content: 'Save changes',
-      onAction: () => {
-        addProductsToBranch();
-        deleteProductsFromBranch(); // updateProducts()
-
-        handleChange();
-      }
-    }
-  }, BranchProducts_jsx(polaris_["Modal"].Section, null, BranchProducts_jsx(external_semantic_ui_react_["Table"], {
-    celled: true,
-    striped: true,
-    selectable: true
-  }, BranchProducts_jsx(external_semantic_ui_react_["Table"].Header, null, BranchProducts_jsx(external_semantic_ui_react_["Table"].Row, null, BranchProducts_jsx(external_semantic_ui_react_["Table"].HeaderCell, null, "Products"), BranchProducts_jsx(external_semantic_ui_react_["Table"].HeaderCell, {
-    textAlign: "center"
-  }, "Price"), BranchProducts_jsx(external_semantic_ui_react_["Table"].HeaderCell, null, "Bonus Percentage"))), BranchProducts_jsx(external_semantic_ui_react_["Table"].Body, null, data && branchInfo && data.products.edges // .filter((product) => {
-  //     if (searchValue == null) {
-  //         return product
-  //     } else if (
-  //         product.node.title
-  //             .toLowerCase()
-  //             .includes(searchValue.toLowerCase())
-  //     ) {
-  //         return product
-  //     }
-  // })
-  .map(product => BranchProducts_jsx(components_BranchRow, {
-    rowId: rowId,
-    setRowId: setRowId,
-    branchInfo: branchInfo,
-    branchId: branchId,
-    product: product,
-    state: state,
-    setState: setState
-  }) // <Table.Row
-  //     key={product.node.id}
-  //     >
-  //     <Table.Cell>
-  //         <Header as="h4" image className="product-header">
-  //             <Checkbox
-  //                 checked={
-  //                     rowId.includes(product.node.id) && true
-  //                 }
-  //                 onClick={() => {
-  //                     if (rowId.includes(product.node.id)) {
-  //                         setRowId(
-  //                             rowId.filter((id) => id !== product.node.id)
-  //                         )
-  //                         setState({
-  //                             products: state.products.filter(
-  //                                 (filteredProduct) =>
-  //                                     filteredProduct.node.id !==
-  //                                     product.node.id
-  //                             )
-  //                         })
-  //                     } else {
-  //                         setRowId([...rowId, product.node.id])
-  //                         setState({
-  //                             ...state,
-  //                             products: [...state.products, product]
-  //                         })
-  //                     }
-  //                 }}
-  //             />
-  //             <Thumbnail
-  //                 source={
-  //                     product.node.images.edges[0] &&
-  //                     product.node.images.edges[0].node
-  //                         .originalSrc
-  //                 }
-  //                 size="small"
-  //                 alt=""
-  //             />
-  //             <Header.Content>
-  //                 {product.node.title}
-  //             </Header.Content>
-  //         </Header>
-  //     </Table.Cell>
-  //     <Table.Cell>
-  //         <TextStyle variation="subdued">
-  //             {product.node.description}
-  //         </TextStyle>
-  //     </Table.Cell>
-  //     <Table.Cell textAlign="center">
-  //         <TextStyle variation="subdued">
-  //             {product.node.variants.edges[0] &&
-  //                 toCurrency(
-  //                     product.node.variants.edges[0].node.price
-  //                 )}
-  //         </TextStyle>
-  //     </Table.Cell>
-  // </Table.Row>
-  )), BranchProducts_jsx(external_semantic_ui_react_["Table"].Footer, {
-    fullWidth: true
-  }, BranchProducts_jsx(external_semantic_ui_react_["Table"].Row, null)))));
-};
-
-/* harmony default export */ var BranchProducts = (BranchProducts_ProductsList);
-// EXTERNAL MODULE: external "aws-sdk"
-var external_aws_sdk_ = __webpack_require__("DaQf");
-var external_aws_sdk_default = /*#__PURE__*/__webpack_require__.n(external_aws_sdk_);
-
-// EXTERNAL MODULE: external "@shopify/app-bridge"
-var app_bridge_ = __webpack_require__("dDoP");
-var app_bridge_default = /*#__PURE__*/__webpack_require__.n(app_bridge_);
-
-// EXTERNAL MODULE: external "@shopify/app-bridge/actions"
-var actions_ = __webpack_require__("0W++");
-
-// EXTERNAL MODULE: external "@shopify/polaris-icons"
-var polaris_icons_ = __webpack_require__("GbwQ");
-
-// CONCATENATED MODULE: ./components/AdminBranchInfo.js
-var AdminBranchInfo_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-const AdminBranchInfo_getBranchById = external_graphql_tag_default.a`
-    query getBranch($id: ID!) {
-        getBranch(id: $id) {
-            transactions(sortDirection: DESC) {
-                items {
-                    branchId
-                    createdAt
-                    currency
-                    note
-                    customer {
-                        email
-                        id
-                        firstName
-                        lastName
-                        phone
-                    }
-                    totalBonusAmount
-                    totalPrice
-                    updatedAt
-                    sortDate
-                }
-            }
-            branchName
-            adminId
-            id
-            branchProducts {
-                items {
-                    branchId
-                    createdAt
-                    id
-                    productId
-                    tags
-                    updatedAt
-                }
-            }
-        }
-    }
-`;
-
-const AdminBranchInfo = ({
-  branchId,
-  setBranchId
-}) => {
-  const {
-    0: branchInfo,
-    1: setBranchInfo
-  } = Object(external_react_["useState"])('');
-  const {
-    0: searchValue,
-    1: setSearchValue
-  } = Object(external_react_["useState"])(null);
-  const handleSearchInput = Object(external_react_["useCallback"])(newValue => setSearchValue(newValue), []);
-
-  const getBranch = async () => {
-    try {
-      const branch = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(AdminBranchInfo_getBranchById, {
-        id: branchId
-      }));
-      setBranchInfo(branch.data.getBranch);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  Object(external_react_["useEffect"])(() => {
-    getBranch();
-  }, []);
-  console.log('Branch info from admin', branchId);
-  return AdminBranchInfo_jsx(external_react_default.a.Fragment, null, branchInfo && AdminBranchInfo_jsx(external_react_default.a.Fragment, null, AdminBranchInfo_jsx(polaris_["Button"], {
-    onClick: () => setBranchId(null),
-    primary: true
-  }, "Go back"), AdminBranchInfo_jsx(polaris_["TextField"], {
-    label: "Search Product",
-    value: searchValue,
-    onChange: handleSearchInput,
-    prefix: AdminBranchInfo_jsx(polaris_["Icon"], {
-      source: polaris_icons_["SearchMajorMonotone"]
-    }),
-    placeholder: "Search by Customer phone number"
-  }), AdminBranchInfo_jsx(polaris_["Card"], null, AdminBranchInfo_jsx(polaris_["DataTable"], {
-    columnContentTypes: ['text', 'text', 'text', 'text'],
-    headings: ['Customer phone number', 'TotalPrice', 'TotalBonusAmount', 'Minus from Bonus Amount', 'CreatedAt'],
-    rows: branchInfo && branchInfo.transactions.items.filter(transaction => {
-      if (searchValue == null) {
-        return transaction;
-      } else if (transaction.customer[0].phone.toLowerCase().includes(searchValue.toLowerCase())) {
-        return transaction;
-      }
-    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(transaction => [AdminBranchInfo_jsx(polaris_["Button"], {
-      primary: true,
-      onClick: () => redirect.dispatch(Redirect.Action.ADMIN_PATH, {
-        path: `/customers/${transaction.customer[0].id}`,
-        newContext: true
-      })
-    }, transaction.customer[0].phone), Object(helper["c" /* toCurrency */])(Number(transaction.totalPrice)), Object(helper["c" /* toCurrency */])(Number(transaction.totalBonusAmount)), transaction.note === null ? '' : Object(helper["c" /* toCurrency */])(extractNumbersFromString(transaction.note)), Object(helper["b" /* formatDate */])(transaction.createdAt)])
-  }))));
-};
-
-/* harmony default export */ var components_AdminBranchInfo = (AdminBranchInfo);
-// CONCATENATED MODULE: ./components/BranchList.js
-var BranchList_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-external_aws_sdk_default.a.config.update({
-  accessKeyId: 'AKIAI53OMMWOAP5X3K5Q',
-  secretAccessKey: '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',
-  region: 'us-east-1'
-});
-const cognito = new external_aws_sdk_default.a.CognitoIdentityServiceProvider();
-const listBranchs = external_graphql_tag_default.a`
-    query listBranchs {
-        listBranchs {
-            items {
-                adminId
-                branchName
-                branchUsername
-                createdAt
-                id
-                branchProducts {
-                    items {
-                        branchId
-                        createdAt
-                        id
-                        productId
-                        tags
-                        updatedAt
-                    }
-                }
-            }
-        }
-    }
-`;
-const onCreateBranchSubscription = external_graphql_tag_default.a`
-    subscription onCreateBranch {
-        onCreateBranch {
-            adminId
-            branchName
-            id
-            createdAt
-        }
-    }
-`;
-const onDeleteBranchSubscription = external_graphql_tag_default.a`
-    subscription onDeleteBranch {
-        onDeleteBranch {
-            id
-        }
-    }
-`;
-const removeBranch = external_graphql_tag_default.a`
-    mutation deleteBranch($input: DeleteBranchInput!) {
-        deleteBranch(input: $input) {
-            id
-        }
-    }
-`;
-
-const BranchList = ({
-  setBranchId,
-  branchId
-}) => {
-  const {
-    0: active,
-    1: setActive
-  } = Object(external_react_["useState"])(false);
-  const {
-    0: branches,
-    1: setBranches
-  } = Object(external_react_["useState"])('');
-  const {
-    0: branchName,
-    1: setBranchName
-  } = Object(external_react_["useState"])('');
-  const {
-    0: productBranchId,
-    1: setProductBranchId
-  } = Object(external_react_["useState"])('');
-  const {
-    0: newCreatedBranch,
-    1: setNewCreatedBranch
-  } = Object(external_react_["useState"])('');
-  const app = app_bridge_default()({
-    apiKey: '3b01063bac3031d13101100ef3e44fd5',
-    shopOrigin: 'transactions-avanta.myshopify.com'
-  });
-  const redirect = actions_["Redirect"].create(app);
-
-  const handleChange = () => {
-    setActive(!active);
-  };
-
-  const fetchBranches = async () => {
-    try {
-      const getBranches = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(listBranchs));
-      setBranches(getBranches.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteBranch = async id => {
-    try {
-      const deletedBranch = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(removeBranch, {
-        input: {
-          id
-        }
-      }));
-      console.log('Deleted branch', deletedBranch);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteUserFromCognito = async username => {
-    try {
-      await cognito.adminDeleteUser({
-        UserPoolId: 'us-east-1_IfrnnzGFR',
-        Username: username
-      }).promise();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  Object(external_react_["useEffect"])(() => {
-    fetchBranches();
-    external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(onCreateBranchSubscription)).subscribe({
-      next: createdBranch => {
-        setNewCreatedBranch(createdBranch);
-      }
-    });
-    external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(onDeleteBranchSubscription)).subscribe({
-      next: deletedBranch => {
-        setNewCreatedBranch(deletedBranch);
-      }
-    });
-  }, [newCreatedBranch]);
-  console.log('Branches from Branch list', branches);
-  return BranchList_jsx(external_react_default.a.Fragment, null, BranchList_jsx(external_semantic_ui_react_["Table"], {
-    selectable: true,
-    celled: true
-  }, BranchList_jsx(external_semantic_ui_react_["Table"].Header, null, BranchList_jsx(external_semantic_ui_react_["Table"].Row, null, BranchList_jsx(external_semantic_ui_react_["Table"].HeaderCell, null, "Branch Name"), BranchList_jsx(external_semantic_ui_react_["Table"].HeaderCell, {
-    textAlign: "center"
-  }, "Created At"), BranchList_jsx(external_semantic_ui_react_["Table"].HeaderCell, {
-    textAlign: "center"
-  }, "Actions"))), BranchList_jsx(external_semantic_ui_react_["Table"].Body, null, branches && branches.listBranchs.items.map(item => BranchList_jsx(external_semantic_ui_react_["Table"].Row, {
-    key: item.id
-  }, BranchList_jsx(external_semantic_ui_react_["Table"].Cell, null, BranchList_jsx(polaris_["Button"], {
-    primary: true,
-    onClick: () => {
-      setBranchId(item.id); // redirect.dispatch(
-      //     Redirect.Action.ADMIN_PATH,
-      //     `/apps/3b01063bac3031d13101100ef3e44fd5/branch/${item.id}`
-      // )
-    }
-  }, BranchList_jsx(external_semantic_ui_react_["Icon"], {
-    name: "code branch"
-  }), " ", item.branchName)), BranchList_jsx(external_semantic_ui_react_["Table"].Cell, {
-    textAlign: "center"
-  }, Object(helper["b" /* formatDate */])(item.createdAt)), BranchList_jsx(external_semantic_ui_react_["Table"].Cell, {
-    textAlign: "center",
-    className: "branch-actions"
-  }, BranchList_jsx(external_semantic_ui_react_["Popup"], {
-    content: "Edit branch",
-    trigger: BranchList_jsx(external_semantic_ui_react_["Icon"], {
-      onClick: () => {
-        setProductBranchId(item.id);
-        setBranchName(item.branchName);
-        handleChange();
-      },
-      className: "edit-branch",
-      name: "edit outline"
-    })
-  }), BranchList_jsx(external_semantic_ui_react_["Popup"], {
-    content: "Delete Branch",
-    trigger: BranchList_jsx(external_semantic_ui_react_["Icon"], {
-      className: "remove-branch",
-      name: "trash alternate",
-      onClick: () => {
-        deleteBranch(item.id);
-        deleteUserFromCognito(item.branchUsername);
-      }
-    })
-  })))))), BranchList_jsx(BranchProducts, {
-    branchName: branchName,
-    branchId: productBranchId,
-    active: active,
-    handleChange: handleChange
-  }));
-};
-
-/* harmony default export */ var components_BranchList = (BranchList);
-// CONCATENATED MODULE: ./components/BranchConsole.js
-var BranchConsole_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-const createBranch = external_graphql_tag_default.a`
-    mutation createBranch($input: CreateBranchInput!) {
-        createBranch(input: $input) {
-            id
-            adminId
-            branchName
-        }
-    }
-`;
-const BranchConsole_listBranchs = external_graphql_tag_default.a`
-    query listBranchs {
-        listBranchs {
-            items {
-                adminId
-                branchName
-                createdAt
-                id
-            }
-        }
-    }
-`;
-
-const BranchConsole = ({
-  updateUser
-}) => {
-  const {
-    0: active,
-    1: setActive
-  } = Object(external_react_["useState"])(false);
-  const {
-    0: branchName,
-    1: setBranchName
-  } = Object(external_react_["useState"])('');
-  const {
-    0: username,
-    1: setUsername
-  } = Object(external_react_["useState"])('');
-  const {
-    0: email,
-    1: setEmail
-  } = Object(external_react_["useState"])('');
-  const {
-    0: password,
-    1: setPassword
-  } = Object(external_react_["useState"])('');
-  const {
-    0: code,
-    1: setCode
-  } = Object(external_react_["useState"])('');
-  const {
-    0: formType,
-    1: setFormType
-  } = Object(external_react_["useState"])('signUp');
-  const {
-    0: userSub,
-    1: setUserSub
-  } = Object(external_react_["useState"])(null);
-  const {
-    0: branches,
-    1: setBranches
-  } = Object(external_react_["useState"])('');
-  const {
-    0: branchId,
-    1: setBranchId
-  } = Object(external_react_["useState"])(null);
-  const onChangeBranchName = Object(external_react_["useCallback"])(newValue => {
-    setBranchName(newValue);
-  }, []);
-  const onChangeUsername = Object(external_react_["useCallback"])(newValue => {
-    setUsername(newValue);
-  }, []);
-  const onChangePassword = Object(external_react_["useCallback"])(newValue => {
-    setPassword(newValue);
-  }, []);
-  const onChangeEmail = Object(external_react_["useCallback"])(newValue => {
-    setEmail(newValue);
-  }, []);
-  const onChangeCode = Object(external_react_["useCallback"])(newValue => {
-    setCode(newValue);
-  }, []);
-
-  const handleChange = () => {
-    setActive(!active);
-  };
-
-  const signUp = async e => {
-    e.preventDefault();
-
-    try {
-      const user = await external_aws_amplify_["Auth"].signUp({
-        username,
-        password,
-        attributes: {
-          email
-        }
-      });
-      setUserSub(user.userSub);
-      console.log('Signed Up User from Modal', user);
-      setFormType('confirm');
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const confirm = async e => {
-    e.preventDefault();
-
-    try {
-      const confirmedUser = await external_aws_amplify_["Auth"].confirmSignUp(username, code);
-      console.log('Confirmed user', confirmedUser);
-      const branch = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(createBranch, {
-        input: {
-          adminId: userSub,
-          branchUsername: username,
-          branchName: branchName,
-          id: Object(external_uuid_["v4"])()
-        }
-      }));
-      console.log('New created branch', branch);
-      setFormType('signUp');
-      handleChange();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchBranches = async () => {
-    try {
-      const getBranches = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(BranchConsole_listBranchs));
-      setBranches(getBranches.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  Object(external_react_["useEffect"])(() => {
-    fetchBranches();
-  }, []);
-  console.log('Branch name', branchName);
-  console.log('Username', username);
-  console.log('Password', password);
-  console.log('Email', email);
-  console.log('Code', code);
-  console.log('Fetched branches', branches);
-  return BranchConsole_jsx(external_react_default.a.Fragment, null, branchId && BranchConsole_jsx(components_AdminBranchInfo, {
-    setBranchId: setBranchId,
-    branchId: branchId
-  }), !branchId && BranchConsole_jsx(external_react_default.a.Fragment, null, BranchConsole_jsx(polaris_["Button"], {
-    onClick: handleChange,
-    primary: true
-  }, "Create branch"), BranchConsole_jsx(polaris_["Button"], {
-    primary: true,
-    id: "Logout",
-    onClick: () => {
-      external_aws_amplify_["Auth"].signOut();
-      updateUser(null);
-    }
-  }, BranchConsole_jsx(external_semantic_ui_react_["Icon"], {
-    name: "sign out"
-  }), " Logout"), BranchConsole_jsx(components_BranchList, {
-    setBranchId: setBranchId
-  }), BranchConsole_jsx(polaris_["Modal"], {
-    open: active,
-    onClose: handleChange,
-    title: "Fill in Branch info"
-  }, BranchConsole_jsx(polaris_["Modal"].Section, null, formType === 'signUp' && BranchConsole_jsx(polaris_["Form"], {
-    onSubmit: signUp
-  }, BranchConsole_jsx(polaris_["FormLayout"], null, BranchConsole_jsx(polaris_["TextField"], {
-    value: branchName,
-    onChange: onChangeBranchName,
-    label: "Branch Name"
-  }), BranchConsole_jsx(polaris_["TextField"], {
-    value: username,
-    onChange: onChangeUsername,
-    label: "Branch admin username"
-  }), BranchConsole_jsx(polaris_["TextField"], {
-    value: email,
-    onChange: onChangeEmail,
-    label: "Branch admin email"
-  }), BranchConsole_jsx(polaris_["TextField"], {
-    type: "password",
-    value: password,
-    onChange: onChangePassword,
-    label: "Branch admin password"
-  }), BranchConsole_jsx(polaris_["Button"], {
-    primary: true,
-    submit: true
-  }, "Create Branch"))), formType === 'confirm' && BranchConsole_jsx(polaris_["Form"], {
-    onSubmit: confirm
-  }, BranchConsole_jsx(polaris_["FormLayout"], null, BranchConsole_jsx(polaris_["TextField"], {
-    value: username,
-    onChange: onChangeUsername,
-    label: "Branch admin username"
-  }), BranchConsole_jsx(polaris_["TextField"], {
-    value: code,
-    onChange: onChangeCode,
-    label: "Confirmation code"
-  }), BranchConsole_jsx(polaris_["Button"], {
-    primary: true,
-    submit: true
-  }, "Confirm")))))));
-};
-
-/* harmony default export */ var components_BranchConsole = (BranchConsole);
-// EXTERNAL MODULE: external "next/router"
-var router_ = __webpack_require__("4Q3z");
-
-// EXTERNAL MODULE: ./components/AcceptedPaymentRequest.js
-var AcceptedPaymentRequest = __webpack_require__("rljl");
-
-// EXTERNAL MODULE: ./components/PendingPaymentRequest.js
-var PendingPaymentRequest = __webpack_require__("7Xrt");
-
-// EXTERNAL MODULE: ./components/DeclinedPaymentRequest.js
-var DeclinedPaymentRequest = __webpack_require__("o0q5");
-
-// EXTERNAL MODULE: ./graphql/subscriptions.js
-var subscriptions = __webpack_require__("Skdt");
-
-// CONCATENATED MODULE: ./components/PaymentRequest.js
-var PaymentRequest_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-
-const AcceptPayment = ({
-  branchId,
-  setShowPaymentRequest
-}) => {
-  const {
-    0: activeToast,
-    1: setActiveToast
-  } = Object(external_react_["useState"])(false);
-  const {
-    0: selected,
-    1: setSelected
-  } = Object(external_react_["useState"])(0);
-  const {
-    0: createUpdatePaymentSubscription,
-    1: setCreateUpdatePaymentSubscription
-  } = Object(external_react_["useState"])('');
-  const handleTabChange = Object(external_react_["useCallback"])(selectedTabIndex => setSelected(selectedTabIndex), []);
-  Object(external_react_["useEffect"])(() => {
-    const listener = external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(subscriptions["b" /* paymentSubscription */])).subscribe({
-      next: paymentResponse => {
-        setCreateUpdatePaymentSubscription(paymentResponse);
-      }
-    });
-    const onUpdatePayment = external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(subscriptions["a" /* onUpdatePaymentSubscription */])).subscribe({
-      next: onUpdatePaymentResponse => {
-        setCreateUpdatePaymentSubscription(onUpdatePaymentResponse);
-      }
-    });
-    return () => {
-      listener.unsubscribe();
-      onUpdatePayment.unsubscribe();
-    };
-  }, []);
-  const tabs = [{
-    id: 'pending-payments',
-    content: 'Pending Payment Requests',
-    accessibilityLabel: 'Pending Requests',
-    panelID: 'pending-payments-content'
-  }, {
-    id: 'accepted-payments',
-    content: 'Accepted Payment Requests',
-    accessibilityLabel: 'Accepted Request',
-    panelID: 'accepted-payments-content'
-  }, {
-    id: 'declined-payments',
-    content: 'Declined Payment Requests',
-    accessibilityLabel: 'Declined Requests',
-    panelID: 'declined-payments-content'
-  }];
-  const toastMarkup = activeToast ? PaymentRequest_jsx(polaris_["Toast"], {
-    content: "Order has been successfully created",
-    onDismiss: () => setActiveToast(false)
-  }) : null;
-
-  const renderPaymentRequest = selected => {
-    switch (selected) {
-      case 0:
-        return PaymentRequest_jsx(PendingPaymentRequest["a" /* default */], {
-          branchId: branchId,
-          createUpdatePaymentSubscription: createUpdatePaymentSubscription
-        });
-
-      case 1:
-        return PaymentRequest_jsx(AcceptedPaymentRequest["a" /* default */], {
-          branchId: branchId
-        });
-
-      case 2:
-        return PaymentRequest_jsx(DeclinedPaymentRequest["a" /* default */], {
-          branchId: branchId
-        });
-
-      default:
-        return;
-    }
-  };
-
-  return PaymentRequest_jsx(polaris_["Frame"], null, PaymentRequest_jsx(polaris_["Page"], {
-    title: "Payment Request"
-  }, PaymentRequest_jsx(Button, {
-    onClick: () => setShowPaymentRequest(false)
-  }, "Go back"), PaymentRequest_jsx(polaris_["Card"], null, PaymentRequest_jsx(polaris_["Tabs"], {
-    tabs: tabs,
-    selected: selected,
-    onSelect: handleTabChange
-  }, PaymentRequest_jsx(polaris_["Card"].Section, {
-    title: tabs[selected].content
-  }, renderPaymentRequest(selected)))), toastMarkup));
-};
-
-/* harmony default export */ var PaymentRequest = (AcceptPayment);
-// CONCATENATED MODULE: ./components/BranchData.js
-var BranchData_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-const branchByAdminId = external_graphql_tag_default.a`
-    query branchByAdminId($adminId: ID!) {
-        branchByAdminId(adminId: $adminId) {
-            items {
-                adminId
-                branchName
-                id
-                transactions {
-                    items {
-                        branchId
-                        createdAt
-                        currency
-                        id
-                        note
-                        customer {
-                            email
-                            firstName
-                            id
-                            lastName
-                            phone
-                        }
-                        products {
-                            bonusPercentage
-                            id
-                            image
-                            priceAmount
-                            priceCurrency
-                            title
-                        }
-                        sortDate
-                        totalBonusAmount
-                        totalPrice
-                        updatedAt
-                    }
-                }
-                branchProducts {
-                    items {
-                        branchId
-                        createdAt
-                        id
-                        productId
-                        tags
-                    }
-                }
-            }
-        }
-    }
-`;
-const onCreateTransaction = external_graphql_tag_default.a`
-    subscription onCreateTransaction {
-        onCreateTransaction {
-            id
-        }
-    }
-`;
-
-const BranchData = ({
-  user,
-  updateUser
-}) => {
-  const {
-    0: branchInfo,
-    1: setBranchInfo
-  } = Object(external_react_["useState"])('');
-  const {
-    0: searchValue,
-    1: setSearchValue
-  } = Object(external_react_["useState"])(null);
-  const {
-    0: newCreatedTransaction,
-    1: setNewCreatedTransaction
-  } = Object(external_react_["useState"])('');
-  const {
-    0: showPaymentRequest,
-    1: setShowPaymentRequest
-  } = Object(external_react_["useState"])(false); // const [transactionItems, setTransactionItems] = useState(transactions.listTransactions.items)
-  // const [nextPaginateToken, setNextPaginateToken] = useState(
-  //     transactions.listTransactions.nextToken
-  // )
-  // const [previousPaginateTokens, setPreviousPaginateTokens] = useState([])
-
-  const handleSearchInput = Object(external_react_["useCallback"])(newValue => setSearchValue(newValue), []);
-  const router = Object(router_["useRouter"])();
-  const app = app_bridge_default()({
-    apiKey: '3b01063bac3031d13101100ef3e44fd5',
-    shopOrigin: 'transactions-avanta.myshopify.com'
-  });
-  const redirect = actions_["Redirect"].create(app); // const paginateNext = async () => {
-  //     setPreviousPaginateTokens([...previousPaginateTokens, nextPaginateToken])
-  //     try {
-  //         const data = await API.graphql(
-  //             graphqlOperation(listTransactions, { limit: 5, nextToken: nextPaginateToken })
-  //         )
-  //         console.log('Data from pagination', data)
-  //         setTransactionItems(data.data.listTransactions.items)
-  //         setNextPaginateToken(data.data.listTransactions.nextToken)
-  //     } catch (error) {
-  //         console.log(error)
-  //     }
-  // }
-  // const paginatePrevious = async () => {
-  //     const previousToken =
-  //         previousPaginateTokens[
-  //             previousPaginateTokens.length === 1 ? 0 : previousPaginateTokens.length - 2
-  //         ]
-  //     setPreviousPaginateTokens([
-  //         ...previousPaginateTokens.slice(0, previousPaginateTokens.length - 1)
-  //     ])
-  //     try {
-  //         if (previousPaginateTokens.length === 1) {
-  //             const data = await API.graphql(graphqlOperation(listTransactions, { limit: 5 }))
-  //             setTransactionItems(data.data.listTransactions.items)
-  //             setNextPaginateToken(data.data.listTransactions.nextToken)
-  //         } else {
-  //             const data = await API.graphql(
-  //                 graphqlOperation(listTransactions, { limit: 5, nextToken: previousToken })
-  //             )
-  //             setTransactionItems(data.data.listTransactions.items)
-  //             setNextPaginateToken(data.data.listTransactions.nextToken)
-  //         }
-  //     } catch (error) {
-  //         console.log(error)
-  //     }
-  // }
-
-  const getBranch = async () => {
-    try {
-      const fetchBranch = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(branchByAdminId, {
-        adminId: user.attributes.sub
-      }));
-      setBranchInfo(fetchBranch.data.branchByAdminId.items[0]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  Object(external_react_["useEffect"])(() => {
-    getBranch();
-    external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(onCreateTransaction)).subscribe({
-      next: createdTransaction => setNewCreatedTransaction(createdTransaction)
-    });
-  }, [newCreatedTransaction]);
-  console.log('Branch data user', user);
-  console.log('Branch info', branchInfo);
-  return BranchData_jsx(external_react_default.a.Fragment, null, showPaymentRequest ? BranchData_jsx(PaymentRequest, {
-    setShowPaymentRequest: setShowPaymentRequest,
-    branchId: branchInfo.id
-  }) : BranchData_jsx(polaris_["Page"], {
-    title: branchInfo && branchInfo.branchName
-  }, BranchData_jsx(polaris_["TextField"], {
-    label: "Search Product",
-    value: searchValue,
-    onChange: handleSearchInput,
-    prefix: BranchData_jsx(polaris_["Icon"], {
-      source: polaris_icons_["SearchMajorMonotone"]
-    }),
-    placeholder: "Search by Customer phone number"
-  }), BranchData_jsx(polaris_["Stack"], null, BranchData_jsx(polaris_["Stack"].Item, {
-    fill: true
-  }, BranchData_jsx(polaris_["Button"], {
-    id: "Accept-Payment",
-    onClick: () => // redirect.dispatch(
-    //     Redirect.Action.ADMIN_PATH,
-    //     '/apps/3b01063bac3031d13101100ef3e44fd5/accept-payment'
-    // )
-    setShowPaymentRequest(true)
-  }, BranchData_jsx(polaris_["Icon"], {
-    source: polaris_icons_["BalanceMajorMonotone"]
-  }), " Accept Payment")), BranchData_jsx(polaris_["Stack"].Item, null, BranchData_jsx(polaris_["Button"], {
-    id: "Create-Transaction",
-    primary: true,
-    onClick: () => redirect.dispatch(actions_["Redirect"].Action.REMOTE, {
-      // url: `https://dev.d3ivgpkzuz6hkr.amplifyapp.com?adminId=${user.attributes.sub}`,
-      url: `http://localhost:3001/transactions/${user.attributes.sub}`,
-      newContext: true
-    })
-  }, BranchData_jsx(polaris_["Icon"], {
-    source: polaris_icons_["TransactionMajorMonotone"]
-  }), " Create transaction")), BranchData_jsx(polaris_["Stack"].Item, null, BranchData_jsx(polaris_["Button"], {
-    primary: true,
-    id: "Logout",
-    onClick: () => {
-      external_aws_amplify_["Auth"].signOut();
-      updateUser(null);
-    }
-  }, BranchData_jsx(polaris_["Icon"], {
-    source: polaris_icons_["LogOutMinor"]
-  }), " Logout"))), branchInfo && BranchData_jsx(polaris_["Card"], null, BranchData_jsx(polaris_["DataTable"], {
-    columnContentTypes: ['text', 'text', 'text', 'text'],
-    headings: ['Customer phone number', 'TotalPrice', 'TotalBonusAmount', 'Minus from Bonus Amount', 'CreatedAt'],
-    rows: branchInfo && branchInfo.transactions.items.filter(transaction => {
-      if (searchValue == null) {
-        return transaction;
-      } else if (transaction.customer[0].phone.toLowerCase().includes(searchValue.toLowerCase())) {
-        return transaction;
-      }
-    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(transaction => [BranchData_jsx(polaris_["Button"], {
-      primary: true,
-      onClick: () => redirect.dispatch(actions_["Redirect"].Action.ADMIN_PATH, {
-        path: `/customers/${transaction.customer[0].id}`,
-        newContext: true
-      })
-    }, transaction.customer[0].phone), Object(helper["c" /* toCurrency */])(Number(transaction.totalPrice)), Object(helper["c" /* toCurrency */])(Number(transaction.totalBonusAmount)), transaction.note === null ? '' : Object(helper["c" /* toCurrency */])(Object(helper["a" /* extractNumbersFromString */])(transaction.note)), Object(helper["b" /* formatDate */])(transaction.createdAt)])
-  }))));
-};
-
-/* harmony default export */ var components_BranchData = (BranchData);
-// CONCATENATED MODULE: ./pages/index.js
-var pages_jsx = external_react_default.a.createElement;
-
-
-
-
-
-
-
-const Index = () => {
-  const {
-    0: user,
-    1: updateUser
-  } = Object(external_react_["useState"])(null);
-
-  const checkUser = async () => {
-    try {
-      const user = await external_aws_amplify_["Auth"].currentAuthenticatedUser();
-
-      if (!user) {
-        return;
-      }
-
-      updateUser(user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  Object(external_react_["useEffect"])(() => {
-    checkUser();
-  }, []);
-  return pages_jsx(external_react_default.a.Fragment, null, user && user.username !== 'superadmin' && pages_jsx(components_BranchData, {
-    updateUser: updateUser,
-    user: user
-  }), !user && pages_jsx(Login, {
-    setUser: fetchedUser => updateUser(fetchedUser)
-  }), user && user.username === 'superadmin' && pages_jsx(components_BranchConsole, {
-    updateUser: updateUser
-  }));
-};
-
-/* harmony default export */ var pages = __webpack_exports__["default"] = (Index);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! graphql-tag */ \"graphql-tag\");\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! uuid */ \"uuid\");\n/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(uuid__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var _ProductsList__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ProductsList */ \"./components/ProductsList.js\");\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _BranchProducts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./BranchProducts */ \"./components/BranchProducts.js\");\n/* harmony import */ var _BranchList__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./BranchList */ \"./components/BranchList.js\");\n/* harmony import */ var _AdminBranchInfo__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./AdminBranchInfo */ \"./components/AdminBranchInfo.js\");\n/* harmony import */ var _graphql_mutation__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../graphql/mutation */ \"./graphql/mutation.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_8__[\"default\"]);\n\nconst BranchConsole = ({\n  updateUser\n}) => {\n  const {\n    0: active,\n    1: setActive\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(false);\n  const {\n    0: branchName,\n    1: setBranchName\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: username,\n    1: setUsername\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: email,\n    1: setEmail\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: password,\n    1: setPassword\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: code,\n    1: setCode\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: formType,\n    1: setFormType\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"signUp\");\n  const {\n    0: userSub,\n    1: setUserSub\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(null);\n  const {\n    0: branches,\n    1: setBranches\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: branchId,\n    1: setBranchId\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(null);\n  const onChangeBranchName = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setBranchName(newValue);\n  }, []);\n  const onChangeUsername = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setUsername(newValue);\n  }, []);\n  const onChangePassword = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setPassword(newValue);\n  }, []);\n  const onChangeEmail = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setEmail(newValue);\n  }, []);\n  const onChangeCode = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setCode(newValue);\n  }, []);\n\n  const handleChange = () => {\n    setActive(!active);\n  };\n\n  const signUp = async e => {\n    e.preventDefault();\n\n    try {\n      const user = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"Auth\"].signUp({\n        username,\n        password,\n        attributes: {\n          email\n        }\n      });\n      setUserSub(user.userSub);\n      setFormType(\"confirm\");\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  const confirm = async e => {\n    e.preventDefault();\n\n    try {\n      const confirmedUser = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"Auth\"].confirmSignUp(username, code);\n      const branch = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_12__[\"createBranch\"], {\n        input: {\n          adminId: userSub,\n          branchUsername: username,\n          branchName: branchName,\n          id: Object(uuid__WEBPACK_IMPORTED_MODULE_3__[\"v4\"])()\n        }\n      }));\n      setFormType(\"signUp\");\n      handleChange();\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  const fetchBranches = async () => {\n    try {\n      const getBranches = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_13__[\"listBranchs\"]));\n      setBranches(getBranches.data);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    fetchBranches();\n  }, []);\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, branchId && __jsx(_AdminBranchInfo__WEBPACK_IMPORTED_MODULE_11__[\"default\"], {\n    setBranchId: setBranchId,\n    branchId: branchId\n  }), !branchId && __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"].Item, {\n    fill: true\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    onClick: handleChange,\n    primary: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Icon\"], {\n    name: \"code branch\"\n  }), \" Create branch\")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"].Item, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    primary: true,\n    id: \"Logout\",\n    onClick: () => {\n      aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"Auth\"].signOut();\n      updateUser(null);\n    }\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Icon\"], {\n    name: \"sign out\"\n  }), \" Logout\"))), __jsx(_BranchList__WEBPACK_IMPORTED_MODULE_10__[\"default\"], {\n    setBranchId: setBranchId\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Modal\"], {\n    open: active,\n    onClose: handleChange,\n    title: \"Fill in Branch info\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Modal\"].Section, null, formType === \"signUp\" && __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Form\"], {\n    onSubmit: signUp\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"FormLayout\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    value: branchName,\n    onChange: onChangeBranchName,\n    label: \"Branch Name\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    value: username,\n    onChange: onChangeUsername,\n    label: \"Branch admin username\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    value: email,\n    onChange: onChangeEmail,\n    label: \"Branch admin email\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    type: \"password\",\n    value: password,\n    onChange: onChangePassword,\n    label: \"Branch admin password\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    primary: true,\n    submit: true\n  }, \"Create Branch\"))), formType === \"confirm\" && __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Form\"], {\n    onSubmit: confirm\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"FormLayout\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    value: username,\n    onChange: onChangeUsername,\n    label: \"Branch admin username\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    value: code,\n    onChange: onChangeCode,\n    label: \"Confirmation code\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    primary: true,\n    submit: true\n  }, \"Confirm\")))))));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (BranchConsole);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0JyYW5jaENvbnNvbGUuanM/MWRjMyJdLCJuYW1lcyI6WyJBUEkiLCJjb25maWd1cmUiLCJjb25maWciLCJCcmFuY2hDb25zb2xlIiwidXBkYXRlVXNlciIsImFjdGl2ZSIsInNldEFjdGl2ZSIsInVzZVN0YXRlIiwiYnJhbmNoTmFtZSIsInNldEJyYW5jaE5hbWUiLCJ1c2VybmFtZSIsInNldFVzZXJuYW1lIiwiZW1haWwiLCJzZXRFbWFpbCIsInBhc3N3b3JkIiwic2V0UGFzc3dvcmQiLCJjb2RlIiwic2V0Q29kZSIsImZvcm1UeXBlIiwic2V0Rm9ybVR5cGUiLCJ1c2VyU3ViIiwic2V0VXNlclN1YiIsImJyYW5jaGVzIiwic2V0QnJhbmNoZXMiLCJicmFuY2hJZCIsInNldEJyYW5jaElkIiwib25DaGFuZ2VCcmFuY2hOYW1lIiwidXNlQ2FsbGJhY2siLCJuZXdWYWx1ZSIsIm9uQ2hhbmdlVXNlcm5hbWUiLCJvbkNoYW5nZVBhc3N3b3JkIiwib25DaGFuZ2VFbWFpbCIsIm9uQ2hhbmdlQ29kZSIsImhhbmRsZUNoYW5nZSIsInNpZ25VcCIsImUiLCJwcmV2ZW50RGVmYXVsdCIsInVzZXIiLCJBdXRoIiwiYXR0cmlidXRlcyIsImVycm9yIiwiY29uc29sZSIsImxvZyIsImNvbmZpcm0iLCJjb25maXJtZWRVc2VyIiwiY29uZmlybVNpZ25VcCIsImJyYW5jaCIsImdyYXBocWwiLCJncmFwaHFsT3BlcmF0aW9uIiwiY3JlYXRlQnJhbmNoIiwiaW5wdXQiLCJhZG1pbklkIiwiYnJhbmNoVXNlcm5hbWUiLCJpZCIsInV1aWR2NCIsImZldGNoQnJhbmNoZXMiLCJnZXRCcmFuY2hlcyIsImxpc3RCcmFuY2hzIiwiZGF0YSIsInVzZUVmZmVjdCIsInNpZ25PdXQiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNB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QUhaO0FBSUUsU0FBSyxFQUFDO0FBSlIsSUFaRixFQWtCRSxNQUFDLHVEQUFEO0FBQVEsV0FBTyxNQUFmO0FBQWdCLFVBQU07QUFBdEIscUJBbEJGLENBREYsQ0FGSixFQTJCR1osUUFBUSxLQUFLLFNBQWIsSUFDQyxNQUFDLHFEQUFEO0FBQU0sWUFBUSxFQUFFeUI7QUFBaEIsS0FDRSxNQUFDLDJEQUFELFFBQ0UsTUFBQywwREFBRDtBQUNFLFNBQUssRUFBRWpDLFFBRFQ7QUFFRSxZQUFRLEVBQUVtQixnQkFGWjtBQUdFLFNBQUssRUFBQztBQUhSLElBREYsRUFNRSxNQUFDLDBEQUFEO0FBQVcsU0FBSyxFQUFFYixJQUFsQjtBQUF3QixZQUFRLEVBQUVnQixZQUFsQztBQUFnRCxTQUFLLEVBQUM7QUFBdEQsSUFORixFQU9FLE1BQUMsdURBQUQ7QUFBUSxXQUFPLE1BQWY7QUFBZ0IsVUFBTTtBQUF0QixlQVBGLENBREYsQ0E1QkosQ0FERixDQXBCRixDQUhKLENBREY7QUF5RUQsQ0ExSkQ7O0FBNEplN0IsNEVBQWYiLCJmaWxlIjoiLi9jb21wb25lbnRzL0JyYW5jaENvbnNvbGUuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUVmZmVjdCwgdXNlUmVmLCB1c2VDYWxsYmFjayB9IGZyb20gXCJyZWFjdFwiXG5pbXBvcnQgeyBBdXRoLCBBUEksIGdyYXBocWxPcGVyYXRpb24gfSBmcm9tIFwiYXdzLWFtcGxpZnlcIlxuaW1wb3J0IGdxbCBmcm9tIFwiZ3JhcGhxbC10YWdcIlxuaW1wb3J0IHsgdjQgYXMgdXVpZHY0IH0gZnJvbSBcInV1aWRcIlxuaW1wb3J0IHsgUGFnZSwgQnV0dG9uLCBNb2RhbCwgRm9ybSwgRm9ybUxheW91dCwgVGV4dEZpZWxkLCBCYWRnZSwgU3RhY2sgfSBmcm9tIFwiQHNob3BpZnkvcG9sYXJpc1wiXG5pbXBvcnQgeyBUYWJsZSwgUG9wdXAsIEhlYWRlciwgSWNvbiB9IGZyb20gXCJzZW1hbnRpYy11aS1yZWFjdFwiXG5pbXBvcnQgUHJvZHVjdExpc3QgZnJvbSBcIi4vUHJvZHVjdHNMaXN0XCJcbmltcG9ydCB7IGZvcm1hdERhdGUgfSBmcm9tIFwiLi4vdXRpbHMvaGVscGVyXCJcbmltcG9ydCBjb25maWcgZnJvbSBcIi4uL2F3cy1leHBvcnRzXCJcbmltcG9ydCBCcmFuY2hQcm9kdWN0cyBmcm9tIFwiLi9CcmFuY2hQcm9kdWN0c1wiXG5pbXBvcnQgQnJhbmNoTGlzdCBmcm9tIFwiLi9CcmFuY2hMaXN0XCJcbmltcG9ydCBBZG1pbkJyYW5jaEluZm8gZnJvbSBcIi4vQWRtaW5CcmFuY2hJbmZvXCJcbmltcG9ydCB7IGNyZWF0ZUJyYW5jaCB9IGZyb20gXCIuLi9ncmFwaHFsL211dGF0aW9uXCJcbmltcG9ydCB7IGxpc3RCcmFuY2hzIH0gZnJvbSBcIi4uL2dyYXBocWwvcXVlcmllc1wiXG5cbkFQSS5jb25maWd1cmUoY29uZmlnKVxuXG5jb25zdCBCcmFuY2hDb25zb2xlID0gKHsgdXBkYXRlVXNlciB9KSA9PiB7XG4gIGNvbnN0IFthY3RpdmUsIHNldEFjdGl2ZV0gPSB1c2VTdGF0ZShmYWxzZSlcbiAgY29uc3QgW2JyYW5jaE5hbWUsIHNldEJyYW5jaE5hbWVdID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW3VzZXJuYW1lLCBzZXRVc2VybmFtZV0gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBbZW1haWwsIHNldEVtYWlsXSA9IHVzZVN0YXRlKFwiXCIpXG4gIGNvbnN0IFtwYXNzd29yZCwgc2V0UGFzc3dvcmRdID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW2NvZGUsIHNldENvZGVdID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW2Zvcm1UeXBlLCBzZXRGb3JtVHlwZV0gPSB1c2VTdGF0ZShcInNpZ25VcFwiKVxuICBjb25zdCBbdXNlclN1Yiwgc2V0VXNlclN1Yl0gPSB1c2VTdGF0ZShudWxsKVxuICBjb25zdCBbYnJhbmNoZXMsIHNldEJyYW5jaGVzXSA9IHVzZVN0YXRlKFwiXCIpXG4gIGNvbnN0IFticmFuY2hJZCwgc2V0QnJhbmNoSWRdID0gdXNlU3RhdGUobnVsbClcblxuICBjb25zdCBvbkNoYW5nZUJyYW5jaE5hbWUgPSB1c2VDYWxsYmFjaygobmV3VmFsdWUpID0+IHtcbiAgICBzZXRCcmFuY2hOYW1lKG5ld1ZhbHVlKVxuICB9LCBbXSlcblxuICBjb25zdCBvbkNoYW5nZVVzZXJuYW1lID0gdXNlQ2FsbGJhY2soKG5ld1ZhbHVlKSA9PiB7XG4gICAgc2V0VXNlcm5hbWUobmV3VmFsdWUpXG4gIH0sIFtdKVxuXG4gIGNvbnN0IG9uQ2hhbmdlUGFzc3dvcmQgPSB1c2VDYWxsYmFjaygobmV3VmFsdWUpID0+IHtcbiAgICBzZXRQYXNzd29yZChuZXdWYWx1ZSlcbiAgfSwgW10pXG5cbiAgY29uc3Qgb25DaGFuZ2VFbWFpbCA9IHVzZUNhbGxiYWNrKChuZXdWYWx1ZSkgPT4ge1xuICAgIHNldEVtYWlsKG5ld1ZhbHVlKVxuICB9LCBbXSlcblxuICBjb25zdCBvbkNoYW5nZUNvZGUgPSB1c2VDYWxsYmFjaygobmV3VmFsdWUpID0+IHtcbiAgICBzZXRDb2RlKG5ld1ZhbHVlKVxuICB9LCBbXSlcblxuICBjb25zdCBoYW5kbGVDaGFuZ2UgPSAoKSA9PiB7XG4gICAgc2V0QWN0aXZlKCFhY3RpdmUpXG4gIH1cblxuICBjb25zdCBzaWduVXAgPSBhc3luYyAoZSkgPT4ge1xuICAgIGUucHJldmVudERlZmF1bHQoKVxuICAgIHRyeSB7XG4gICAgICBjb25zdCB1c2VyID0gYXdhaXQgQXV0aC5zaWduVXAoeyB1c2VybmFtZSwgcGFzc3dvcmQsIGF0dHJpYnV0ZXM6IHsgZW1haWwgfSB9KVxuICAgICAgc2V0VXNlclN1Yih1c2VyLnVzZXJTdWIpXG4gICAgICBzZXRGb3JtVHlwZShcImNvbmZpcm1cIilcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5sb2coZXJyb3IpXG4gICAgfVxuICB9XG5cbiAgY29uc3QgY29uZmlybSA9IGFzeW5jIChlKSA9PiB7XG4gICAgZS5wcmV2ZW50RGVmYXVsdCgpXG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IGNvbmZpcm1lZFVzZXIgPSBhd2FpdCBBdXRoLmNvbmZpcm1TaWduVXAodXNlcm5hbWUsIGNvZGUpXG4gICAgICBjb25zdCBicmFuY2ggPSBhd2FpdCBBUEkuZ3JhcGhxbChcbiAgICAgICAgZ3JhcGhxbE9wZXJhdGlvbihjcmVhdGVCcmFuY2gsIHtcbiAgICAgICAgICBpbnB1dDoge1xuICAgICAgICAgICAgYWRtaW5JZDogdXNlclN1YixcbiAgICAgICAgICAgIGJyYW5jaFVzZXJuYW1lOiB1c2VybmFtZSxcbiAgICAgICAgICAgIGJyYW5jaE5hbWU6IGJyYW5jaE5hbWUsXG4gICAgICAgICAgICBpZDogdXVpZHY0KCksXG4gICAgICAgICAgfSxcbiAgICAgICAgfSlcbiAgICAgIClcbiAgICAgIHNldEZvcm1UeXBlKFwic2lnblVwXCIpXG4gICAgICBoYW5kbGVDaGFuZ2UoKVxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmxvZyhlcnJvcilcbiAgICB9XG4gIH1cblxuICBjb25zdCBmZXRjaEJyYW5jaGVzID0gYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBnZXRCcmFuY2hlcyA9IGF3YWl0IEFQSS5ncmFwaHFsKGdyYXBocWxPcGVyYXRpb24obGlzdEJyYW5jaHMpKVxuICAgICAgc2V0QnJhbmNoZXMoZ2V0QnJhbmNoZXMuZGF0YSlcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5sb2coZXJyb3IpXG4gICAgfVxuICB9XG5cbiAgdXNlRWZmZWN0KCgpID0+IHtcbiAgICBmZXRjaEJyYW5jaGVzKClcbiAgfSwgW10pXG5cbiAgcmV0dXJuIChcbiAgICA8PlxuICAgICAge2JyYW5jaElkICYmIDxBZG1pbkJyYW5jaEluZm8gc2V0QnJhbmNoSWQ9e3NldEJyYW5jaElkfSBicmFuY2hJZD17YnJhbmNoSWR9IC8+fVxuICAgICAgeyFicmFuY2hJZCAmJiAoXG4gICAgICAgIDw+XG4gICAgICAgICAgPFN0YWNrPlxuICAgICAgICAgICAgPFN0YWNrLkl0ZW0gZmlsbD5cbiAgICAgICAgICAgICAgPEJ1dHRvbiBvbkNsaWNrPXtoYW5kbGVDaGFuZ2V9IHByaW1hcnk+XG4gICAgICAgICAgICAgICAgPEljb24gbmFtZT1cImNvZGUgYnJhbmNoXCIgLz4gQ3JlYXRlIGJyYW5jaFxuICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgIDwvU3RhY2suSXRlbT5cbiAgICAgICAgICAgIDxTdGFjay5JdGVtPlxuICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgcHJpbWFyeVxuICAgICAgICAgICAgICAgIGlkPVwiTG9nb3V0XCJcbiAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB7XG4gICAgICAgICAgICAgICAgICBBdXRoLnNpZ25PdXQoKVxuICAgICAgICAgICAgICAgICAgdXBkYXRlVXNlcihudWxsKVxuICAgICAgICAgICAgICAgIH19PlxuICAgICAgICAgICAgICAgIDxJY29uIG5hbWU9XCJzaWduIG91dFwiIC8+IExvZ291dFxuICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgIDwvU3RhY2suSXRlbT5cbiAgICAgICAgICA8L1N0YWNrPlxuICAgICAgICAgIDxCcmFuY2hMaXN0IHNldEJyYW5jaElkPXtzZXRCcmFuY2hJZH0gLz5cbiAgICAgICAgICA8TW9kYWwgb3Blbj17YWN0aXZlfSBvbkNsb3NlPXtoYW5kbGVDaGFuZ2V9IHRpdGxlPVwiRmlsbCBpbiBCcmFuY2ggaW5mb1wiPlxuICAgICAgICAgICAgPE1vZGFsLlNlY3Rpb24+XG4gICAgICAgICAgICAgIHtmb3JtVHlwZSA9PT0gXCJzaWduVXBcIiAmJiAoXG4gICAgICAgICAgICAgICAgPEZvcm0gb25TdWJtaXQ9e3NpZ25VcH0+XG4gICAgICAgICAgICAgICAgICA8Rm9ybUxheW91dD5cbiAgICAgICAgICAgICAgICAgICAgPFRleHRGaWVsZFxuICAgICAgICAgICAgICAgICAgICAgIHZhbHVlPXticmFuY2hOYW1lfVxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXtvbkNoYW5nZUJyYW5jaE5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgbGFiZWw9XCJCcmFuY2ggTmFtZVwiXG4gICAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICAgIDxUZXh0RmllbGRcbiAgICAgICAgICAgICAgICAgICAgICB2YWx1ZT17dXNlcm5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9e29uQ2hhbmdlVXNlcm5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgbGFiZWw9XCJCcmFuY2ggYWRtaW4gdXNlcm5hbWVcIlxuICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICA8VGV4dEZpZWxkIHZhbHVlPXtlbWFpbH0gb25DaGFuZ2U9e29uQ2hhbmdlRW1haWx9IGxhYmVsPVwiQnJhbmNoIGFkbWluIGVtYWlsXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgPFRleHRGaWVsZFxuICAgICAgICAgICAgICAgICAgICAgIHR5cGU9XCJwYXNzd29yZFwiXG4gICAgICAgICAgICAgICAgICAgICAgdmFsdWU9e3Bhc3N3b3JkfVxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXtvbkNoYW5nZVBhc3N3b3JkfVxuICAgICAgICAgICAgICAgICAgICAgIGxhYmVsPVwiQnJhbmNoIGFkbWluIHBhc3N3b3JkXCJcbiAgICAgICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgICAgICAgPEJ1dHRvbiBwcmltYXJ5IHN1Ym1pdD5cbiAgICAgICAgICAgICAgICAgICAgICBDcmVhdGUgQnJhbmNoXG4gICAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICAgICAgPC9Gb3JtTGF5b3V0PlxuICAgICAgICAgICAgICAgIDwvRm9ybT5cbiAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAge2Zvcm1UeXBlID09PSBcImNvbmZpcm1cIiAmJiAoXG4gICAgICAgICAgICAgICAgPEZvcm0gb25TdWJtaXQ9e2NvbmZpcm19PlxuICAgICAgICAgICAgICAgICAgPEZvcm1MYXlvdXQ+XG4gICAgICAgICAgICAgICAgICAgIDxUZXh0RmllbGRcbiAgICAgICAgICAgICAgICAgICAgICB2YWx1ZT17dXNlcm5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9e29uQ2hhbmdlVXNlcm5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgbGFiZWw9XCJCcmFuY2ggYWRtaW4gdXNlcm5hbWVcIlxuICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICA8VGV4dEZpZWxkIHZhbHVlPXtjb2RlfSBvbkNoYW5nZT17b25DaGFuZ2VDb2RlfSBsYWJlbD1cIkNvbmZpcm1hdGlvbiBjb2RlXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgPEJ1dHRvbiBwcmltYXJ5IHN1Ym1pdD5cbiAgICAgICAgICAgICAgICAgICAgICBDb25maXJtXG4gICAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICAgICAgPC9Gb3JtTGF5b3V0PlxuICAgICAgICAgICAgICAgIDwvRm9ybT5cbiAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgIDwvTW9kYWwuU2VjdGlvbj5cbiAgICAgICAgICA8L01vZGFsPlxuICAgICAgICA8Lz5cbiAgICAgICl9XG4gICAgPC8+XG4gIClcbn1cblxuZXhwb3J0IGRlZmF1bHQgQnJhbmNoQ29uc29sZVxuIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/BranchConsole.js\n");
 
 /***/ }),
 
-/***/ "Skdt":
+/***/ "./components/BranchData.js":
+/*!**********************************!*\
+  !*** ./components/BranchData.js ***!
+  \**********************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return onUpdatePaymentSubscription; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return paymentSubscription; });
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("txk1");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_0__);
-
-const onUpdatePaymentSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    subscription onUpdatePaymentRequest {
-        onUpdatePaymentRequest {
-            id
-            status
-        }
-    }
-`;
-const paymentSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`
-    subscription paymentRequest {
-        onCreatePaymentRequest {
-            bonusAmount
-            createdAt
-            customerId
-            id
-            orderId
-            status
-            updatedAt
-        }
-    }
-`;
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/app-bridge/actions */ \"@shopify/app-bridge/actions\");\n/* harmony import */ var _shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_app_bridge__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/app-bridge */ \"@shopify/app-bridge\");\n/* harmony import */ var _shopify_app_bridge__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_app_bridge__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @shopify/polaris-icons */ \"@shopify/polaris-icons\");\n/* harmony import */ var _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _components_PaymentRequest__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/PaymentRequest */ \"./components/PaymentRequest.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\n/* harmony import */ var _graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../graphql/subscriptions */ \"./graphql/subscriptions.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_7__[\"default\"]);\n\nconst BranchData = ({\n  user,\n  updateUser\n}) => {\n  const {\n    0: branchInfo,\n    1: setBranchInfo\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: searchValue,\n    1: setSearchValue\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(null);\n  const {\n    0: newCreatedTransaction,\n    1: setNewCreatedTransaction\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: showPaymentRequest,\n    1: setShowPaymentRequest\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(false);\n  const handleSearchInput = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => setSearchValue(newValue), []);\n  const app = _shopify_app_bridge__WEBPACK_IMPORTED_MODULE_3___default()({\n    apiKey: \"3b01063bac3031d13101100ef3e44fd5\",\n    shopOrigin: \"transactions-avanta.myshopify.com\"\n  });\n  const redirect = _shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_2__[\"Redirect\"].create(app);\n\n  const getBranch = async () => {\n    try {\n      const fetchBranch = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_9__[\"branchByAdminId\"], {\n        adminId: user.attributes.sub\n      }));\n      setBranchInfo(fetchBranch.data.branchByAdminId.items[0]);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    getBranch();\n    const createListener = aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__[\"onCreateTransaction\"])).subscribe({\n      next: createdTransaction => setNewCreatedTransaction(createdTransaction)\n    });\n    const deleteListener = aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__[\"onDeleteTransaction\"])).subscribe({\n      next: deletedTransaction => setNewCreatedTransaction(deletedTransaction)\n    });\n    return () => {\n      createListener.unsubscribe();\n      deleteListener.unsubscribe();\n    };\n  }, [newCreatedTransaction]);\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, showPaymentRequest ? __jsx(_components_PaymentRequest__WEBPACK_IMPORTED_MODULE_8__[\"default\"], {\n    setShowPaymentRequest: setShowPaymentRequest,\n    branchId: branchInfo ? branchInfo.id : \"\"\n  }) : __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Page\"], {\n    title: branchInfo && branchInfo.branchName\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"TextField\"], {\n    label: \"Search Product\",\n    value: searchValue,\n    onChange: handleSearchInput,\n    prefix: __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n      source: _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5__[\"SearchMajorMonotone\"]\n    }),\n    placeholder: \"Search by Customer phone number\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"].Item, {\n    fill: true\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    id: \"Accept-Payment\",\n    onClick: () => setShowPaymentRequest(true)\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n    source: _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5__[\"BalanceMajorMonotone\"]\n  }), \" Accept Payment\")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"].Item, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    id: \"Create-Transaction\",\n    primary: true,\n    onClick: () => redirect.dispatch(_shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_2__[\"Redirect\"].Action.REMOTE, {\n      // url: `https://dev.d3ivgpkzuz6hkr.amplifyapp.com?adminId=${user.attributes.sub}`,\n      url: `http://localhost:3001/transactions/${user.attributes.sub}`,\n      newContext: true\n    })\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n    source: _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5__[\"TransactionMajorMonotone\"]\n  }), \" Create transaction\")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Stack\"].Item, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n    primary: true,\n    id: \"Logout\",\n    onClick: () => {\n      aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"Auth\"].signOut();\n      updateUser(null);\n    }\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n    source: _shopify_polaris_icons__WEBPACK_IMPORTED_MODULE_5__[\"LogOutMinor\"]\n  }), \" Logout\"))), branchInfo && __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Card\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"DataTable\"], {\n    columnContentTypes: [\"text\", \"text\", \"text\", \"text\"],\n    headings: [\"Customer phone number\", \"TotalPrice\", \"TotalBonusAmount\", \"Minus from Bonus Amount\", \"CreatedAt\"],\n    rows: branchInfo && branchInfo.transactions.items.filter(transaction => {\n      if (searchValue == null) {\n        return transaction;\n      } else if (transaction.customer[0].phone.toLowerCase().includes(searchValue.toLowerCase())) {\n        return transaction;\n      }\n    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(transaction => [__jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Button\"], {\n      primary: true,\n      onClick: () => redirect.dispatch(_shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_2__[\"Redirect\"].Action.ADMIN_PATH, {\n        path: `/customers/${transaction.customer[0].id}`,\n        newContext: true\n      })\n    }, transaction.customer[0].phone), Object(_utils_helper__WEBPACK_IMPORTED_MODULE_6__[\"toCurrency\"])(Number(transaction.totalPrice)), Object(_utils_helper__WEBPACK_IMPORTED_MODULE_6__[\"toCurrency\"])(Number(transaction.totalBonusAmount)), transaction.note === null ? \"\" : Object(_utils_helper__WEBPACK_IMPORTED_MODULE_6__[\"toCurrency\"])(Object(_utils_helper__WEBPACK_IMPORTED_MODULE_6__[\"extractNumbersFromString\"])(transaction.note)), Object(_utils_helper__WEBPACK_IMPORTED_MODULE_6__[\"formatDate\"])(transaction.createdAt)])\n  }))));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (BranchData);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0JyYW5jaERhdGEuanM/NzVhMyJdLCJuYW1lcyI6WyJBUEkiLCJjb25maWd1cmUiLCJjb25maWciLCJCcmFuY2hEYXRhIiwidXNlciIsInVwZGF0ZVVzZXIiLCJicmFuY2hJbmZvIiwic2V0QnJhbmNoSW5mbyIsInVzZVN0YXRlIiwic2VhcmNoVmFsdWUiLCJzZXRTZWFyY2hWYWx1ZSIsIm5ld0NyZWF0ZWRUcmFuc2FjdGlvbiIsInNldE5ld0NyZWF0ZWRUcmFuc2FjdGlvbiIsInNob3dQYXltZW50UmVxdWVzdCIsInNldFNob3dQYXltZW50UmVxdWVzdCIsImhhbmRsZVNlYXJjaElucHV0IiwidXNlQ2FsbGJhY2siLCJuZXdWYWx1ZSIsImFwcCIsImNyZWF0ZUFwcCIsImFwaUtleSIsInNob3BPcmlnaW4iLCJyZWRpcmVjdCIsIlJlZGlyZWN0IiwiY3JlYXRlIiwiZ2V0QnJhbmNoIiwiZmV0Y2hCcmFuY2giLCJncmFwaHFsIiwiZ3JhcGhxbE9wZXJhdGlvbiIsImJyYW5jaEJ5QWRtaW5JZCIsImFkbWluSWQiLCJhdHRyaWJ1dGVzIiwic3ViIiwiZGF0YSIsIml0ZW1zIiwiZXJyb3IiLCJjb25zb2xlIiwibG9nIiwidXNlRWZmZWN0IiwiY3JlYXRlTGlzdGVuZXIiLCJvbkNyZWF0ZVRyYW5zYWN0aW9uIiwic3Vic2NyaWJlIiwibmV4dCIsImNyZWF0ZWRUcmFuc2FjdGlvbiIsImRlbGV0ZUxpc3RlbmVyIiwib25EZWxldGVUcmFuc2FjdGlvbiIsImRlbGV0ZWRUcmFuc2FjdGlvbiIsInVuc3Vic2NyaWJlIiwiaWQiLCJicmFuY2hOYW1lIiwiU2VhcmNoTWFqb3JNb25vdG9uZSIsIkJhbGFuY2VNYWpvck1vbm90b25lIiwiZGlzcGF0Y2giLCJBY3Rpb24iLCJSRU1PVEUiLCJ1cmwiLCJuZXdDb250ZXh0IiwiVHJhbnNhY3Rpb25NYWpvck1vbm90b25lIiwiQXV0aCIsInNpZ25PdXQiLCJMb2dPdXRNaW5vciIsInRyYW5zYWN0aW9ucyIsImZpbHRlciIsInRyYW5zYWN0aW9uIiwiY3VzdG9tZXIiLCJwaG9uZSIsInRvTG93ZXJDYXNlIiwiaW5jbHVkZXMiLCJzb3J0IiwiYSIsImIiLCJEYXRlIiwiY3JlYXRlZEF0IiwibWFwIiwiQURNSU5fUEFUSCIsInBhdGgiLCJ0b0N1cnJlbmN5IiwiTnVtYmVyIiwidG90YWxQcmljZSIsInRvdGFsQm9udXNBbW91bnQiLCJub3RlIiwiZXh0cmFjdE51bWJlcnNGcm9tU3RyaW5nIiwiZm9ybWF0RGF0ZSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQU1BO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFFQUEsK0NBQUcsQ0FBQ0MsU0FBSixDQUFjQyxvREFBZDs7QUFFQSxNQUFNQyxVQUFVLEdBQUcsQ0FBQztBQUFFQyxNQUFGO0FBQVFDO0FBQVIsQ0FBRCxLQUEwQjtBQUMzQyxRQUFNO0FBQUEsT0FBQ0MsVUFBRDtBQUFBLE9BQWFDO0FBQWIsTUFBOEJDLHNEQUFRLENBQUMsRUFBRCxDQUE1QztBQUNBLFFBQU07QUFBQSxPQUFDQyxXQUFEO0FBQUEsT0FBY0M7QUFBZCxNQUFnQ0Ysc0RBQVEsQ0FBQyxJQUFELENBQTlDO0FBQ0EsUUFBTTtBQUFBLE9BQUNHLHFCQUFEO0FBQUEsT0FBd0JDO0FBQXhCLE1BQW9ESixzREFBUSxDQUFDLEVBQUQsQ0FBbEU7QUFDQSxRQUFNO0FBQUEsT0FBQ0ssa0JBQUQ7QUFBQSxPQUFxQkM7QUFBckIsTUFBOENOLHNEQUFRLENBQUMsS0FBRCxDQUE1RDtBQUVBLFFBQU1PLGlCQUFpQixHQUFHQyx5REFBVyxDQUFFQyxRQUFELElBQWNQLGNBQWMsQ0FBQ08sUUFBRCxDQUE3QixFQUF5QyxFQUF6QyxDQUFyQztBQUVBLFFBQU1DLEdBQUcsR0FBR0MsMERBQVMsQ0FBQztBQUNwQkMsVUFBTSxFQUFFLGtDQURZO0FBRXBCQyxjQUFVLEVBQUU7QUFGUSxHQUFELENBQXJCO0FBS0EsUUFBTUMs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QWdCcUIsVUFBbEMsRUFBOEM7QUFDNUNDLFlBQUksRUFBRyxjQUFhWixXQUFXLENBQUNDLFFBQVosQ0FBcUIsQ0FBckIsRUFBd0JoQixFQUFHLEVBREg7QUFFNUNRLGtCQUFVLEVBQUU7QUFGZ0MsT0FBOUM7QUFISixPQVFHTyxXQUFXLENBQUNDLFFBQVosQ0FBcUIsQ0FBckIsRUFBd0JDLEtBUjNCLENBRG9CLEVBV3BCVyxnRUFBVSxDQUFDQyxNQUFNLENBQUNkLFdBQVcsQ0FBQ2UsVUFBYixDQUFQLENBWFUsRUFZcEJGLGdFQUFVLENBQUNDLE1BQU0sQ0FBQ2QsV0FBVyxDQUFDZ0IsZ0JBQWIsQ0FBUCxDQVpVLEVBYXBCaEIsV0FBVyxDQUFDaUIsSUFBWixLQUFxQixJQUFyQixHQUNJLEVBREosR0FFSUosZ0VBQVUsQ0FBQ0ssOEVBQXdCLENBQUNsQixXQUFXLENBQUNpQixJQUFiLENBQXpCLENBZk0sRUFnQnBCRSxnRUFBVSxDQUFDbkIsV0FBVyxDQUFDUyxTQUFiLENBaEJVLENBYnhCO0FBWEosSUFERixDQXpDSixDQVBKLENBREY7QUFvR0QsQ0EvSUQ7O0FBaUplckUseUVBQWYiLCJmaWxlIjoiLi9jb21wb25lbnRzL0JyYW5jaERhdGEuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUNhbGxiYWNrLCB1c2VFZmZlY3QgfSBmcm9tIFwicmVhY3RcIlxuaW1wb3J0IHsgQXV0aCwgQVBJLCBncmFwaHFsT3BlcmF0aW9uIH0gZnJvbSBcImF3cy1hbXBsaWZ5XCJcbmltcG9ydCB7IFJlZGlyZWN0IH0gZnJvbSBcIkBzaG9waWZ5L2FwcC1icmlkZ2UvYWN0aW9uc1wiXG5pbXBvcnQgY3JlYXRlQXBwIGZyb20gXCJAc2hvcGlmeS9hcHAtYnJpZGdlXCJcbmltcG9ydCB7IENhcmQsIERhdGFUYWJsZSwgQnV0dG9uLCBQYWdlLCBUZXh0RmllbGQsIEljb24sIFN0YWNrIH0gZnJvbSBcIkBzaG9waWZ5L3BvbGFyaXNcIlxuaW1wb3J0IHtcbiAgU2VhcmNoTWFqb3JNb25vdG9uZSxcbiAgVHJhbnNhY3Rpb25NYWpvck1vbm90b25lLFxuICBCYWxhbmNlTWFqb3JNb25vdG9uZSxcbiAgTG9nT3V0TWlub3IsXG59IGZyb20gXCJAc2hvcGlmeS9wb2xhcmlzLWljb25zXCJcbmltcG9ydCB7IHRvQ3VycmVuY3ksIGZvcm1hdERhdGUsIGV4dHJhY3ROdW1iZXJzRnJvbVN0cmluZyB9IGZyb20gXCIuLi91dGlscy9oZWxwZXJcIlxuaW1wb3J0IGNvbmZpZyBmcm9tIFwiLi4vYXdzLWV4cG9ydHNcIlxuaW1wb3J0IFBheW1lbnRSZXF1ZXN0IGZyb20gXCIuLi9jb21wb25lbnRzL1BheW1lbnRSZXF1ZXN0XCJcbmltcG9ydCB7IGJyYW5jaEJ5QWRtaW5JZCB9IGZyb20gXCIuLi9ncmFwaHFsL3F1ZXJpZXNcIlxuaW1wb3J0IHsgb25DcmVhdGVUcmFuc2FjdGlvbiwgb25EZWxldGVUcmFuc2FjdGlvbiB9IGZyb20gXCIuLi9ncmFwaHFsL3N1YnNjcmlwdGlvbnNcIlxuXG5BUEkuY29uZmlndXJlKGNvbmZpZylcblxuY29uc3QgQnJhbmNoRGF0YSA9ICh7IHVzZXIsIHVwZGF0ZVVzZXIgfSkgPT4ge1xuICBjb25zdCBbYnJhbmNoSW5mbywgc2V0QnJhbmNoSW5mb10gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBbc2VhcmNoVmFsdWUsIHNldFNlYXJjaFZhbHVlXSA9IHVzZVN0YXRlKG51bGwpXG4gIGNvbnN0IFtuZXdDcmVhdGVkVHJhbnNhY3Rpb24sIHNldE5ld0NyZWF0ZWRUcmFuc2FjdGlvbl0gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBbc2hvd1BheW1lbnRSZXF1ZXN0LCBzZXRTaG93UGF5bWVudFJlcXVlc3RdID0gdXNlU3RhdGUoZmFsc2UpXG5cbiAgY29uc3QgaGFuZGxlU2VhcmNoSW5wdXQgPSB1c2VDYWxsYmFjaygobmV3VmFsdWUpID0+IHNldFNlYXJjaFZhbHVlKG5ld1ZhbHVlKSwgW10pXG5cbiAgY29uc3QgYXBwID0gY3JlYXRlQXBwKHtcbiAgICBhcGlLZXk6IFwiM2IwMTA2M2JhYzMwMzFkMTMxMDExMDBlZjNlNDRmZDVcIixcbiAgICBzaG9wT3JpZ2luOiBcInRyYW5zYWN0aW9ucy1hdmFudGEubXlzaG9waWZ5LmNvbVwiLFxuICB9KVxuXG4gIGNvbnN0IHJlZGlyZWN0ID0gUmVkaXJlY3QuY3JlYXRlKGFwcClcblxuICBjb25zdCBnZXRCcmFuY2ggPSBhc3luYyAoKSA9PiB7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IGZldGNoQnJhbmNoID0gYXdhaXQgQVBJLmdyYXBocWwoXG4gICAgICAgIGdyYXBocWxPcGVyYXRpb24oYnJhbmNoQnlBZG1pbklkLCB7IGFkbWluSWQ6IHVzZXIuYXR0cmlidXRlcy5zdWIgfSlcbiAgICAgIClcbiAgICAgIHNldEJyYW5jaEluZm8oZmV0Y2hCcmFuY2guZGF0YS5icmFuY2hCeUFkbWluSWQuaXRlbXNbMF0pXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgIH1cbiAgfVxuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgZ2V0QnJhbmNoKClcblxuICAgIGNvbnN0IGNyZWF0ZUxpc3RlbmVyID0gQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihvbkNyZWF0ZVRyYW5zYWN0aW9uKSkuc3Vic2NyaWJlKHtcbiAgICAgIG5leHQ6IChjcmVhdGVkVHJhbnNhY3Rpb24pID0+IHNldE5ld0NyZWF0ZWRUcmFuc2FjdGlvbihjcmVhdGVkVHJhbnNhY3Rpb24pLFxuICAgIH0pXG5cbiAgICBjb25zdCBkZWxldGVMaXN0ZW5lciA9IEFQSS5ncmFwaHFsKGdyYXBocWxPcGVyYXRpb24ob25EZWxldGVUcmFuc2FjdGlvbikpLnN1YnNjcmliZSh7XG4gICAgICBuZXh0OiAoZGVsZXRlZFRyYW5zYWN0aW9uKSA9PiBzZXROZXdDcmVhdGVkVHJhbnNhY3Rpb24oZGVsZXRlZFRyYW5zYWN0aW9uKSxcbiAgICB9KVxuXG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGNyZWF0ZUxpc3RlbmVyLnVuc3Vic2NyaWJlKClcbiAgICAgIGRlbGV0ZUxpc3RlbmVyLnVuc3Vic2NyaWJlKClcbiAgICB9XG4gIH0sIFtuZXdDcmVhdGVkVHJhbnNhY3Rpb25dKVxuXG4gIHJldHVybiAoXG4gICAgPD5cbiAgICAgIHtzaG93UGF5bWVudFJlcXVlc3QgPyAoXG4gICAgICAgIDxQYXltZW50UmVxdWVzdFxuICAgICAgICAgIHNldFNob3dQYXltZW50UmVxdWVzdD17c2V0U2hvd1BheW1lbnRSZXF1ZXN0fVxuICAgICAgICAgIGJyYW5jaElkPXticmFuY2hJbmZvID8gYnJhbmNoSW5mby5pZCA6IFwiXCJ9XG4gICAgICAgIC8+XG4gICAgICApIDogKFxuICAgICAgICA8UGFnZSB0aXRsZT17YnJhbmNoSW5mbyAmJiBicmFuY2hJbmZvLmJyYW5jaE5hbWV9PlxuICAgICAgICAgIDxUZXh0RmllbGRcbiAgICAgICAgICAgIGxhYmVsPVwiU2VhcmNoIFByb2R1Y3RcIlxuICAgICAgICAgICAgdmFsdWU9e3NlYXJjaFZhbHVlfVxuICAgICAgICAgICAgb25DaGFuZ2U9e2hhbmRsZVNlYXJjaElucHV0fVxuICAgICAgICAgICAgcHJlZml4PXs8SWNvbiBzb3VyY2U9e1NlYXJjaE1ham9yTW9ub3RvbmV9IC8+fVxuICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJTZWFyY2ggYnkgQ3VzdG9tZXIgcGhvbmUgbnVtYmVyXCJcbiAgICAgICAgICAvPlxuICAgICAgICAgIDxTdGFjaz5cbiAgICAgICAgICAgIDxTdGFjay5JdGVtIGZpbGw+XG4gICAgICAgICAgICAgIDxCdXR0b24gaWQ9XCJBY2NlcHQtUGF5bWVudFwiIG9uQ2xpY2s9eygpID0+IHNldFNob3dQYXltZW50UmVxdWVzdCh0cnVlKX0+XG4gICAgICAgICAgICAgICAgPEljb24gc291cmNlPXtCYWxhbmNlTWFqb3JNb25vdG9uZX0gLz4gQWNjZXB0IFBheW1lbnRcbiAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICA8L1N0YWNrLkl0ZW0+XG4gICAgICAgICAgICA8U3RhY2suSXRlbT5cbiAgICAgICAgICAgICAgPEJ1dHRvblxuICAgICAgICAgICAgICAgIGlkPVwiQ3JlYXRlLVRyYW5zYWN0aW9uXCJcbiAgICAgICAgICAgICAgICBwcmltYXJ5XG4gICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT5cbiAgICAgICAgICAgICAgICAgIHJlZGlyZWN0LmRpc3BhdGNoKFJlZGlyZWN0LkFjdGlvbi5SRU1PVEUsIHtcbiAgICAgICAgICAgICAgICAgICAgLy8gdXJsOiBgaHR0cHM6Ly9kZXYuZDNpdmdwa3p1ejZoa3IuYW1wbGlmeWFwcC5jb20/YWRtaW5JZD0ke3VzZXIuYXR0cmlidXRlcy5zdWJ9YCxcbiAgICAgICAgICAgICAgICAgICAgdXJsOiBgaHR0cDovL2xvY2FsaG9zdDozMDAxL3RyYW5zYWN0aW9ucy8ke3VzZXIuYXR0cmlidXRlcy5zdWJ9YCxcbiAgICAgICAgICAgICAgICAgICAgbmV3Q29udGV4dDogdHJ1ZSxcbiAgICAgICAgICAgICAgICAgIH0pXG4gICAgICAgICAgICAgICAgfT5cbiAgICAgICAgICAgICAgICA8SWNvbiBzb3VyY2U9e1RyYW5zYWN0aW9uTWFqb3JNb25vdG9uZX0gLz4gQ3JlYXRlIHRyYW5zYWN0aW9uXG4gICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgPC9TdGFjay5JdGVtPlxuICAgICAgICAgICAgPFN0YWNrLkl0ZW0+XG4gICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICBwcmltYXJ5XG4gICAgICAgICAgICAgICAgaWQ9XCJMb2dvdXRcIlxuICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHtcbiAgICAgICAgICAgICAgICAgIEF1dGguc2lnbk91dCgpXG4gICAgICAgICAgICAgICAgICB1cGRhdGVVc2VyKG51bGwpXG4gICAgICAgICAgICAgICAgfX0+XG4gICAgICAgICAgICAgICAgPEljb24gc291cmNlPXtMb2dPdXRNaW5vcn0gLz4gTG9nb3V0XG4gICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgPC9TdGFjay5JdGVtPlxuICAgICAgICAgIDwvU3RhY2s+XG4gICAgICAgICAge2JyYW5jaEluZm8gJiYgKFxuICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgIDxEYXRhVGFibGVcbiAgICAgICAgICAgICAgICBjb2x1bW5Db250ZW50VHlwZXM9e1tcInRleHRcIiwgXCJ0ZXh0XCIsIFwidGV4dFwiLCBcInRleHRcIl19XG4gICAgICAgICAgICAgICAgaGVhZGluZ3M9e1tcbiAgICAgICAgICAgICAgICAgIFwiQ3VzdG9tZXIgcGhvbmUgbnVtYmVyXCIsXG4gICAgICAgICAgICAgICAgICBcIlRvdGFsUHJpY2VcIixcbiAgICAgICAgICAgICAgICAgIFwiVG90YWxCb251c0Ftb3VudFwiLFxuICAgICAgICAgICAgICAgICAgXCJNaW51cyBmcm9tIEJvbnVzIEFtb3VudFwiLFxuICAgICAgICAgICAgICAgICAgXCJDcmVhdGVkQXRcIixcbiAgICAgICAgICAgICAgICBdfVxuICAgICAgICAgICAgICAgIHJvd3M9e1xuICAgICAgICAgICAgICAgICAgYnJhbmNoSW5mbyAmJlxuICAgICAgICAgICAgICAgICAgYnJhbmNoSW5mby50cmFuc2FjdGlvbnMuaXRlbXNcbiAgICAgICAgICAgICAgICAgICAgLmZpbHRlcigodHJhbnNhY3Rpb24pID0+IHtcbiAgICAgICAgICAgICAgICAgICAgICBpZiAoc2VhcmNoVmFsdWUgPT0gbnVsbCkge1xuICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIHRyYW5zYWN0aW9uXG4gICAgICAgICAgICAgICAgICAgICAgfSBlbHNlIGlmIChcbiAgICAgICAgICAgICAgICAgICAgICAgIHRyYW5zYWN0aW9uLmN1c3RvbWVyWzBdLnBob25lXG4gICAgICAgICAgICAgICAgICAgICAgICAgIC50b0xvd2VyQ2FzZSgpXG4gICAgICAgICAgICAgICAgICAgICAgICAgIC5pbmNsdWRlcyhzZWFyY2hWYWx1ZS50b0xvd2VyQ2FzZSgpKVxuICAgICAgICAgICAgICAgICAgICAgICkge1xuICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIHRyYW5zYWN0aW9uXG4gICAgICAgICAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgICAgICAgICB9KVxuICAgICAgICAgICAgICAgICAgICAuc29ydCgoYSwgYikgPT4gbmV3IERhdGUoYi5jcmVhdGVkQXQpIC0gbmV3IERhdGUoYS5jcmVhdGVkQXQpKVxuICAgICAgICAgICAgICAgICAgICAubWFwKCh0cmFuc2FjdGlvbikgPT4gW1xuICAgICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICAgIHByaW1hcnlcbiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIHJlZGlyZWN0LmRpc3BhdGNoKFJlZGlyZWN0LkFjdGlvbi5BRE1JTl9QQVRILCB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgcGF0aDogYC9jdXN0b21lcnMvJHt0cmFuc2FjdGlvbi5jdXN0b21lclswXS5pZH1gLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG5ld0NvbnRleHQ6IHRydWUsXG4gICAgICAgICAgICAgICAgICAgICAgICAgIH0pXG4gICAgICAgICAgICAgICAgICAgICAgICB9PlxuICAgICAgICAgICAgICAgICAgICAgICAge3RyYW5zYWN0aW9uLmN1c3RvbWVyWzBdLnBob25lfVxuICAgICAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPixcbiAgICAgICAgICAgICAgICAgICAgICB0b0N1cnJlbmN5KE51bWJlcih0cmFuc2FjdGlvbi50b3RhbFByaWNlKSksXG4gICAgICAgICAgICAgICAgICAgICAgdG9DdXJyZW5jeShOdW1iZXIodHJhbnNhY3Rpb24udG90YWxCb251c0Ftb3VudCkpLFxuICAgICAgICAgICAgICAgICAgICAgIHRyYW5zYWN0aW9uLm5vdGUgPT09IG51bGxcbiAgICAgICAgICAgICAgICAgICAgICAgID8gXCJcIlxuICAgICAgICAgICAgICAgICAgICAgICAgOiB0b0N1cnJlbmN5KGV4dHJhY3ROdW1iZXJzRnJvbVN0cmluZyh0cmFuc2FjdGlvbi5ub3RlKSksXG4gICAgICAgICAgICAgICAgICAgICAgZm9ybWF0RGF0ZSh0cmFuc2FjdGlvbi5jcmVhdGVkQXQpLFxuICAgICAgICAgICAgICAgICAgICBdKVxuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIDwvQ2FyZD5cbiAgICAgICAgICApfVxuICAgICAgICA8L1BhZ2U+XG4gICAgICApfVxuICAgIDwvPlxuICApXG59XG5cbmV4cG9ydCBkZWZhdWx0IEJyYW5jaERhdGFcbiJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/BranchData.js\n");
 
 /***/ }),
 
-/***/ "T7Fc":
-/***/ (function(module, exports) {
-
-module.exports = require("graphql");
-
-/***/ }),
-
-/***/ "Vixo":
+/***/ "./components/BranchList.js":
+/*!**********************************!*\
+  !*** ./components/BranchList.js ***!
+  \**********************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-// EXTERNAL MODULE: external "react"
-var external_react_ = __webpack_require__("cDcd");
-var external_react_default = /*#__PURE__*/__webpack_require__.n(external_react_);
-
-// EXTERNAL MODULE: external "aws-amplify"
-var external_aws_amplify_ = __webpack_require__("fAuv");
-
-// EXTERNAL MODULE: external "graphql-tag"
-var external_graphql_tag_ = __webpack_require__("txk1");
-var external_graphql_tag_default = /*#__PURE__*/__webpack_require__.n(external_graphql_tag_);
-
-// EXTERNAL MODULE: external "@apollo/client"
-var client_ = __webpack_require__("z+8S");
-
-// EXTERNAL MODULE: external "@shopify/polaris"
-var polaris_ = __webpack_require__("nj/N");
-
-// EXTERNAL MODULE: external "semantic-ui-react"
-var external_semantic_ui_react_ = __webpack_require__("FfxO");
-
-// EXTERNAL MODULE: ./utils/helper.js
-var helper = __webpack_require__("FVIk");
-
-// EXTERNAL MODULE: ./aws-exports.js
-var aws_exports = __webpack_require__("uI6m");
-
-// EXTERNAL MODULE: ./graphql/queries.js
-var queries = __webpack_require__("E1HW");
-
-// CONCATENATED MODULE: ./graphql/mutation.js
-
-const createDraftOrder = external_graphql_tag_default.a`
-    mutation CreateOrder($input: DraftOrderInput!) {
-        draftOrderCreate(input: $input) {
-            draftOrder {
-                id
-                customer {
-                    id
-                }
-                email
-                lineItems(first: 10) {
-                    edges {
-                        node {
-                            title
-                            quantity
-                            originalUnitPrice
-                            variant {
-                                id
-                                price
-                                title
-                                product {
-                                    tags
-                                    title
-                                    images(first: 5) {
-                                        edges {
-                                            node {
-                                                originalSrc
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-const completeOrder = external_graphql_tag_default.a`
-    mutation CompleteOrder($id: ID!) {
-        draftOrderComplete(id: $id, paymentPending: true) {
-            draftOrder {
-                customer {
-                    id
-                }
-                email
-                name
-            }
-        }
-    }
-`;
-const updatePaymentRequest = external_graphql_tag_default.a`
-    mutation updatePaymentRequest($input: UpdatePaymentRequestInput!) {
-        updatePaymentRequest(input: $input) {
-            bonusAmount
-            customerId
-            id
-            orderId
-            status
-            products {
-                originalUnitPrice
-                quantity
-                variantId
-            }
-            createdAt
-            updatedAt
-        }
-    }
-`;
-// CONCATENATED MODULE: ./components/ProductsList.js
-var __jsx = external_react_default.a.createElement;
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-
-
-
-
-
-
-
-external_aws_amplify_["API"].configure(aws_exports["a" /* default */]);
-
-const ProductsList = ({
-  active,
-  handleChange,
-  paymentRequestId
-}) => {
-  const {
-    loading,
-    error,
-    data
-  } = Object(client_["useQuery"])(queries["a" /* listProducts */]);
-  const {
-    0: rowId,
-    1: setRowId
-  } = Object(external_react_["useState"])([]);
-  const {
-    0: state,
-    1: setState
-  } = Object(external_react_["useState"])({
-    products: []
-  });
-
-  if (loading) {
-    return __jsx("div", null, "Loading products...");
-  }
-
-  if (error) {
-    return __jsx("div", null, "Some error occured");
-  }
-
-  const acceptPayment = async () => {
-    try {
-      const paymentResponse = await external_aws_amplify_["API"].graphql(Object(external_aws_amplify_["graphqlOperation"])(updatePaymentRequest, {
-        input: {
-          id: paymentRequestId,
-          status: 'APPROVED',
-          products: state.products.map(product => ({
-            originalUnitPrice: product.node.variants.edges[0].node.price,
-            quantity: 1,
-            variantId: product.node.variants.edges[0].node.id
-          }))
-        }
-      }));
-      console.log('Payment data from lambda', paymentResponse.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return __jsx(polaris_["Modal"], {
-    open: active,
-    onClose: handleChange,
-    title: "Choose products",
-    primaryAction: {
-      content: 'Proceed',
-      onAction: () => {
-        acceptPayment();
-        handleChange();
-      }
-    }
-  }, __jsx(polaris_["Modal"].Section, null, __jsx(external_semantic_ui_react_["Table"], {
-    celled: true,
-    striped: true,
-    selectable: true
-  }, __jsx(external_semantic_ui_react_["Table"].Header, null, __jsx(external_semantic_ui_react_["Table"].Row, null, __jsx(external_semantic_ui_react_["Table"].HeaderCell, null, "Products"), __jsx(external_semantic_ui_react_["Table"].HeaderCell, null, "Description"), __jsx(external_semantic_ui_react_["Table"].HeaderCell, {
-    textAlign: "center"
-  }, "Price"))), __jsx(external_semantic_ui_react_["Table"].Body, null, data && data.products.edges.map(product => __jsx(external_semantic_ui_react_["Table"].Row, {
-    key: product.node.id,
-    onClick: () => {
-      if (rowId.includes(product.node.id)) {
-        setRowId(rowId.filter(id => id !== product.node.id));
-        setState({
-          products: state.products.filter(filteredProduct => filteredProduct.node.id !== product.node.id)
-        });
-      } else {
-        setRowId([...rowId, product.node.id]);
-        setState(_objectSpread(_objectSpread({}, state), {}, {
-          products: [...state.products, product]
-        }));
-      }
-    }
-  }, __jsx(external_semantic_ui_react_["Table"].Cell, null, __jsx(external_semantic_ui_react_["Header"], {
-    as: "h4",
-    image: true,
-    className: "product-header"
-  }, __jsx(polaris_["Checkbox"], {
-    checked: rowId.includes(product.node.id) && true
-  }), __jsx(polaris_["Thumbnail"], {
-    source: product.node.images.edges[0] && product.node.images.edges[0].node.originalSrc,
-    size: "small",
-    alt: ""
-  }), __jsx(external_semantic_ui_react_["Header"].Content, null, product.node.title))), __jsx(external_semantic_ui_react_["Table"].Cell, null, __jsx(polaris_["TextStyle"], {
-    variation: "subdued"
-  }, product.node.description)), __jsx(external_semantic_ui_react_["Table"].Cell, {
-    textAlign: "center"
-  }, __jsx(polaris_["TextStyle"], {
-    variation: "subdued"
-  }, product.node.variants.edges[0] && Object(helper["c" /* toCurrency */])(product.node.variants.edges[0].node.price)))))), __jsx(external_semantic_ui_react_["Table"].Footer, {
-    fullWidth: true
-  }, __jsx(external_semantic_ui_react_["Table"].Row, null)))));
-};
-
-/* harmony default export */ var components_ProductsList = __webpack_exports__["a"] = (ProductsList);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-sdk */ \"aws-sdk\");\n/* harmony import */ var aws_sdk__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_sdk__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _BranchProducts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./BranchProducts */ \"./components/BranchProducts.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\n/* harmony import */ var _graphql_subscriptions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../graphql/subscriptions */ \"./graphql/subscriptions.js\");\n/* harmony import */ var _graphql_mutation__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../graphql/mutation */ \"./graphql/mutation.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_6__[\"default\"]);\naws_sdk__WEBPACK_IMPORTED_MODULE_1___default.a.config.update({\n  accessKeyId: \"AKIAIF6WKVKSOTQCUREQ\",\n  secretAccessKey: \"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\",\n  region: \"us-east-1\"\n});\nconst cognito = new aws_sdk__WEBPACK_IMPORTED_MODULE_1___default.a.CognitoIdentityServiceProvider();\n\nconst BranchList = ({\n  setBranchId,\n  branchId\n}) => {\n  const {\n    0: active,\n    1: setActive\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(false);\n  const {\n    0: branches,\n    1: setBranches\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: branchName,\n    1: setBranchName\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: productBranchId,\n    1: setProductBranchId\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: newCreatedBranch,\n    1: setNewCreatedBranch\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n\n  const handleChange = () => {\n    setActive(!active);\n  };\n\n  const fetchBranches = async () => {\n    try {\n      const getBranches = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_8__[\"listBranchs\"]));\n      setBranches(getBranches.data);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  const deleteBranch = async id => {\n    const branchToDelete = branches.listBranchs.items.filter(item => item.id === id)[0];\n    const transactionsToDelete = branchToDelete.transactions.items ? branchToDelete.transactions.items.map(transaction => transaction.id) : \"\";\n    const productsToDelete = branchToDelete.branchProducts.items ? branchToDelete.branchProducts.items.map(product => product.id) : \"\";\n    const paymentRequestToDelete = branchToDelete.branchPaymentRequests.items ? branchToDelete.branchPaymentRequests.items.map(paymentRequest => paymentRequest.id) : \"\";\n\n    try {\n      const deletedBranch = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_10__[\"removeBranch\"], {\n        input: {\n          id\n        }\n      }));\n      await Promise.all(transactionsToDelete.map(transactionId => {\n        aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_10__[\"deleteTransaction\"], {\n          input: {\n            id: transactionId\n          }\n        }));\n      })).catch(err => console.log(err));\n      await Promise.all(productsToDelete.map(productId => {\n        aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_10__[\"deleteBranchProduct\"], {\n          input: {\n            id: productId\n          }\n        }));\n      })).catch(err => console.log(err));\n      await Promise.all(paymentRequestToDelete.map(paymentId => {\n        aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_10__[\"deletePaymentRequest\"], {\n          input: {\n            id: paymentId\n          }\n        }));\n      }));\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  const deleteUserFromCognito = async username => {\n    try {\n      await cognito.adminDeleteUser({\n        UserPoolId: \"us-east-1_IfrnnzGFR\",\n        Username: username\n      }).promise();\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    fetchBranches();\n    const createListener = aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_9__[\"onCreateBranchSubscription\"])).subscribe({\n      next: createdBranch => {\n        setNewCreatedBranch(createdBranch);\n      }\n    });\n    const deleteListener = aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_9__[\"onDeleteBranchSubscription\"])).subscribe({\n      next: deletedBranch => {\n        setNewCreatedBranch(deletedBranch);\n      }\n    });\n    return () => {\n      createListener.unsubscribe();\n      deleteListener.unsubscribe();\n    };\n  }, [newCreatedBranch]);\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"], {\n    selectable: true,\n    celled: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].HeaderCell, null, \"Branch Name\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].HeaderCell, {\n    textAlign: \"center\"\n  }, \"Created At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].HeaderCell, {\n    textAlign: \"center\"\n  }, \"Actions\"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Body, null, branches && branches.listBranchs.items.map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Row, {\n    key: item.id\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Button\"], {\n    primary: true,\n    onClick: () => {\n      setBranchId(item.id);\n    }\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n    name: \"code branch\"\n  }), \" \", item.branchName)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Cell, {\n    textAlign: \"center\"\n  }, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[\"formatDate\"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Cell, {\n    textAlign: \"center\",\n    className: \"branch-actions\"\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Popup\"], {\n    content: \"Edit branch\",\n    trigger: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n      onClick: () => {\n        setProductBranchId(item.id);\n        setBranchName(item.branchName);\n        handleChange();\n      },\n      className: \"edit-branch\",\n      name: \"edit outline\"\n    })\n  }), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Popup\"], {\n    content: \"Delete Branch\",\n    trigger: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Icon\"], {\n      className: \"remove-branch\",\n      name: \"trash alternate\",\n      onClick: () => {\n        deleteBranch(item.id);\n        deleteUserFromCognito(item.branchUsername);\n      }\n    })\n  })))))), __jsx(_BranchProducts__WEBPACK_IMPORTED_MODULE_7__[\"default\"], {\n    branchName: branchName,\n    branchId: productBranchId,\n    active: active,\n    handleChange: handleChange\n  }));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (BranchList);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0JyYW5jaExpc3QuanM/YWMzOCJdLCJuYW1lcyI6WyJBUEkiLCJjb25maWd1cmUiLCJjb25maWciLCJBV1MiLCJ1cGRhdGUiLCJhY2Nlc3NLZXlJZCIsInNlY3JldEFjY2Vzc0tleSIsInJlZ2lvbiIsImNvZ25pdG8iLCJDb2duaXRvSWRlbnRpdHlTZXJ2aWNlUHJvdmlkZXIiLCJCcmFuY2hMaXN0Iiwic2V0QnJhbmNoSWQiLCJicmFuY2hJZCIsImFjdGl2ZSIsInNldEFjdGl2ZSIsInVzZVN0YXRlIiwiYnJhbmNoZXMiLCJzZXRCcmFuY2hlcyIsImJyYW5jaE5hbWUiLCJzZXRCcmFuY2hOYW1lIiwicHJvZHVjdEJyYW5jaElkIiwic2V0UHJvZHVjdEJyYW5jaElkIiwibmV3Q3JlYXRlZEJyYW5jaCIsInNldE5ld0NyZWF0ZWRCcmFuY2giLCJoYW5kbGVDaGFuZ2UiLCJmZXRjaEJyYW5jaGVzIiwiZ2V0QnJhbmNoZXMiLCJncmFwaHFsIiwiZ3JhcGhxbE9wZXJhdGlvbiIsImxpc3RCcmFuY2hzIiwiZGF0YSIsImVycm9yIiwiY29uc29sZSIsImxvZyIsImRlbGV0ZUJyYW5jaCIsImlkIiwiYnJhbmNoVG9EZWxldGUiLCJpdGVtcyIsImZpbHRlciIsIml0ZW0iLCJ0cmFuc2FjdGlvbnNUb0RlbGV0ZSIsInRyYW5zYWN0aW9ucyIsIm1hcCIsInRyYW5zYWN0aW9uIiwicHJvZHVjdHNUb0RlbGV0ZSIsImJyYW5jaFByb2R1Y3RzIiwicHJvZHVjdCIsInBheW1lbnRSZXF1ZXN0VG9EZWxldGUiLCJicmFuY2hQYXltZW50UmVxdWVzdHMiLCJwYXltZW50UmVxdWVzdCIsImRlbGV0ZWRCcmFuY2giLCJyZW1vdmVCcmFuY2giLCJpbnB1dCIsIlByb21pc2UiLCJhbGwiLCJ0cmFuc2FjdGlvbklkIiwiZGVsZXRlVHJhbnNhY3Rpb24iLCJjYXRjaCIsImVyciIsInByb2R1Y3RJZCIsImRlbGV0ZUJyYW5jaFByb2R1Y3QiLCJwYXltZW50SWQiLCJkZWxldGVQYXltZW50UmVxdWVzdCIsImRlbGV0ZVVzZXJGcm9tQ29nbml0byIsInVzZXJuYW1lIiwiYWRtaW5EZWxldGVVc2VyIiwiVXNlclBvb2xJZCIsIlVzZXJuYW1lIiwicHJvbWlzZSIsInVzZUVmZmVjdCIsImNyZWF0ZUxpc3RlbmVyIiwib25DcmVhdGVCcmFuY2hTdWJzY3JpcHRpb24iLCJzdWJzY3JpYmUiLCJuZXh0IiwiY3JlYXRlZEJyYW5jaCIsImRlbGV0ZUxpc3RlbmVyIiwib25EZWxldGVCcmFuY2hTdWJzY3JpcHRpb24iLCJ1bnN1YnNjcmliZSIsImZvcm1hdERhdGUiLCJjcmVhdGVkQXQiLCJicmFuY2hVc2VybmFtZSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQU9BQSwrQ0FBRyxDQUFDQyxTQUFKLENBQWNDLG9EQUFkO0FBRUFDLDhDQUFHLENBQUNELE1BQUosQ0FBV0UsTUFBWCxDQUFrQjtBQUNoQkMsYUFBVyxFQUFFLHNCQURHO0FBRWhCQyxpQkFBZSxFQUFFLDBDQUZEO0FBR2hCQyxRQUFNLEVBQUU7QUFIUSxDQUFsQjtBQU1BLE1BQU1DLE9BQU8sR0FBRyxJQUFJTCw4Q0FBRyxDQUFDTSw4QkFBUixFQUFoQjs7QUFFQSxNQUFNQyxVQUFVLEdBQUcsQ0FBQztBQUFFQyxhQUFGO0FBQWVDO0FBQWYsQ0FBRCxLQUErQjtBQUNoRCxRQUFNO0FBQUEsT0FBQ0MsTUFBRDtBQUFBLE9BQVNDO0FBQVQsTUFBc0JDLHNEQUFRLENBQUMsS0FBRCxDQUFwQztBQUNBLFFBQU07QUFBQSxPQUFDQyxRQUFEO0FBQUEsT0FBV0M7QUFBWCxNQUEwQkYsc0RBQVEsQ0FBQyxFQUFELENBQXhDO0FBQ0EsUUFBTTtBQUFBLE9BQUNHLFVBQUQ7QUFBQSxPQUFhQztBQUFiLE1BQThCSixzREFBUSxDQUFDLEVBQUQsQ0FBNUM7QUFDQSxRQUFNO0FBQUEsT0FBQ0ssZUFB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TyxFQUNMLE1BQUMsc0RBQUQ7QUFDRSxhQUFPLEVBQUUsTUFBTTtBQUNiMUQsMEJBQWtCLENBQUNrQixJQUFJLENBQUNKLEVBQU4sQ0FBbEI7QUFDQWhCLHFCQUFhLENBQUNvQixJQUFJLENBQUNyQixVQUFOLENBQWI7QUFDQU0sb0JBQVk7QUFDYixPQUxIO0FBTUUsZUFBUyxFQUFDLGFBTlo7QUFPRSxVQUFJLEVBQUM7QUFQUDtBQUhKLElBREYsRUFlRSxNQUFDLHVEQUFEO0FBQ0UsV0FBTyxFQUFDLGVBRFY7QUFFRSxXQUFPLEVBQ0wsTUFBQyxzREFBRDtBQUNFLGVBQVMsRUFBQyxlQURaO0FBRUUsVUFBSSxFQUFDLGlCQUZQO0FBR0UsYUFBTyxFQUFFLE1BQU07QUFDYlUsb0JBQVksQ0FBQ0ssSUFBSSxDQUFDSixFQUFOLENBQVo7QUFDQTRCLDZCQUFxQixDQUFDeEIsSUFBSSxDQUFDeUMsY0FBTixDQUFyQjtBQUNEO0FBTkg7QUFISixJQWZGLENBWEYsQ0FERixDQUZKLENBUkYsQ0FERixFQXdERSxNQUFDLHVEQUFEO0FBQ0UsY0FBVSxFQUFFOUQsVUFEZDtBQUVFLFlBQVEsRUFBRUUsZUFGWjtBQUdFLFVBQU0sRUFBRVAsTUFIVjtBQUlFLGdCQUFZLEVBQUVXO0FBSmhCLElBeERGLENBREY7QUFpRUQsQ0EvSkQ7O0FBaUtlZCx5RUFBZiIsImZpbGUiOiIuL2NvbXBvbmVudHMvQnJhbmNoTGlzdC5qcy5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCwgeyB1c2VTdGF0ZSwgdXNlRWZmZWN0IH0gZnJvbSBcInJlYWN0XCJcbmltcG9ydCBBV1MgZnJvbSBcImF3cy1zZGtcIlxuaW1wb3J0IHsgQVBJLCBncmFwaHFsT3BlcmF0aW9uIH0gZnJvbSBcImF3cy1hbXBsaWZ5XCJcbmltcG9ydCB7IEJ1dHRvbiwgRm9ybSB9IGZyb20gXCJAc2hvcGlmeS9wb2xhcmlzXCJcbmltcG9ydCB7IFRhYmxlLCBQb3B1cCwgSWNvbiB9IGZyb20gXCJzZW1hbnRpYy11aS1yZWFjdFwiXG5pbXBvcnQgeyBmb3JtYXREYXRlIH0gZnJvbSBcIi4uL3V0aWxzL2hlbHBlclwiXG5pbXBvcnQgY29uZmlnIGZyb20gXCIuLi9hd3MtZXhwb3J0c1wiXG5pbXBvcnQgQnJhbmNoUHJvZHVjdHMgZnJvbSBcIi4vQnJhbmNoUHJvZHVjdHNcIlxuaW1wb3J0IHsgbGlzdEJyYW5jaHMgfSBmcm9tIFwiLi4vZ3JhcGhxbC9xdWVyaWVzXCJcbmltcG9ydCB7IG9uQ3JlYXRlQnJhbmNoU3Vic2NyaXB0aW9uLCBvbkRlbGV0ZUJyYW5jaFN1YnNjcmlwdGlvbiB9IGZyb20gXCIuLi9ncmFwaHFsL3N1YnNjcmlwdGlvbnNcIlxuaW1wb3J0IHtcbiAgcmVtb3ZlQnJhbmNoLFxuICBkZWxldGVUcmFuc2FjdGlvbixcbiAgZGVsZXRlQnJhbmNoUHJvZHVjdCxcbiAgZGVsZXRlUGF5bWVudFJlcXVlc3QsXG59IGZyb20gXCIuLi9ncmFwaHFsL211dGF0aW9uXCJcblxuQVBJLmNvbmZpZ3VyZShjb25maWcpXG5cbkFXUy5jb25maWcudXBkYXRlKHtcbiAgYWNjZXNzS2V5SWQ6IFwiQUtJQUlGNldLVktTT1RRQ1VSRVFcIixcbiAgc2VjcmV0QWNjZXNzS2V5OiBcIm9FTVFOSWlEVitRSzNSeHRmcCtEUlJ3R1I5ME9XY0tWcHlqWGQxSndcIixcbiAgcmVnaW9uOiBcInVzLWVhc3QtMVwiLFxufSlcblxuY29uc3QgY29nbml0byA9IG5ldyBBV1MuQ29nbml0b0lkZW50aXR5U2VydmljZVByb3ZpZGVyKClcblxuY29uc3QgQnJhbmNoTGlzdCA9ICh7IHNldEJyYW5jaElkLCBicmFuY2hJZCB9KSA9PiB7XG4gIGNvbnN0IFthY3RpdmUsIHNldEFjdGl2ZV0gPSB1c2VTdGF0ZShmYWxzZSlcbiAgY29uc3QgW2JyYW5jaGVzLCBzZXRCcmFuY2hlc10gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBbYnJhbmNoTmFtZSwgc2V0QnJhbmNoTmFtZV0gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBbcHJvZHVjdEJyYW5jaElkLCBzZXRQcm9kdWN0QnJhbmNoSWRdID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW25ld0NyZWF0ZWRCcmFuY2gsIHNldE5ld0NyZWF0ZWRCcmFuY2hdID0gdXNlU3RhdGUoXCJcIilcblxuICBjb25zdCBoYW5kbGVDaGFuZ2UgPSAoKSA9PiB7XG4gICAgc2V0QWN0aXZlKCFhY3RpdmUpXG4gIH1cblxuICBjb25zdCBmZXRjaEJyYW5jaGVzID0gYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBnZXRCcmFuY2hlcyA9IGF3YWl0IEFQSS5ncmFwaHFsKGdyYXBocWxPcGVyYXRpb24obGlzdEJyYW5jaHMpKVxuICAgICAgc2V0QnJhbmNoZXMoZ2V0QnJhbmNoZXMuZGF0YSlcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5sb2coZXJyb3IpXG4gICAgfVxuICB9XG5cbiAgY29uc3QgZGVsZXRlQnJhbmNoID0gYXN5bmMgKGlkKSA9PiB7XG4gICAgY29uc3QgYnJhbmNoVG9EZWxldGUgPSBicmFuY2hlcy5saXN0QnJhbmNocy5pdGVtcy5maWx0ZXIoKGl0ZW0pID0+IGl0ZW0uaWQgPT09IGlkKVswXVxuXG4gICAgY29uc3QgdHJhbnNhY3Rpb25zVG9EZWxldGUgPSBicmFuY2hUb0RlbGV0ZS50cmFuc2FjdGlvbnMuaXRlbXNcbiAgICAgID8gYnJhbmNoVG9EZWxldGUudHJhbnNhY3Rpb25zLml0ZW1zLm1hcCgodHJhbnNhY3Rpb24pID0+IHRyYW5zYWN0aW9uLmlkKVxuICAgICAgOiBcIlwiXG5cbiAgICBjb25zdCBwcm9kdWN0c1RvRGVsZXRlID0gYnJhbmNoVG9EZWxldGUuYnJhbmNoUHJvZHVjdHMuaXRlbXNcbiAgICAgID8gYnJhbmNoVG9EZWxldGUuYnJhbmNoUHJvZHVjdHMuaXRlbXMubWFwKChwcm9kdWN0KSA9PiBwcm9kdWN0LmlkKVxuICAgICAgOiBcIlwiXG5cbiAgICBjb25zdCBwYXltZW50UmVxdWVzdFRvRGVsZXRlID0gYnJhbmNoVG9EZWxldGUuYnJhbmNoUGF5bWVudFJlcXVlc3RzLml0ZW1zXG4gICAgICA/IGJyYW5jaFRvRGVsZXRlLmJyYW5jaFBheW1lbnRSZXF1ZXN0cy5pdGVtcy5tYXAoKHBheW1lbnRSZXF1ZXN0KSA9PiBwYXltZW50UmVxdWVzdC5pZClcbiAgICAgIDogXCJcIlxuXG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IGRlbGV0ZWRCcmFuY2ggPSBhd2FpdCBBUEkuZ3JhcGhxbChncmFwaHFsT3BlcmF0aW9uKHJlbW92ZUJyYW5jaCwgeyBpbnB1dDogeyBpZCB9IH0pKVxuXG4gICAgICBhd2FpdCBQcm9taXNlLmFsbChcbiAgICAgICAgdHJhbnNhY3Rpb25zVG9EZWxldGUubWFwKCh0cmFuc2FjdGlvbklkKSA9PiB7XG4gICAgICAgICAgQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihkZWxldGVUcmFuc2FjdGlvbiwgeyBpbnB1dDogeyBpZDogdHJhbnNhY3Rpb25JZCB9IH0pKVxuICAgICAgICB9KVxuICAgICAgKS5jYXRjaCgoZXJyKSA9PiBjb25zb2xlLmxvZyhlcnIpKVxuXG4gICAgICBhd2FpdCBQcm9taXNlLmFsbChcbiAgICAgICAgcHJvZHVjdHNUb0RlbGV0ZS5tYXAoKHByb2R1Y3RJZCkgPT4ge1xuICAgICAgICAgIEFQSS5ncmFwaHFsKGdyYXBocWxPcGVyYXRpb24oZGVsZXRlQnJhbmNoUHJvZHVjdCwgeyBpbnB1dDogeyBpZDogcHJvZHVjdElkIH0gfSkpXG4gICAgICAgIH0pXG4gICAgICApLmNhdGNoKChlcnIpID0+IGNvbnNvbGUubG9nKGVycikpXG5cbiAgICAgIGF3YWl0IFByb21pc2UuYWxsKFxuICAgICAgICBwYXltZW50UmVxdWVzdFRvRGVsZXRlLm1hcCgocGF5bWVudElkKSA9PiB7XG4gICAgICAgICAgQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihkZWxldGVQYXltZW50UmVxdWVzdCwgeyBpbnB1dDogeyBpZDogcGF5bWVudElkIH0gfSkpXG4gICAgICAgIH0pXG4gICAgICApXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgIH1cbiAgfVxuXG4gIGNvbnN0IGRlbGV0ZVVzZXJGcm9tQ29nbml0byA9IGFzeW5jICh1c2VybmFtZSkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBhd2FpdCBjb2duaXRvXG4gICAgICAgIC5hZG1pbkRlbGV0ZVVzZXIoe1xuICAgICAgICAgIFVzZXJQb29sSWQ6IFwidXMtZWFzdC0xX0lmcm5uekdGUlwiLFxuICAgICAgICAgIFVzZXJuYW1lOiB1c2VybmFtZSxcbiAgICAgICAgfSlcbiAgICAgICAgLnByb21pc2UoKVxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmxvZyhlcnJvcilcbiAgICB9XG4gIH1cblxuICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgIGZldGNoQnJhbmNoZXMoKVxuXG4gICAgY29uc3QgY3JlYXRlTGlzdGVuZXIgPSBBUEkuZ3JhcGhxbChncmFwaHFsT3BlcmF0aW9uKG9uQ3JlYXRlQnJhbmNoU3Vic2NyaXB0aW9uKSkuc3Vic2NyaWJlKHtcbiAgICAgIG5leHQ6IChjcmVhdGVkQnJhbmNoKSA9PiB7XG4gICAgICAgIHNldE5ld0NyZWF0ZWRCcmFuY2goY3JlYXRlZEJyYW5jaClcbiAgICAgIH0sXG4gICAgfSlcblxuICAgIGNvbnN0IGRlbGV0ZUxpc3RlbmVyID0gQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihvbkRlbGV0ZUJyYW5jaFN1YnNjcmlwdGlvbikpLnN1YnNjcmliZSh7XG4gICAgICBuZXh0OiAoZGVsZXRlZEJyYW5jaCkgPT4ge1xuICAgICAgICBzZXROZXdDcmVhdGVkQnJhbmNoKGRlbGV0ZWRCcmFuY2gpXG4gICAgICB9LFxuICAgIH0pXG5cbiAgICByZXR1cm4gKCkgPT4ge1xuICAgICAgY3JlYXRlTGlzdGVuZXIudW5zdWJzY3JpYmUoKVxuICAgICAgZGVsZXRlTGlzdGVuZXIudW5zdWJzY3JpYmUoKVxuICAgIH1cbiAgfSwgW25ld0NyZWF0ZWRCcmFuY2hdKVxuXG4gIHJldHVybiAoXG4gICAgPD5cbiAgICAgIDxUYWJsZSBzZWxlY3RhYmxlIGNlbGxlZD5cbiAgICAgICAgPFRhYmxlLkhlYWRlcj5cbiAgICAgICAgICA8VGFibGUuUm93PlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+QnJhbmNoIE5hbWU8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbCB0ZXh0QWxpZ249XCJjZW50ZXJcIj5DcmVhdGVkIEF0PC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGwgdGV4dEFsaWduPVwiY2VudGVyXCI+QWN0aW9uczwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICA8L1RhYmxlLlJvdz5cbiAgICAgICAgPC9UYWJsZS5IZWFkZXI+XG4gICAgICAgIDxUYWJsZS5Cb2R5PlxuICAgICAgICAgIHticmFuY2hlcyAmJlxuICAgICAgICAgICAgYnJhbmNoZXMubGlzdEJyYW5jaHMuaXRlbXMubWFwKChpdGVtKSA9PiAoXG4gICAgICAgICAgICAgIDxUYWJsZS5Sb3cga2V5PXtpdGVtLmlkfT5cbiAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgcHJpbWFyeVxuICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB7XG4gICAgICAgICAgICAgICAgICAgICAgc2V0QnJhbmNoSWQoaXRlbS5pZClcbiAgICAgICAgICAgICAgICAgICAgfX0+XG4gICAgICAgICAgICAgICAgICAgIDxJY29uIG5hbWU9XCJjb2RlIGJyYW5jaFwiIC8+IHtpdGVtLmJyYW5jaE5hbWV9XG4gICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICA8L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgPFRhYmxlLkNlbGwgdGV4dEFsaWduPVwiY2VudGVyXCI+e2Zvcm1hdERhdGUoaXRlbS5jcmVhdGVkQXQpfTwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbCB0ZXh0QWxpZ249XCJjZW50ZXJcIiBjbGFzc05hbWU9XCJicmFuY2gtYWN0aW9uc1wiPlxuICAgICAgICAgICAgICAgICAgPFBvcHVwXG4gICAgICAgICAgICAgICAgICAgIGNvbnRlbnQ9XCJFZGl0IGJyYW5jaFwiXG4gICAgICAgICAgICAgICAgICAgIHRyaWdnZXI9e1xuICAgICAgICAgICAgICAgICAgICAgIDxJY29uXG4gICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgIHNldFByb2R1Y3RCcmFuY2hJZChpdGVtLmlkKVxuICAgICAgICAgICAgICAgICAgICAgICAgICBzZXRCcmFuY2hOYW1lKGl0ZW0uYnJhbmNoTmFtZSlcbiAgICAgICAgICAgICAgICAgICAgICAgICAgaGFuZGxlQ2hhbmdlKClcbiAgICAgICAgICAgICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJlZGl0LWJyYW5jaFwiXG4gICAgICAgICAgICAgICAgICAgICAgICBuYW1lPVwiZWRpdCBvdXRsaW5lXCJcbiAgICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgPFBvcHVwXG4gICAgICAgICAgICAgICAgICAgIGNvbnRlbnQ9XCJEZWxldGUgQnJhbmNoXCJcbiAgICAgICAgICAgICAgICAgICAgdHJpZ2dlcj17XG4gICAgICAgICAgICAgICAgICAgICAgPEljb25cbiAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInJlbW92ZS1icmFuY2hcIlxuICAgICAgICAgICAgICAgICAgICAgICAgbmFtZT1cInRyYXNoIGFsdGVybmF0ZVwiXG4gICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgIGRlbGV0ZUJyYW5jaChpdGVtLmlkKVxuICAgICAgICAgICAgICAgICAgICAgICAgICBkZWxldGVVc2VyRnJvbUNvZ25pdG8oaXRlbS5icmFuY2hVc2VybmFtZSlcbiAgICAgICAgICAgICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgICA8L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgIDwvVGFibGUuUm93PlxuICAgICAgICAgICAgKSl9XG4gICAgICAgIDwvVGFibGUuQm9keT5cbiAgICAgIDwvVGFibGU+XG4gICAgICA8QnJhbmNoUHJvZHVjdHNcbiAgICAgICAgYnJhbmNoTmFtZT17YnJhbmNoTmFtZX1cbiAgICAgICAgYnJhbmNoSWQ9e3Byb2R1Y3RCcmFuY2hJZH1cbiAgICAgICAgYWN0aXZlPXthY3RpdmV9XG4gICAgICAgIGhhbmRsZUNoYW5nZT17aGFuZGxlQ2hhbmdlfVxuICAgICAgLz5cbiAgICA8Lz5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBCcmFuY2hMaXN0XG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/BranchList.js\n");
 
 /***/ }),
 
-/***/ "cDcd":
-/***/ (function(module, exports) {
-
-module.exports = require("react");
-
-/***/ }),
-
-/***/ "dDoP":
-/***/ (function(module, exports) {
-
-module.exports = require("@shopify/app-bridge");
-
-/***/ }),
-
-/***/ "fAuv":
-/***/ (function(module, exports) {
-
-module.exports = require("aws-amplify");
-
-/***/ }),
-
-/***/ "kNaX":
-/***/ (function(module, exports) {
-
-module.exports = require("uuid");
-
-/***/ }),
-
-/***/ "nj/N":
-/***/ (function(module, exports) {
-
-module.exports = require("@shopify/polaris");
-
-/***/ }),
-
-/***/ "o0q5":
+/***/ "./components/BranchProducts.js":
+/*!**************************************!*\
+  !*** ./components/BranchProducts.js ***!
+  \**************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("cDcd");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("FfxO");
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("fAuv");
-/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("txk1");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("nj/N");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("FVIk");
-var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
-
-
-
-
-
-
-
-aws_amplify__WEBPACK_IMPORTED_MODULE_2__["API"].configure(aws_amplify__WEBPACK_IMPORTED_MODULE_2___default.a);
-const listPaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_3___default.a`
-    query listPaymentRequest($limit: Int, $nextToken: String) {
-        listPaymentRequests(
-            limit: $limit
-            nextToken: $nextToken
-            filter: { status: { eq: DECLINED } }
-        ) {
-            items {
-                bonusAmount
-                createdAt
-                customerId
-                id
-                orderId
-                status
-                updatedAt
-            }
-            nextToken
-        }
-    }
-`;
-
-const DeclinedPaymentRequest = () => {
-  const {
-    0: nextPaginateToken,
-    1: setNextPaginateToken
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const {
-    0: paymentRequestItems,
-    1: setPaymentRequestItems
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
-  const fetchAcceptedPayments = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(async () => {
-    try {
-      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__["API"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__["graphqlOperation"])(listPaymentRequest, {
-        limit: 20
-      }));
-      setNextPaginateToken(res.data.listPaymentRequests.nextToken);
-      setPaymentRequestItems(res.data.listPaymentRequests.items);
-      console.log('Accepted payments', res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    fetchAcceptedPayments();
-  }, [fetchAcceptedPayments]);
-
-  const loadMore = async () => {
-    try {
-      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__["API"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__["graphqlOperation"])(listPaymentRequest, {
-        limit: 20,
-        nextToken: nextPaginateToken
-      }));
-      setNextPaginateToken(res.data.listPaymentRequests.nextToken);
-      setPaymentRequestItems([...paymentRequestItems, ...res.data.listPaymentRequests.items]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"], {
-    celled: true
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].HeaderCell, null, "Customer Id"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].HeaderCell, null, "Bonus Amount"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].HeaderCell, null, "Created At"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].HeaderCell, null, "Updated At"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].HeaderCell, null, "Status"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Body, null, paymentRequestItems && paymentRequestItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Row, {
-    key: item.id
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small"
-  }, item.customerId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* toCurrency */ "c"])(item.bonusAmount)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* formatDate */ "b"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* formatDate */ "b"])(item.updatedAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small",
-    progress: "incomplete",
-    status: "critical"
-  }, item.status)))))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
-    disabled: !nextPaginateToken,
-    primary: true,
-    onClick: loadMore
-  }, "Load more"));
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (DeclinedPaymentRequest);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! uuid */ \"uuid\");\n/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(uuid__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _apollo_client__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @apollo/client */ \"@apollo/client\");\n/* harmony import */ var _apollo_client__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_apollo_client__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _BranchRow__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./BranchRow */ \"./components/BranchRow.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\n/* harmony import */ var _graphql_mutation__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../graphql/mutation */ \"./graphql/mutation.js\");\n/* harmony import */ var _graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../graphql/subscriptions */ \"./graphql/subscriptions.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_6__[\"default\"]);\n\nconst ProductsList = ({\n  active,\n  handleChange,\n  branchId\n}) => {\n  const {\n    loading,\n    error,\n    data\n  } = Object(_apollo_client__WEBPACK_IMPORTED_MODULE_3__[\"useQuery\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_8__[\"listProducts\"]);\n  const {\n    0: branchProductSubscription,\n    1: setBranchProductSubscription\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: rowId,\n    1: setRowId\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])([]);\n  const {\n    0: state,\n    1: setState\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])({\n    products: []\n  });\n  const {\n    0: branchInfo,\n    1: setBranchInfo\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n\n  const getBranch = async () => {\n    try {\n      const branch = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_8__[\"getBranchById\"], {\n        id: branchId\n      }));\n      setBranchInfo(branch.data.getBranch);\n      setRowId([...rowId, ...branch.data.getBranch.branchProducts.items.map(item => item.productId)]);\n      setState({\n        products: [...state.products, ...branch.data.getBranch.branchProducts.items.map(product => ({\n          id: product.productId\n        }))]\n      });\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    getBranch();\n    const createListener = aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__[\"onCreateBranchProduct\"])).subscribe({\n      next: createdBranchProduct => setBranchProductSubscription(createdBranchProduct)\n    });\n    const updateListener = aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__[\"onUpdateBranchProduct\"])).subscribe({\n      next: updatedBranchProduct => setBranchProductSubscription(updatedBranchProduct)\n    });\n    const deleteListener = aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_10__[\"onDeleteBranchProduct\"])).subscribe({\n      next: deletedBranchProduct => setBranchProductSubscription(deletedBranchProduct)\n    });\n    return () => {\n      createListener.unsubscribe();\n      updateListener.unsubscribe();\n      deleteListener.unsubscribe();\n    };\n  }, [branchId, branchProductSubscription]);\n\n  if (loading) {\n    return __jsx(\"div\", null, \"Loading products...\");\n  }\n\n  if (error) {\n    return __jsx(\"div\", null, \"Some error occured\");\n  }\n\n  const deleteProductsFromBranch = () => {\n    const productsToDeleteFromBranch = branchInfo.branchProducts.items.filter(branchProduct => !state.products.map(product => product.id).includes(branchProduct.productId));\n    Promise.all(productsToDeleteFromBranch.map(deleteProduct => {\n      aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_9__[\"deleteBranchProduct\"], {\n        input: {\n          id: deleteProduct.id\n        }\n      }));\n    })).catch(err => console.log(err));\n    return;\n  };\n\n  const addProductsToBranch = () => {\n    Promise.all(state.products.map(product => {\n      const updatedProduct = branchInfo.branchProducts.items.filter(branchProduct => branchProduct.productId === product.id)[0];\n\n      if (updatedProduct) {\n        aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_9__[\"updateBranchProduct\"], {\n          input: {\n            id: updatedProduct.id,\n            tags: product.tags\n          }\n        }));\n      } else {\n        aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_9__[\"createBranchProduct\"], {\n          input: {\n            id: Object(uuid__WEBPACK_IMPORTED_MODULE_1__[\"v4\"])(),\n            branchId: branchId,\n            productId: product.id,\n            tags: product.tags\n          }\n        }));\n      }\n    })).catch(err => console.log(err));\n    return;\n  };\n\n  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Modal\"], {\n    open: active,\n    onClose: () => handleChange(),\n    title: \"Choose products\",\n    primaryAction: {\n      content: \"Save changes\",\n      onAction: () => {\n        addProductsToBranch();\n        deleteProductsFromBranch();\n        handleChange();\n      }\n    }\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__[\"Modal\"].Section, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"], {\n    celled: true,\n    striped: true,\n    selectable: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].HeaderCell, null, \"Products\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].HeaderCell, {\n    textAlign: \"center\"\n  }, \"Price\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].HeaderCell, null, \"Bonus Percentage\"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].Body, null, data && branchInfo && data.products.edges.map(product => __jsx(_BranchRow__WEBPACK_IMPORTED_MODULE_7__[\"default\"], {\n    rowId: rowId,\n    setRowId: setRowId,\n    branchInfo: branchInfo,\n    branchId: branchId,\n    product: product,\n    state: state,\n    setState: setState\n  }))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].Footer, {\n    fullWidth: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_5__[\"Table\"].Row, null)))));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (ProductsList);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0JyYW5jaFByb2R1Y3RzLmpzPzNlNzUiXSwibmFtZXMiOlsiQVBJIiwiY29uZmlndXJlIiwiY29uZmlnIiwiUHJvZHVjdHNMaXN0IiwiYWN0aXZlIiwiaGFuZGxlQ2hhbmdlIiwiYnJhbmNoSWQiLCJsb2FkaW5nIiwiZXJyb3IiLCJkYXRhIiwidXNlUXVlcnkiLCJsaXN0UHJvZHVjdHMiLCJicmFuY2hQcm9kdWN0U3Vic2NyaXB0aW9uIiwic2V0QnJhbmNoUHJvZHVjdFN1YnNjcmlwdGlvbiIsInVzZVN0YXRlIiwicm93SWQiLCJzZXRSb3dJZCIsInN0YXRlIiwic2V0U3RhdGUiLCJwcm9kdWN0cyIsImJyYW5jaEluZm8iLCJzZXRCcmFuY2hJbmZvIiwiZ2V0QnJhbmNoIiwiYnJhbmNoIiwiZ3JhcGhxbCIsImdyYXBocWxPcGVyYXRpb24iLCJnZXRCcmFuY2hCeUlkIiwiaWQiLCJicmFuY2hQcm9kdWN0cyIsIml0ZW1zIiwibWFwIiwiaXRlbSIsInByb2R1Y3RJZCIsInByb2R1Y3QiLCJjb25zb2xlIiwibG9nIiwidXNlRWZmZWN0IiwiY3JlYXRlTGlzdGVuZXIiLCJvbkNyZWF0ZUJyYW5jaFByb2R1Y3QiLCJzdWJzY3JpYmUiLCJuZXh0IiwiY3JlYXRlZEJyYW5jaFByb2R1Y3QiLCJ1cGRhdGVMaXN0ZW5lciIsIm9uVXBkYXRlQnJhbmNoUHJvZHVjdCIsInVwZGF0ZWRCcmFuY2hQcm9kdWN0IiwiZGVsZXRlTGlzdGVuZXIiLCJvbkRlbGV0ZUJyYW5jaFByb2R1Y3QiLCJkZWxldGVkQnJhbmNoUHJvZHVjdCIsInVuc3Vic2NyaWJlIiwiZGVsZXRlUHJvZHVjdHNGcm9tQnJhbmNoIiwicHJvZHVjdHNUb0RlbGV0ZUZyb21CcmFuY2giLCJmaWx0ZXIiLCJicmFuY2hQcm9kdWN0IiwiaW5jbHVkZXMiLCJQcm9taXNlIiwiYWxsIiwiZGVsZXRlUHJvZHVjdCIsImRlbGV0ZUJyYW5jaFByb2R1Y3QiLCJpbnB1dCIsImNhdGNoIiwiZXJyIiwiYWRkUHJvZHVjdHNUb0JyYW5jaCIsInVwZGF0ZWRQcm9kdWN0IiwidXBkYXRlQnJhbmNoUHJvZHVjdCIsInRhZ3MiLCJjcmVhdGVCcmFuY2hQcm9kdWN0IiwidXVpZHY0IiwiY29udGVudCIsIm9uQWN0aW9uIiwiZWRnZXMiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQU1BO0FBTUFBLCtDQUFHLENBQUNDLFNBQUosQ0FBY0Msb0RBQWQ7O0FBRUEsTUFBTUMsWUFBWSxHQUFHLENBQUM7QUFBRUMsUUFBRjtBQUFVQyxjQUFWO0FBQXdCQztBQUF4QixDQUFELEtBQXdDO0FBQzNELFFBQU07QUFBRUMsV0FBRjtBQUFXQyxTQUFYO0FBQWtCQztBQUFsQixNQUEyQkMsK0RBQVEsQ0FBQ0MsNkRBQUQsQ0FBekM7QUFDQSxRQUFNO0FBQUEsT0FBQ0MseUJBQUQ7QUFBQSxPQUE0QkM7QUFBNUIsTUFBNERDLHNEQUFRLENBQUMsRUFBRCxDQUExRTtBQUNBLFFBQU07QUFBQSxPQUFDQyxLQUFEO0FBQUEsT0FBUUM7QUFBUixNQUFvQkYsc0RBQVEsQ0FBQyxFQUFELENBQWxDO0FBQ0EsUUFBTTtBQUFBLE9BQUNHLEtBQUQ7QUFBQSxPQUFRQztBQUFSLE1BQW9CSixzREFBUSxDQUFDO0FBQ2pDSyxZQUFRLEVBQUU7QUFEdUIsR0FBRCxDQUFsQztBQUdBLFFBQU07QUFBQSxPQUFDQyxVQUFEO0FBQUEsT0FBYUM7QUFBYixNQUE4QlAsc0RBQVEsQ0FBQyxFQUFELENBQTVDOztBQUVBLFFBQU1RLFNBQVMsR0FBRyxZQUFZO0FBQzVCLFFBQUk7QUFDRixZQUFNQyxNQUFNLEdBQUcsTUFBTXZCLCtDQUFHLENBQUN3QixPQUFKLENBQVlDLG9FQUFnQixDQUFDQyw4REFBRCxFQUFnQjtBQUFFQyxVQUFFLEVBQUVyQjtBQUFOLE9BQWhCLENBQTVCLENBQXJCO0FBQ0FlLG1CQUFhLENBQUNFLE1BQU0s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QU07QUFDZFAsMkJBQW1CO0FBQ25CWixnQ0FBd0I7QUFDeEI1QyxvQkFBWTtBQUNiO0FBTlk7QUFKakIsS0FZRSxNQUFDLHNEQUFELENBQU8sT0FBUCxRQUNFLE1BQUMsdURBQUQ7QUFBTyxVQUFNLE1BQWI7QUFBYyxXQUFPLE1BQXJCO0FBQXNCLGNBQVU7QUFBaEMsS0FDRSxNQUFDLHVEQUFELENBQU8sTUFBUCxRQUNFLE1BQUMsdURBQUQsQ0FBTyxHQUFQLFFBQ0UsTUFBQyx1REFBRCxDQUFPLFVBQVAsbUJBREYsRUFFRSxNQUFDLHVEQUFELENBQU8sVUFBUDtBQUFrQixhQUFTLEVBQUM7QUFBNUIsYUFGRixFQUdFLE1BQUMsdURBQUQsQ0FBTyxVQUFQLDJCQUhGLENBREYsQ0FERixFQVFFLE1BQUMsdURBQUQsQ0FBTyxJQUFQLFFBQ0dJLElBQUksSUFDSFcsVUFERCxJQUVDWCxJQUFJLENBQUNVLFFBQUwsQ0FBY2tELEtBQWQsQ0FBb0J2QyxHQUFwQixDQUF5QkcsT0FBRCxJQUN0QixNQUFDLGtEQUFEO0FBQ0UsU0FBSyxFQUFFbEIsS0FEVDtBQUVFLFlBQVEsRUFBRUMsUUFGWjtBQUdFLGNBQVUsRUFBRUksVUFIZDtBQUlFLFlBQVEsRUFBRWQsUUFKWjtBQUtFLFdBQU8sRUFBRTJCLE9BTFg7QUFNRSxTQUFLLEVBQUVoQixLQU5UO0FBT0UsWUFBUSxFQUFFQztBQVBaLElBREYsQ0FISixDQVJGLEVBdUJFLE1BQUMsdURBQUQsQ0FBTyxNQUFQO0FBQWMsYUFBUztBQUF2QixLQUNFLE1BQUMsdURBQUQsQ0FBTyxHQUFQLE9BREYsQ0F2QkYsQ0FERixDQVpGLENBREY7QUE0Q0QsQ0F0SkQ7O0FBd0plZiwyRUFBZiIsImZpbGUiOiIuL2NvbXBvbmVudHMvQnJhbmNoUHJvZHVjdHMuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUNhbGxiYWNrLCB1c2VFZmZlY3QgfSBmcm9tIFwicmVhY3RcIlxuaW1wb3J0IHsgdjQgYXMgdXVpZHY0IH0gZnJvbSBcInV1aWRcIlxuaW1wb3J0IHsgQVBJLCBncmFwaHFsT3BlcmF0aW9uIH0gZnJvbSBcImF3cy1hbXBsaWZ5XCJcbmltcG9ydCB7IHVzZVF1ZXJ5IH0gZnJvbSBcIkBhcG9sbG8vY2xpZW50XCJcbmltcG9ydCB7IE1vZGFsIH0gZnJvbSBcIkBzaG9waWZ5L3BvbGFyaXNcIlxuaW1wb3J0IHsgVGFibGUgfSBmcm9tIFwic2VtYW50aWMtdWktcmVhY3RcIlxuaW1wb3J0IGNvbmZpZyBmcm9tIFwiLi4vYXdzLWV4cG9ydHNcIlxuaW1wb3J0IEJyYW5jaFJvdyBmcm9tIFwiLi9CcmFuY2hSb3dcIlxuaW1wb3J0IHsgbGlzdFByb2R1Y3RzLCBnZXRCcmFuY2hCeUlkIH0gZnJvbSBcIi4uL2dyYXBocWwvcXVlcmllc1wiXG5pbXBvcnQge1xuICBjcmVhdGVCcmFuY2hQcm9kdWN0LFxuICBwcm9kdWN0VXBkYXRlLFxuICB1cGRhdGVCcmFuY2hQcm9kdWN0LFxuICBkZWxldGVCcmFuY2hQcm9kdWN0LFxufSBmcm9tIFwiLi4vZ3JhcGhxbC9tdXRhdGlvblwiXG5pbXBvcnQge1xuICBvbkNyZWF0ZUJyYW5jaFByb2R1Y3QsXG4gIG9uVXBkYXRlQnJhbmNoUHJvZHVjdCxcbiAgb25EZWxldGVCcmFuY2hQcm9kdWN0LFxufSBmcm9tIFwiLi4vZ3JhcGhxbC9zdWJzY3JpcHRpb25zXCJcblxuQVBJLmNvbmZpZ3VyZShjb25maWcpXG5cbmNvbnN0IFByb2R1Y3RzTGlzdCA9ICh7IGFjdGl2ZSwgaGFuZGxlQ2hhbmdlLCBicmFuY2hJZCB9KSA9PiB7XG4gIGNvbnN0IHsgbG9hZGluZywgZXJyb3IsIGRhdGEgfSA9IHVzZVF1ZXJ5KGxpc3RQcm9kdWN0cylcbiAgY29uc3QgW2JyYW5jaFByb2R1Y3RTdWJzY3JpcHRpb24sIHNldEJyYW5jaFByb2R1Y3RTdWJzY3JpcHRpb25dID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW3Jvd0lkLCBzZXRSb3dJZF0gPSB1c2VTdGF0ZShbXSlcbiAgY29uc3QgW3N0YXRlLCBzZXRTdGF0ZV0gPSB1c2VTdGF0ZSh7XG4gICAgcHJvZHVjdHM6IFtdLFxuICB9KVxuICBjb25zdCBbYnJhbmNoSW5mbywgc2V0QnJhbmNoSW5mb10gPSB1c2VTdGF0ZShcIlwiKVxuXG4gIGNvbnN0IGdldEJyYW5jaCA9IGFzeW5jICgpID0+IHtcbiAgICB0cnkge1xuICAgICAgY29uc3QgYnJhbmNoID0gYXdhaXQgQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihnZXRCcmFuY2hCeUlkLCB7IGlkOiBicmFuY2hJZCB9KSlcbiAgICAgIHNldEJyYW5jaEluZm8oYnJhbmNoLmRhdGEuZ2V0QnJhbmNoKVxuICAgICAgc2V0Um93SWQoW1xuICAgICAgICAuLi5yb3dJZCxcbiAgICAgICAgLi4uYnJhbmNoLmRhdGEuZ2V0QnJhbmNoLmJyYW5jaFByb2R1Y3RzLml0ZW1zLm1hcCgoaXRlbSkgPT4gaXRlbS5wcm9kdWN0SWQpLFxuICAgICAgXSlcbiAgICAgIHNldFN0YXRlKHtcbiAgICAgICAgcHJvZHVjdHM6IFtcbiAgICAgICAgICAuLi5zdGF0ZS5wcm9kdWN0cyxcbiAgICAgICAgICAuLi5icmFuY2guZGF0YS5nZXRCcmFuY2guYnJhbmNoUHJvZHVjdHMuaXRlbXMubWFwKChwcm9kdWN0KSA9PiAoe1xuICAgICAgICAgICAgaWQ6IHByb2R1Y3QucHJvZHVjdElkLFxuICAgICAgICAgIH0pKSxcbiAgICAgICAgXSxcbiAgICAgIH0pXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgIH1cbiAgfVxuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgZ2V0QnJhbmNoKClcblxuICAgIGNvbnN0IGNyZWF0ZUxpc3RlbmVyID0gQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihvbkNyZWF0ZUJyYW5jaFByb2R1Y3QpKS5zdWJzY3JpYmUoe1xuICAgICAgbmV4dDogKGNyZWF0ZWRCcmFuY2hQcm9kdWN0KSA9PiBzZXRCcmFuY2hQcm9kdWN0U3Vic2NyaXB0aW9uKGNyZWF0ZWRCcmFuY2hQcm9kdWN0KSxcbiAgICB9KVxuICAgIGNvbnN0IHVwZGF0ZUxpc3RlbmVyID0gQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihvblVwZGF0ZUJyYW5jaFByb2R1Y3QpKS5zdWJzY3JpYmUoe1xuICAgICAgbmV4dDogKHVwZGF0ZWRCcmFuY2hQcm9kdWN0KSA9PiBzZXRCcmFuY2hQcm9kdWN0U3Vic2NyaXB0aW9uKHVwZGF0ZWRCcmFuY2hQcm9kdWN0KSxcbiAgICB9KVxuICAgIGNvbnN0IGRlbGV0ZUxpc3RlbmVyID0gQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihvbkRlbGV0ZUJyYW5jaFByb2R1Y3QpKS5zdWJzY3JpYmUoe1xuICAgICAgbmV4dDogKGRlbGV0ZWRCcmFuY2hQcm9kdWN0KSA9PiBzZXRCcmFuY2hQcm9kdWN0U3Vic2NyaXB0aW9uKGRlbGV0ZWRCcmFuY2hQcm9kdWN0KSxcbiAgICB9KVxuXG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGNyZWF0ZUxpc3RlbmVyLnVuc3Vic2NyaWJlKClcbiAgICAgIHVwZGF0ZUxpc3RlbmVyLnVuc3Vic2NyaWJlKClcbiAgICAgIGRlbGV0ZUxpc3RlbmVyLnVuc3Vic2NyaWJlKClcbiAgICB9XG4gIH0sIFticmFuY2hJZCwgYnJhbmNoUHJvZHVjdFN1YnNjcmlwdGlvbl0pXG5cbiAgaWYgKGxvYWRpbmcpIHtcbiAgICByZXR1cm4gPGRpdj5Mb2FkaW5nIHByb2R1Y3RzLi4uPC9kaXY+XG4gIH1cblxuICBpZiAoZXJyb3IpIHtcbiAgICByZXR1cm4gPGRpdj5Tb21lIGVycm9yIG9jY3VyZWQ8L2Rpdj5cbiAgfVxuXG4gIGNvbnN0IGRlbGV0ZVByb2R1Y3RzRnJvbUJyYW5jaCA9ICgpID0+IHtcbiAgICBjb25zdCBwcm9kdWN0c1RvRGVsZXRlRnJvbUJyYW5jaCA9IGJyYW5jaEluZm8uYnJhbmNoUHJvZHVjdHMuaXRlbXMuZmlsdGVyKFxuICAgICAgKGJyYW5jaFByb2R1Y3QpID0+XG4gICAgICAgICFzdGF0ZS5wcm9kdWN0cy5tYXAoKHByb2R1Y3QpID0+IHByb2R1Y3QuaWQpLmluY2x1ZGVzKGJyYW5jaFByb2R1Y3QucHJvZHVjdElkKVxuICAgIClcblxuICAgIFByb21pc2UuYWxsKFxuICAgICAgcHJvZHVjdHNUb0RlbGV0ZUZyb21CcmFuY2gubWFwKChkZWxldGVQcm9kdWN0KSA9PiB7XG4gICAgICAgIEFQSS5ncmFwaHFsKGdyYXBocWxPcGVyYXRpb24oZGVsZXRlQnJhbmNoUHJvZHVjdCwgeyBpbnB1dDogeyBpZDogZGVsZXRlUHJvZHVjdC5pZCB9IH0pKVxuICAgICAgfSlcbiAgICApLmNhdGNoKChlcnIpID0+IGNvbnNvbGUubG9nKGVycikpXG5cbiAgICByZXR1cm5cbiAgfVxuXG4gIGNvbnN0IGFkZFByb2R1Y3RzVG9CcmFuY2ggPSAoKSA9PiB7XG4gICAgUHJvbWlzZS5hbGwoXG4gICAgICBzdGF0ZS5wcm9kdWN0cy5tYXAoKHByb2R1Y3QpID0+IHtcbiAgICAgICAgY29uc3QgdXBkYXRlZFByb2R1Y3QgPSBicmFuY2hJbmZvLmJyYW5jaFByb2R1Y3RzLml0ZW1zLmZpbHRlcihcbiAgICAgICAgICAoYnJhbmNoUHJvZHVjdCkgPT4gYnJhbmNoUHJvZHVjdC5wcm9kdWN0SWQgPT09IHByb2R1Y3QuaWRcbiAgICAgICAgKVswXVxuICAgICAgICBpZiAodXBkYXRlZFByb2R1Y3QpIHtcbiAgICAgICAgICBBUEkuZ3JhcGhxbChcbiAgICAgICAgICAgIGdyYXBocWxPcGVyYXRpb24odXBkYXRlQnJhbmNoUHJvZHVjdCwge1xuICAgICAgICAgICAgICBpbnB1dDoge1xuICAgICAgICAgICAgICAgIGlkOiB1cGRhdGVkUHJvZHVjdC5pZCxcbiAgICAgICAgICAgICAgICB0YWdzOiBwcm9kdWN0LnRhZ3MsXG4gICAgICAgICAgICAgIH0sXG4gICAgICAgICAgICB9KVxuICAgICAgICAgIClcbiAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICBBUEkuZ3JhcGhxbChcbiAgICAgICAgICAgIGdyYXBocWxPcGVyYXRpb24oY3JlYXRlQnJhbmNoUHJvZHVjdCwge1xuICAgICAgICAgICAgICBpbnB1dDoge1xuICAgICAgICAgICAgICAgIGlkOiB1dWlkdjQoKSxcbiAgICAgICAgICAgICAgICBicmFuY2hJZDogYnJhbmNoSWQsXG4gICAgICAgICAgICAgICAgcHJvZHVjdElkOiBwcm9kdWN0LmlkLFxuICAgICAgICAgICAgICAgIHRhZ3M6IHByb2R1Y3QudGFncyxcbiAgICAgICAgICAgICAgfSxcbiAgICAgICAgICAgIH0pXG4gICAgICAgICAgKVxuICAgICAgICB9XG4gICAgICB9KVxuICAgICkuY2F0Y2goKGVycikgPT4gY29uc29sZS5sb2coZXJyKSlcblxuICAgIHJldHVyblxuICB9XG5cbiAgcmV0dXJuIChcbiAgICA8TW9kYWxcbiAgICAgIG9wZW49e2FjdGl2ZX1cbiAgICAgIG9uQ2xvc2U9eygpID0+IGhhbmRsZUNoYW5nZSgpfVxuICAgICAgdGl0bGU9XCJDaG9vc2UgcHJvZHVjdHNcIlxuICAgICAgcHJpbWFyeUFjdGlvbj17e1xuICAgICAgICBjb250ZW50OiBcIlNhdmUgY2hhbmdlc1wiLFxuICAgICAgICBvbkFjdGlvbjogKCkgPT4ge1xuICAgICAgICAgIGFkZFByb2R1Y3RzVG9CcmFuY2goKVxuICAgICAgICAgIGRlbGV0ZVByb2R1Y3RzRnJvbUJyYW5jaCgpXG4gICAgICAgICAgaGFuZGxlQ2hhbmdlKClcbiAgICAgICAgfSxcbiAgICAgIH19PlxuICAgICAgPE1vZGFsLlNlY3Rpb24+XG4gICAgICAgIDxUYWJsZSBjZWxsZWQgc3RyaXBlZCBzZWxlY3RhYmxlPlxuICAgICAgICAgIDxUYWJsZS5IZWFkZXI+XG4gICAgICAgICAgICA8VGFibGUuUm93PlxuICAgICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5Qcm9kdWN0czwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGwgdGV4dEFsaWduPVwiY2VudGVyXCI+UHJpY2U8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPkJvbnVzIFBlcmNlbnRhZ2U8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8L1RhYmxlLlJvdz5cbiAgICAgICAgICA8L1RhYmxlLkhlYWRlcj5cbiAgICAgICAgICA8VGFibGUuQm9keT5cbiAgICAgICAgICAgIHtkYXRhICYmXG4gICAgICAgICAgICAgIGJyYW5jaEluZm8gJiZcbiAgICAgICAgICAgICAgZGF0YS5wcm9kdWN0cy5lZGdlcy5tYXAoKHByb2R1Y3QpID0+IChcbiAgICAgICAgICAgICAgICA8QnJhbmNoUm93XG4gICAgICAgICAgICAgICAgICByb3dJZD17cm93SWR9XG4gICAgICAgICAgICAgICAgICBzZXRSb3dJZD17c2V0Um93SWR9XG4gICAgICAgICAgICAgICAgICBicmFuY2hJbmZvPXticmFuY2hJbmZvfVxuICAgICAgICAgICAgICAgICAgYnJhbmNoSWQ9e2JyYW5jaElkfVxuICAgICAgICAgICAgICAgICAgcHJvZHVjdD17cHJvZHVjdH1cbiAgICAgICAgICAgICAgICAgIHN0YXRlPXtzdGF0ZX1cbiAgICAgICAgICAgICAgICAgIHNldFN0YXRlPXtzZXRTdGF0ZX1cbiAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICApKX1cbiAgICAgICAgICA8L1RhYmxlLkJvZHk+XG4gICAgICAgICAgPFRhYmxlLkZvb3RlciBmdWxsV2lkdGg+XG4gICAgICAgICAgICA8VGFibGUuUm93PjwvVGFibGUuUm93PlxuICAgICAgICAgIDwvVGFibGUuRm9vdGVyPlxuICAgICAgICA8L1RhYmxlPlxuICAgICAgPC9Nb2RhbC5TZWN0aW9uPlxuICAgIDwvTW9kYWw+XG4gIClcbn1cblxuZXhwb3J0IGRlZmF1bHQgUHJvZHVjdHNMaXN0XG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/BranchProducts.js\n");
 
 /***/ }),
 
-/***/ "rljl":
+/***/ "./components/BranchRow.js":
+/*!*********************************!*\
+  !*** ./components/BranchRow.js ***!
+  \*********************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("cDcd");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("fAuv");
-/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("txk1");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("FfxO");
-/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("nj/N");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("FVIk");
-/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("uI6m");
-var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
-
-
-
-
-
-
-
-aws_amplify__WEBPACK_IMPORTED_MODULE_1__["API"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_6__[/* default */ "a"]);
-const listPaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_2___default.a`
-    query listPaymentRequest($limit: Int, $nextToken: String) {
-        listPaymentRequests(
-            limit: $limit
-            nextToken: $nextToken
-            filter: { status: { eq: APPROVED } }
-        ) {
-            items {
-                bonusAmount
-                createdAt
-                customerId
-                id
-                orderId
-                status
-                updatedAt
-            }
-            nextToken
-        }
-    }
-`;
-
-const AcceptedPaymentRequest = () => {
-  const {
-    0: nextPaginateToken,
-    1: setNextPaginateToken
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
-  const {
-    0: paymentRequestItems,
-    1: setPaymentRequestItems
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
-  console.log('Next token is', nextPaginateToken);
-  const fetchAcceptedPayments = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(async () => {
-    try {
-      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__["API"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__["graphqlOperation"])(listPaymentRequest, {
-        limit: 20
-      }));
-      setNextPaginateToken(res.data.listPaymentRequests.nextToken);
-      setPaymentRequestItems(res.data.listPaymentRequests.items);
-      console.log('Accepted payments', res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    fetchAcceptedPayments();
-  }, [fetchAcceptedPayments]);
-
-  const loadMore = async () => {
-    try {
-      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__["API"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__["graphqlOperation"])(listPaymentRequest, {
-        limit: 20,
-        nextToken: nextPaginateToken
-      }));
-      setNextPaginateToken(res.data.listPaymentRequests.nextToken);
-      setPaymentRequestItems([...paymentRequestItems, ...res.data.listPaymentRequests.items]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  console.log('Next paginate token', nextPaginateToken);
-  console.log('Accepted state data', paymentRequestItems);
-  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"], {
-    celled: true
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Customer Id"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Order Id"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Bonus Amount"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Created At"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Updated At"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].HeaderCell, null, "Status"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Body, null, paymentRequestItems && paymentRequestItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Row, {
-    key: item.id
-  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small"
-  }, item.customerId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small"
-  }, item.orderId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* toCurrency */ "c"])(item.bonusAmount)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* formatDate */ "b"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[/* formatDate */ "b"])(item.updatedAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_3__["Table"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Badge"], {
-    size: "small",
-    progress: "complete",
-    status: "success"
-  }, item.status)))))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
-    disabled: !nextPaginateToken,
-    primary: true,
-    onClick: loadMore
-  }, "Load more"));
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (AcceptedPaymentRequest);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\nfunction ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }\n\nfunction _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }\n\nfunction _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }\n\n\n\n\n\n\nconst BranchRow = ({\n  product,\n  state,\n  setState,\n  branchInfo,\n  rowId,\n  setRowId\n}) => {\n  const {\n    0: fetchedProduct,\n    1: setFetchedProduct\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])({\n    description: product.node.description,\n    id: product.node.id,\n    image: product.node.images.edges[0] ? product.node.images.edges[0].node.originalSrc : \"\",\n    tags: product.node.tags,\n    title: product.node.title,\n    variants: {\n      id: product.node.variants.edges[0].node.id,\n      price: product.node.variants.edges[0].node.price\n    }\n  });\n  const {\n    0: searchValue,\n    1: setSearchValue\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(null);\n  const {\n    0: bonus,\n    1: setBonus\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const handleSearchInput = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => setSearchValue(newValue), []);\n  const handleBonus = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(value => {\n    setBonus(value);\n    fetchedProduct.tags = [value];\n    setFetchedProduct(fetchedProduct);\n  }, []);\n\n  const compareProduct = () => {\n    const comparedProduct = branchInfo.branchProducts.items.filter(branchProduct => branchProduct.productId === fetchedProduct.id);\n\n    if (!comparedProduct || comparedProduct === undefined) {\n      return;\n    }\n\n    setBonus(comparedProduct[0] ? comparedProduct[0].tags[0] : \"\");\n    return;\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    console.log(\"Row id from useEffect\", branchInfo.branchProducts.items.map(item => item.productId).filter(productId => productId === fetchedProduct.id)[0]);\n    compareProduct();\n  }, [product, branchInfo]);\n  return __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Row, {\n    key: fetchedProduct.id\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Header\"], {\n    as: \"h4\",\n    image: true,\n    className: \"product-header\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"Checkbox\"], {\n    checked: rowId.includes(fetchedProduct.id) && true,\n    onChange: () => {\n      if (rowId.includes(fetchedProduct.id)) {\n        setRowId(rowId.filter(id => id !== fetchedProduct.id));\n        setState({\n          products: state.products.filter(filteredProduct => filteredProduct.id !== fetchedProduct.id)\n        });\n      } else {\n        setRowId([...rowId, fetchedProduct.id]);\n        setState(_objectSpread(_objectSpread({}, state), {}, {\n          products: [...state.products, fetchedProduct]\n        }));\n      }\n    }\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"Thumbnail\"], {\n    source: fetchedProduct.image,\n    size: \"small\",\n    alt: \"\"\n  }), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Header\"].Content, null, fetchedProduct.title))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, {\n    textAlign: \"center\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"TextStyle\"], {\n    variation: \"subdued\"\n  }, fetchedProduct.variants && Object(_utils_helper__WEBPACK_IMPORTED_MODULE_3__[\"toCurrency\"])(fetchedProduct.variants.price))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"TextField\"], {\n    id: \"percentage-input\",\n    placeholder: \"Bonus Percentage\",\n    value: bonus,\n    onChange: handleBonus,\n    prefix: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Icon\"], {\n      name: \"percent\"\n    }),\n    disabled: !rowId.includes(fetchedProduct.id)\n  })));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (BranchRow);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0JyYW5jaFJvdy5qcz84ZWM2Il0sIm5hbWVzIjpbIkJyYW5jaFJvdyIsInByb2R1Y3QiLCJzdGF0ZSIsInNldFN0YXRlIiwiYnJhbmNoSW5mbyIsInJvd0lkIiwic2V0Um93SWQiLCJmZXRjaGVkUHJvZHVjdCIsInNldEZldGNoZWRQcm9kdWN0IiwidXNlU3RhdGUiLCJkZXNjcmlwdGlvbiIsIm5vZGUiLCJpZCIsImltYWdlIiwiaW1hZ2VzIiwiZWRnZXMiLCJvcmlnaW5hbFNyYyIsInRhZ3MiLCJ0aXRsZSIsInZhcmlhbnRzIiwicHJpY2UiLCJzZWFyY2hWYWx1ZSIsInNldFNlYXJjaFZhbHVlIiwiYm9udXMiLCJzZXRCb251cyIsImhhbmRsZVNlYXJjaElucHV0IiwidXNlQ2FsbGJhY2siLCJuZXdWYWx1ZSIsImhhbmRsZUJvbnVzIiwidmFsdWUiLCJjb21wYXJlUHJvZHVjdCIsImNvbXBhcmVkUHJvZHVjdCIsImJyYW5jaFByb2R1Y3RzIiwiaXRlbXMiLCJmaWx0ZXIiLCJicmFuY2hQcm9kdWN0IiwicHJvZHVjdElkIiwidW5kZWZpbmVkIiwidXNlRWZmZWN0IiwiY29uc29sZSIsImxvZyIsIm1hcCIsIml0ZW0iLCJpbmNsdWRlcyIsInByb2R1Y3RzIiwiZmlsdGVyZWRQcm9kdWN0IiwidG9DdXJyZW5jeSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7OztBQUFBO0FBQ0E7QUFDQTtBQUNBOztBQUVBLE1BQU1BLFNBQVMsR0FBRyxDQUFDO0FBQUVDLFNBQUY7QUFBV0MsT0FBWDtBQUFrQkMsVUFBbEI7QUFBNEJDLFlBQTVCO0FBQXdDQyxPQUF4QztBQUErQ0M7QUFBL0MsQ0FBRCxLQUErRDtBQUMvRSxRQUFNO0FBQUEsT0FBQ0MsY0FBRDtBQUFBLE9BQWlCQztBQUFqQixNQUFzQ0Msc0RBQVEsQ0FBQztBQUNuREMsZUFBVyxFQUFFVCxPQUFPLENBQUNVLElBQVIsQ0FBYUQsV0FEeUI7QUFFbkRFLE1BQUUsRUFBRVgsT0FBTyxDQUFDVSxJQUFSLENBQWFDLEVBRmtDO0FBR25EQyxTQUFLLEVBQUVaLE9BQU8sQ0FBQ1UsSUFBUixDQUFhRyxNQUFiLENBQW9CQyxLQUFwQixDQUEwQixDQUExQixJQUErQmQsT0FBTyxDQUFDVSxJQUFSLENBQWFHLE1BQWIsQ0FBb0JDLEtBQXBCLENBQTBCLENBQTFCLEVBQTZCSixJQUE3QixDQUFrQ0ssV0FBakUsR0FBK0UsRUFIbkM7QUFJbkRDLFFBQUksRUFBRWhCLE9BQU8sQ0FBQ1UsSUFBUixDQUFhTSxJQUpnQztBQUtuREMsU0FBSyxFQUFFakIsT0FBTyxDQUFDVSxJQUFSLENBQWFPLEtBTCtCO0FBTW5EQyxZQUFRLEVBQUU7QUFDUlAsUUFBRSxFQUFFWCxPQUFPLENBQUNVLElBQVIsQ0FBYVEsUUFBYixDQUFzQkosS0FBdEIsQ0FBNEIsQ0FBNUIsRUFBK0JKLElBQS9CLENBQW9DQyxFQURoQztBQUVSUSxXQUFLLEVBQUVuQixPQUFPLENBQUNVLElBQVIsQ0FBYVEsUUFBYixDQUFzQkosS0FBdEIsQ0FBNEIsQ0FBNUIsRUFBK0JKLElBQS9CLENBQW9DUztBQUZuQztBQU55QyxHQUFELENBQXBEO0FBWUEsUUFBTTtBQUFBLE9BQUNDLFdBQUQ7QUFBQSxPQUFjQztBQUFkLE1BQWdDYixzREFBUSxDQUFDLElBQUQsQ0FBOUM7QUFDQSxRQUFNO0FBQUEsT0FBQ2MsS0FBRDtBQUFBLE9BQVFDO0FBQVIsTUFBb0JmLHNEQUFRLENBQUMsRUFBRCxDQUFsQztBQUNBLFFBQU1nQixpQkFBaUIsR0FBR0MseURBQVcsQ0FBRUMsUUFBRCxJQUFjTCxjQUFjLENBQUNLLFFBQUQsQ0FBN0IsRUFBeUMsRUFBekMsQ0FBckM7QUFFQSxRQUFNQyxXQUFXLEdBQUdGLHlEQUFXLENBQUVHLEtBQUQsSUFBVztBQUN6Q0wsWUFBUSxDQUFDSyxLQUFELENBQVI7QUFDQXRCLGtCQUFjLENBQUNVLElBQWYsR0FBc0IsQ0FBQ1ksS0FBRCxDQUF0QjtBQUNBckIscUJBQWlCLENBQUNELGNBQUQsQ0FBakI7QUFDRCxHQUo4QixFQUk1QixFQUo0QixDQUEvQjs7QUFNQSxRQUFNdUIsY0FBYyxHQUFHLE1BQU07QUFDM0IsVUFBTUMsZUFBZSxHQUFHM0IsVUFBVSxDQUFDNEIsY0FBWCxDQUEwQkMsS0FBMUIsQ0FBZ0NDLE1BQWhDLENBQ3JCQyxhQUFELElBQW1CQSxhQUFhLENBQUNDLFNBQWQsS0FBNEI3QixjQUFjLENBQUNLLEVBRHhDLENBQXhCOztBQUlBLFFBQUksQ0FBQ21CLGVBQUQsSUFBb0JBLGVBQWUsS0FBS00sU0FBNUMsRUFBdUQ7QUFDckQ7QUFDRDs7QUFFRGIsWUFBUSxDQUFDTyxlQUFlLENBQUMsQ0FBRCxDQUFmLEdBQXFCQSxlQUFlLENBQUMsQ0FBRCxDQUFmLENBQW1CZCxJQUFuQixDQUF3QixDQUF4QixDQUFyQixHQUFrRCxFQUFuRCxDQUFSO0FBRUE7QUFDRCxHQVpEOztBQWNBcUIseURBQVMsQ0FBQyxNQUFNO0FBQ2RDLFdBQU8sQ0FBQ0MsR0FBUixDQUNFLHVCQURGLEVBRUVwQyxVQUFVLENBQUM0QixjQUFYLENBQTBCQyxLQUExQixDQUNHUSxHQURILENBQ1FDLElBQUQsSUFBVUEsSUFBSSxDQUFDTixTQUR0QixFQUVHRixNQUZILENBRVdFLFNBQUQsSUFBZUEsU0FBUyxLQUFLN0IsY0FBYyxDQUFDSyxFQUZ0RCxFQUUwRCxDQUYxRCxDQUZGO0FBT0FrQixrQkFBYztBQUNmLEdBVFEsRUFTTixDQUFDN0IsT0FBRCxFQUFVRyxVQUFWLENBVE0sQ0FBVDtBQVdBLFNBQ0UsTUFBQyx1REFBRCxDQUFPLEdBQVA7QUFBVyxPQUFHLEVBQUVHLGNBQWMsQ0FBQ0s7QUFBL0IsS0FDRSxNQUFDLHVEQUFELENBQU8sSUFBUCxRQUNFLE1BQUMsd0RBQUQ7QUFBUSxNQUFFLEVBQUMsSUFBWDtBQUFnQixTQUFLLE1BQXJCO0FBQXNCLGFBQVMsRUFBQztBQUFoQyxLQUNFLE1BQUMseURBQUQ7QUFDRSxXQUFPLEVBQUVQLEtBQUssQ0FBQ3NDLFFBQU4sQ0FBZXBDLGNBQWMsQ0FBQ0ssRUFBOUIsS0FBcUMsSUFEaEQ7QUFFRSxZQUFRLEVBQUUsTUFBTTtBQUNkLFVBQUlQLEtBQUssQ0FBQ3NDLFFBQU4sQ0FBZXBDLGNBQWMsQ0FBQ0ssRUFBOUIsQ0FBSixFQUF1QztBQUNyQ04sZ0JBQVEsQ0FBQ0QsS0FBSyxDQUFDNkIsTUFBTixDQUFjdEIsRUFBRCxJQUFRQSxFQUFFLEtBQUtMLGNBQWMsQ0FBQ0ssRUFBM0MsQ0FBRCxDQUFSO0FBQ0FULGdCQUFRLENBQUM7QUFDUHlDLGtCQUFRLEVBQUUxQyxLQUFLLENBQUMwQyxRQUFOLENBQWVWLE1BQWYsQ0FDUFcsZUFBRCxJQUFxQkEsZUFBZSxDQUFDakMsRUFBaEIsS0FBdUJMLGNBQWMsQ0FBQ0ssRUFEbkQ7QUFESCxTQUFELENBQVI7QUFLRCxPQVBELE1BT087QUFDTE4sZ0JBQVEsQ0FBQyxDQUFDLEdBQUdELEtBQUosRUFBV0UsY0FBYyxDQUFDSyxFQUExQixDQUFELENBQVI7QUFDQVQsZ0JBQVEsaUNBQ0hELEtBREc7QUFFTjBDLGtCQUFRLEVBQUUsQ0FBQyxHQUFHMUMsS0FBSyxDQUFDMEMsUUFBVixFQUFvQnJDLGNBQXBCO0FBRkosV0FBUjtBQUlEO0FBQ0Y7QUFqQkgsSUFERixFQW9CRSxNQUFDLDBEQUFEO0FBQVcsVUFBTSxFQUFFQSxjQUFjLENBQUNNLEtBQWxDO0FBQXlDLFFBQUksRUFBQyxPQUE5QztBQUFzRCxPQUFHLEVBQUM7QUFBMUQsSUFwQkYsRUFxQkUsTUFBQyx3REFBRCxDQUFRLE9BQVIsUUFBaUJOLGNBQWMsQ0FBQ1csS0FBaEMsQ0FyQkYsQ0FERixDQURGLEVBMEJFLE1BQUMsdURBQUQsQ0FBTyxJQUFQO0FBQVksYUFBUyxFQUFDO0FBQXRCLEtBQ0UsTUFBQywwREFBRDtBQUFXLGFBQVMsRUFBQztBQUFyQixLQUNHWCxjQUFjLENBQUNZLFFBQWYsSUFBMkIyQixnRUFBVSxDQUFDdkMsY0FBYyxDQUFDWSxRQUFmLENBQXdCQyxLQUF6QixDQUR4QyxDQURGLENBMUJGLEVBK0JFLE1BQUMsdURBQUQsQ0FBTyxJQUFQLFFBQ0UsTUFBQywwREFBRDtBQUNFLE1BQUUsRUFBQyxrQkFETDtBQUVFLGVBQVcsRUFBQyxrQkFGZDtBQUdFLFNBQUssRUFBRUcsS0FIVDtBQUlFLFlBQVEsRUFBRUssV0FKWjtBQUtFLFVBQU0sRUFBRSxNQUFDLHNEQUFEO0FBQU0sVUFBSSxFQUFDO0FBQVgsTUFMVjtBQU1FLFlBQVEsRUFBRSxDQUFDdkIsS0FBSyxDQUFDc0MsUUFBTixDQUFlcEMsY0FBYyxDQUFDSyxFQUE5QjtBQU5iLElBREYsQ0EvQkYsQ0FERjtBQTRDRCxDQTVGRDs7QUE4RmVaLHdFQUFmIiwiZmlsZSI6Ii4vY29tcG9uZW50cy9CcmFuY2hSb3cuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUNhbGxiYWNrLCB1c2VFZmZlY3QgfSBmcm9tIFwicmVhY3RcIlxuaW1wb3J0IHsgVGh1bWJuYWlsLCBDaGVja2JveCwgVGV4dFN0eWxlLCBUZXh0RmllbGQgfSBmcm9tIFwiQHNob3BpZnkvcG9sYXJpc1wiXG5pbXBvcnQgeyBUYWJsZSwgSGVhZGVyLCBJY29uIH0gZnJvbSBcInNlbWFudGljLXVpLXJlYWN0XCJcbmltcG9ydCB7IHRvQ3VycmVuY3kgfSBmcm9tIFwiLi4vdXRpbHMvaGVscGVyXCJcblxuY29uc3QgQnJhbmNoUm93ID0gKHsgcHJvZHVjdCwgc3RhdGUsIHNldFN0YXRlLCBicmFuY2hJbmZvLCByb3dJZCwgc2V0Um93SWQgfSkgPT4ge1xuICBjb25zdCBbZmV0Y2hlZFByb2R1Y3QsIHNldEZldGNoZWRQcm9kdWN0XSA9IHVzZVN0YXRlKHtcbiAgICBkZXNjcmlwdGlvbjogcHJvZHVjdC5ub2RlLmRlc2NyaXB0aW9uLFxuICAgIGlkOiBwcm9kdWN0Lm5vZGUuaWQsXG4gICAgaW1hZ2U6IHByb2R1Y3Qubm9kZS5pbWFnZXMuZWRnZXNbMF0gPyBwcm9kdWN0Lm5vZGUuaW1hZ2VzLmVkZ2VzWzBdLm5vZGUub3JpZ2luYWxTcmMgOiBcIlwiLFxuICAgIHRhZ3M6IHByb2R1Y3Qubm9kZS50YWdzLFxuICAgIHRpdGxlOiBwcm9kdWN0Lm5vZGUudGl0bGUsXG4gICAgdmFyaWFudHM6IHtcbiAgICAgIGlkOiBwcm9kdWN0Lm5vZGUudmFyaWFudHMuZWRnZXNbMF0ubm9kZS5pZCxcbiAgICAgIHByaWNlOiBwcm9kdWN0Lm5vZGUudmFyaWFudHMuZWRnZXNbMF0ubm9kZS5wcmljZSxcbiAgICB9LFxuICB9KVxuXG4gIGNvbnN0IFtzZWFyY2hWYWx1ZSwgc2V0U2VhcmNoVmFsdWVdID0gdXNlU3RhdGUobnVsbClcbiAgY29uc3QgW2JvbnVzLCBzZXRCb251c10gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBoYW5kbGVTZWFyY2hJbnB1dCA9IHVzZUNhbGxiYWNrKChuZXdWYWx1ZSkgPT4gc2V0U2VhcmNoVmFsdWUobmV3VmFsdWUpLCBbXSlcblxuICBjb25zdCBoYW5kbGVCb251cyA9IHVzZUNhbGxiYWNrKCh2YWx1ZSkgPT4ge1xuICAgIHNldEJvbnVzKHZhbHVlKVxuICAgIGZldGNoZWRQcm9kdWN0LnRhZ3MgPSBbdmFsdWVdXG4gICAgc2V0RmV0Y2hlZFByb2R1Y3QoZmV0Y2hlZFByb2R1Y3QpXG4gIH0sIFtdKVxuXG4gIGNvbnN0IGNvbXBhcmVQcm9kdWN0ID0gKCkgPT4ge1xuICAgIGNvbnN0IGNvbXBhcmVkUHJvZHVjdCA9IGJyYW5jaEluZm8uYnJhbmNoUHJvZHVjdHMuaXRlbXMuZmlsdGVyKFxuICAgICAgKGJyYW5jaFByb2R1Y3QpID0+IGJyYW5jaFByb2R1Y3QucHJvZHVjdElkID09PSBmZXRjaGVkUHJvZHVjdC5pZFxuICAgIClcblxuICAgIGlmICghY29tcGFyZWRQcm9kdWN0IHx8IGNvbXBhcmVkUHJvZHVjdCA9PT0gdW5kZWZpbmVkKSB7XG4gICAgICByZXR1cm5cbiAgICB9XG5cbiAgICBzZXRCb251cyhjb21wYXJlZFByb2R1Y3RbMF0gPyBjb21wYXJlZFByb2R1Y3RbMF0udGFnc1swXSA6IFwiXCIpXG5cbiAgICByZXR1cm5cbiAgfVxuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgY29uc29sZS5sb2coXG4gICAgICBcIlJvdyBpZCBmcm9tIHVzZUVmZmVjdFwiLFxuICAgICAgYnJhbmNoSW5mby5icmFuY2hQcm9kdWN0cy5pdGVtc1xuICAgICAgICAubWFwKChpdGVtKSA9PiBpdGVtLnByb2R1Y3RJZClcbiAgICAgICAgLmZpbHRlcigocHJvZHVjdElkKSA9PiBwcm9kdWN0SWQgPT09IGZldGNoZWRQcm9kdWN0LmlkKVswXVxuICAgIClcblxuICAgIGNvbXBhcmVQcm9kdWN0KClcbiAgfSwgW3Byb2R1Y3QsIGJyYW5jaEluZm9dKVxuXG4gIHJldHVybiAoXG4gICAgPFRhYmxlLlJvdyBrZXk9e2ZldGNoZWRQcm9kdWN0LmlkfT5cbiAgICAgIDxUYWJsZS5DZWxsPlxuICAgICAgICA8SGVhZGVyIGFzPVwiaDRcIiBpbWFnZSBjbGFzc05hbWU9XCJwcm9kdWN0LWhlYWRlclwiPlxuICAgICAgICAgIDxDaGVja2JveFxuICAgICAgICAgICAgY2hlY2tlZD17cm93SWQuaW5jbHVkZXMoZmV0Y2hlZFByb2R1Y3QuaWQpICYmIHRydWV9XG4gICAgICAgICAgICBvbkNoYW5nZT17KCkgPT4ge1xuICAgICAgICAgICAgICBpZiAocm93SWQuaW5jbHVkZXMoZmV0Y2hlZFByb2R1Y3QuaWQpKSB7XG4gICAgICAgICAgICAgICAgc2V0Um93SWQocm93SWQuZmlsdGVyKChpZCkgPT4gaWQgIT09IGZldGNoZWRQcm9kdWN0LmlkKSlcbiAgICAgICAgICAgICAgICBzZXRTdGF0ZSh7XG4gICAgICAgICAgICAgICAgICBwcm9kdWN0czogc3RhdGUucHJvZHVjdHMuZmlsdGVyKFxuICAgICAgICAgICAgICAgICAgICAoZmlsdGVyZWRQcm9kdWN0KSA9PiBmaWx0ZXJlZFByb2R1Y3QuaWQgIT09IGZldGNoZWRQcm9kdWN0LmlkXG4gICAgICAgICAgICAgICAgICApLFxuICAgICAgICAgICAgICAgIH0pXG4gICAgICAgICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgICAgICAgc2V0Um93SWQoWy4uLnJvd0lkLCBmZXRjaGVkUHJvZHVjdC5pZF0pXG4gICAgICAgICAgICAgICAgc2V0U3RhdGUoe1xuICAgICAgICAgICAgICAgICAgLi4uc3RhdGUsXG4gICAgICAgICAgICAgICAgICBwcm9kdWN0czogWy4uLnN0YXRlLnByb2R1Y3RzLCBmZXRjaGVkUHJvZHVjdF0sXG4gICAgICAgICAgICAgICAgfSlcbiAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgfX1cbiAgICAgICAgICAvPlxuICAgICAgICAgIDxUaHVtYm5haWwgc291cmNlPXtmZXRjaGVkUHJvZHVjdC5pbWFnZX0gc2l6ZT1cInNtYWxsXCIgYWx0PVwiXCIgLz5cbiAgICAgICAgICA8SGVhZGVyLkNvbnRlbnQ+e2ZldGNoZWRQcm9kdWN0LnRpdGxlfTwvSGVhZGVyLkNvbnRlbnQ+XG4gICAgICAgIDwvSGVhZGVyPlxuICAgICAgPC9UYWJsZS5DZWxsPlxuICAgICAgPFRhYmxlLkNlbGwgdGV4dEFsaWduPVwiY2VudGVyXCI+XG4gICAgICAgIDxUZXh0U3R5bGUgdmFyaWF0aW9uPVwic3ViZHVlZFwiPlxuICAgICAgICAgIHtmZXRjaGVkUHJvZHVjdC52YXJpYW50cyAmJiB0b0N1cnJlbmN5KGZldGNoZWRQcm9kdWN0LnZhcmlhbnRzLnByaWNlKX1cbiAgICAgICAgPC9UZXh0U3R5bGU+XG4gICAgICA8L1RhYmxlLkNlbGw+XG4gICAgICA8VGFibGUuQ2VsbD5cbiAgICAgICAgPFRleHRGaWVsZFxuICAgICAgICAgIGlkPVwicGVyY2VudGFnZS1pbnB1dFwiXG4gICAgICAgICAgcGxhY2Vob2xkZXI9XCJCb251cyBQZXJjZW50YWdlXCJcbiAgICAgICAgICB2YWx1ZT17Ym9udXN9XG4gICAgICAgICAgb25DaGFuZ2U9e2hhbmRsZUJvbnVzfVxuICAgICAgICAgIHByZWZpeD17PEljb24gbmFtZT1cInBlcmNlbnRcIiAvPn1cbiAgICAgICAgICBkaXNhYmxlZD17IXJvd0lkLmluY2x1ZGVzKGZldGNoZWRQcm9kdWN0LmlkKX1cbiAgICAgICAgLz5cbiAgICAgIDwvVGFibGUuQ2VsbD5cbiAgICA8L1RhYmxlLlJvdz5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBCcmFuY2hSb3dcbiJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/BranchRow.js\n");
 
 /***/ }),
 
-/***/ "txk1":
-/***/ (function(module, exports) {
-
-module.exports = require("graphql-tag");
-
-/***/ }),
-
-/***/ "uI6m":
+/***/ "./components/DeclinedPaymentRequest.js":
+/*!**********************************************!*\
+  !*** ./components/DeclinedPaymentRequest.js ***!
+  \**********************************************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-// WARNING: DO NOT EDIT. This file is automatically generated by AWS Amplify. It will be overwritten.
-const awsmobile = {
-  "aws_appsync_graphqlEndpoint": "https://kytejmxrrrgahiikcodklhf6rq.appsync-api.us-east-1.amazonaws.com/graphql",
-  "aws_appsync_region": "us-east-1",
-  "aws_appsync_authenticationType": "API_KEY",
-  "aws_appsync_apiKey": "da2-iwznaxe3h5bxznagzuctrhqekm"
-};
-/* harmony default export */ __webpack_exports__["a"] = (awsmobile);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].configure(aws_amplify__WEBPACK_IMPORTED_MODULE_2___default.a);\n\nconst DeclinedPaymentRequest = ({\n  branchId\n}) => {\n  const {\n    0: nextPaginateToken,\n    1: setNextPaginateToken\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: paymentRequestItems,\n    1: setPaymentRequestItems\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])([]);\n  const fetchAcceptedPayments = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(async () => {\n    try {\n      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_5__[\"listPaymentRequest\"], {\n        limit: 20,\n        branchId,\n        status: \"DECLINED\"\n      }));\n      setNextPaginateToken(res.data.listPaymentRequests.nextToken);\n      setPaymentRequestItems(res.data.listPaymentRequests.items);\n    } catch (error) {\n      console.log(error);\n    }\n  }, []);\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    fetchAcceptedPayments();\n  }, [fetchAcceptedPayments]);\n\n  const loadMore = async () => {\n    try {\n      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_5__[\"listPaymentRequest\"], {\n        limit: 20,\n        nextToken: nextPaginateToken,\n        branchId,\n        status: \"DECLINED\"\n      }));\n      setNextPaginateToken(res.data.listPaymentRequests.nextToken);\n      setPaymentRequestItems([...paymentRequestItems, ...res.data.listPaymentRequests.items]);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"], {\n    celled: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].HeaderCell, null, \"Customer Id\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].HeaderCell, null, \"Bonus Amount\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].HeaderCell, null, \"Created At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].HeaderCell, null, \"Updated At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].HeaderCell, null, \"Status\"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Body, null, paymentRequestItems && paymentRequestItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Row, {\n    key: item.id\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\"\n  }, item.customerId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"toCurrency\"])(item.bonusAmount)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(item.updatedAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_1__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\",\n    progress: \"incomplete\",\n    status: \"critical\"\n  }, item.status)))))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Button\"], {\n    disabled: !nextPaginateToken,\n    primary: true,\n    onClick: loadMore\n  }, \"Load more\"));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (DeclinedPaymentRequest);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0RlY2xpbmVkUGF5bWVudFJlcXVlc3QuanM/YTM0YSJdLCJuYW1lcyI6WyJBUEkiLCJjb25maWd1cmUiLCJjb25maWciLCJEZWNsaW5lZFBheW1lbnRSZXF1ZXN0IiwiYnJhbmNoSWQiLCJuZXh0UGFnaW5hdGVUb2tlbiIsInNldE5leHRQYWdpbmF0ZVRva2VuIiwidXNlU3RhdGUiLCJwYXltZW50UmVxdWVzdEl0ZW1zIiwic2V0UGF5bWVudFJlcXVlc3RJdGVtcyIsImZldGNoQWNjZXB0ZWRQYXltZW50cyIsInVzZUNhbGxiYWNrIiwicmVzIiwiZ3JhcGhxbCIsImdyYXBocWxPcGVyYXRpb24iLCJsaXN0UGF5bWVudFJlcXVlc3QiLCJsaW1pdCIsInN0YXR1cyIsImRhdGEiLCJsaXN0UGF5bWVudFJlcXVlc3RzIiwibmV4dFRva2VuIiwiaXRlbXMiLCJlcnJvciIsImNvbnNvbGUiLCJsb2ciLCJ1c2VFZmZlY3QiLCJsb2FkTW9yZSIsInNvcnQiLCJhIiwiYiIsIkRhdGUiLCJ1cGRhdGVkQXQiLCJtYXAiLCJpdGVtIiwiaWQiLCJjdXN0b21lcklkIiwidG9DdXJyZW5jeSIsImJvbnVzQW1vdW50IiwiZm9ybWF0RGF0ZSIsImNyZWF0ZWRBdCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBQUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFFQUEsK0NBQUcsQ0FBQ0MsU0FBSixDQUFjQyxrREFBZDs7QUFFQSxNQUFNQyxzQkFBc0IsR0FBRyxDQUFDO0FBQUVDO0FBQUYsQ0FBRCxLQUFrQjtBQUMvQyxRQUFNO0FBQUEsT0FBQ0MsaUJBQUQ7QUFBQSxPQUFvQkM7QUFBcEIsTUFBNENDLHNEQUFRLENBQUMsRUFBRCxDQUExRDtBQUNBLFFBQU07QUFBQSxPQUFDQyxtQkFBRDtBQUFBLE9BQXNCQztBQUF0QixNQUFnREYsc0RBQVEsQ0FBQyxFQUFELENBQTlEO0FBRUEsUUFBTUcscUJBQXFCLEdBQUdDLHlE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RSxNQUFDLHNEQUFEO0FBQU8sUUFBSSxFQUFDLE9BQVo7QUFBb0IsWUFBUSxFQUFDLFlBQTdCO0FBQTBDLFVBQU0sRUFBQztBQUFqRCxLQUNHRSxJQUFJLENBQUNoQixNQURSLENBREYsQ0FQRixDQUhKLENBRkosQ0FWRixDQURGLEVBZ0NFLE1BQUMsdURBQUQ7QUFBUSxZQUFRLEVBQUUsQ0FBQ1osaUJBQW5CO0FBQXNDLFdBQU8sTUFBN0M7QUFBOEMsV0FBTyxFQUFFcUI7QUFBdkQsaUJBaENGLENBREY7QUFzQ0QsQ0EzRUQ7O0FBNkVldkIscUZBQWYiLCJmaWxlIjoiLi9jb21wb25lbnRzL0RlY2xpbmVkUGF5bWVudFJlcXVlc3QuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUVmZmVjdCwgdXNlQ2FsbGJhY2sgfSBmcm9tIFwicmVhY3RcIlxuaW1wb3J0IHsgVGFibGUgfSBmcm9tIFwic2VtYW50aWMtdWktcmVhY3RcIlxuaW1wb3J0IHsgQVBJLCBncmFwaHFsT3BlcmF0aW9uIH0gZnJvbSBcImF3cy1hbXBsaWZ5XCJcbmltcG9ydCB7IEJhZGdlLCBCdXR0b24gfSBmcm9tIFwiQHNob3BpZnkvcG9sYXJpc1wiXG5pbXBvcnQgeyB0b0N1cnJlbmN5LCBmb3JtYXREYXRlIH0gZnJvbSBcIi4uL3V0aWxzL2hlbHBlclwiXG5pbXBvcnQgY29uZmlnIGZyb20gXCJhd3MtYW1wbGlmeVwiXG5pbXBvcnQgeyBsaXN0UGF5bWVudFJlcXVlc3QgfSBmcm9tIFwiLi4vZ3JhcGhxbC9xdWVyaWVzXCJcblxuQVBJLmNvbmZpZ3VyZShjb25maWcpXG5cbmNvbnN0IERlY2xpbmVkUGF5bWVudFJlcXVlc3QgPSAoeyBicmFuY2hJZCB9KSA9PiB7XG4gIGNvbnN0IFtuZXh0UGFnaW5hdGVUb2tlbiwgc2V0TmV4dFBhZ2luYXRlVG9rZW5dID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW3BheW1lbnRSZXF1ZXN0SXRlbXMsIHNldFBheW1lbnRSZXF1ZXN0SXRlbXNdID0gdXNlU3RhdGUoW10pXG5cbiAgY29uc3QgZmV0Y2hBY2NlcHRlZFBheW1lbnRzID0gdXNlQ2FsbGJhY2soYXN5bmMgKCkgPT4ge1xuICAgIHRyeSB7XG4gICAgICBjb25zdCByZXMgPSBhd2FpdCBBUEkuZ3JhcGhxbChcbiAgICAgICAgZ3JhcGhxbE9wZXJhdGlvbihsaXN0UGF5bWVudFJlcXVlc3QsIHsgbGltaXQ6IDIwLCBicmFuY2hJZCwgc3RhdHVzOiBcIkRFQ0xJTkVEXCIgfSlcbiAgICAgIClcbiAgICAgIHNldE5leHRQYWdpbmF0ZVRva2VuKHJlcy5kYXRhLmxpc3RQYXltZW50UmVxdWVzdHMubmV4dFRva2VuKVxuICAgICAgc2V0UGF5bWVudFJlcXVlc3RJdGVtcyhyZXMuZGF0YS5saXN0UGF5bWVudFJlcXVlc3RzLml0ZW1zKVxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmxvZyhlcnJvcilcbiAgICB9XG4gIH0sIFtdKVxuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgZmV0Y2hBY2NlcHRlZFBheW1lbnRzKClcbiAgfSwgW2ZldGNoQWNjZXB0ZWRQYXltZW50c10pXG5cbiAgY29uc3QgbG9hZE1vcmUgPSBhc3luYyAoKSA9PiB7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IHJlcyA9IGF3YWl0IEFQSS5ncmFwaHFsKFxuICAgICAgICBncmFwaHFsT3BlcmF0aW9uKGxpc3RQYXltZW50UmVxdWVzdCwge1xuICAgICAgICAgIGxpbWl0OiAyMCxcbiAgICAgICAgICBuZXh0VG9rZW46IG5leHRQYWdpbmF0ZVRva2VuLFxuICAgICAgICAgIGJyYW5jaElkLFxuICAgICAgICAgIHN0YXR1czogXCJERUNMSU5FRFwiLFxuICAgICAgICB9KVxuICAgICAgKVxuICAgICAgc2V0TmV4dFBhZ2luYXRlVG9rZW4ocmVzLmRhdGEubGlzdFBheW1lbnRSZXF1ZXN0cy5uZXh0VG9rZW4pXG4gICAgICBzZXRQYXltZW50UmVxdWVzdEl0ZW1zKFsuLi5wYXltZW50UmVxdWVzdEl0ZW1zLCAuLi5yZXMuZGF0YS5saXN0UGF5bWVudFJlcXVlc3RzLml0ZW1zXSlcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgY29uc29sZS5sb2coZXJyb3IpXG4gICAgfVxuICB9XG5cbiAgcmV0dXJuIChcbiAgICA8PlxuICAgICAgPFRhYmxlIGNlbGxlZD5cbiAgICAgICAgPFRhYmxlLkhlYWRlcj5cbiAgICAgICAgICA8VGFibGUuUm93PlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+Q3VzdG9tZXIgSWQ8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5Cb251cyBBbW91bnQ8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5DcmVhdGVkIEF0PC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+VXBkYXRlZCBBdDwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPlN0YXR1czwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICA8L1RhYmxlLlJvdz5cbiAgICAgICAgPC9UYWJsZS5IZWFkZXI+XG4gICAgICAgIDxUYWJsZS5Cb2R5PlxuICAgICAgICAgIHtwYXltZW50UmVxdWVzdEl0ZW1zICYmXG4gICAgICAgICAgICBwYXltZW50UmVxdWVzdEl0ZW1zXG4gICAgICAgICAgICAgIC5zb3J0KChhLCBiKSA9PiBuZXcgRGF0ZShiLnVwZGF0ZWRBdCkgLSBuZXcgRGF0ZShhLnVwZGF0ZWRBdCkpXG4gICAgICAgICAgICAgIC5tYXAoKGl0ZW0pID0+IChcbiAgICAgICAgICAgICAgICA8VGFibGUuUm93IGtleT17aXRlbS5pZH0+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgPEJhZGdlIHNpemU9XCJzbWFsbFwiPntpdGVtLmN1c3RvbWVySWR9PC9CYWRnZT5cbiAgICAgICAgICAgICAgICAgIDwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZS5DZWxsPnt0b0N1cnJlbmN5KGl0ZW0uYm9udXNBbW91bnQpfTwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZS5DZWxsPntmb3JtYXREYXRlKGl0ZW0uY3JlYXRlZEF0KX08L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD57Zm9ybWF0RGF0ZShpdGVtLnVwZGF0ZWRBdCl9PC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgPFRhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICAgIDxCYWRnZSBzaXplPVwic21hbGxcIiBwcm9ncmVzcz1cImluY29tcGxldGVcIiBzdGF0dXM9XCJjcml0aWNhbFwiPlxuICAgICAgICAgICAgICAgICAgICAgIHtpdGVtLnN0YXR1c31cbiAgICAgICAgICAgICAgICAgICAgPC9CYWRnZT5cbiAgICAgICAgICAgICAgICAgIDwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICA8L1RhYmxlLlJvdz5cbiAgICAgICAgICAgICAgKSl9XG4gICAgICAgIDwvVGFibGUuQm9keT5cbiAgICAgIDwvVGFibGU+XG4gICAgICA8QnV0dG9uIGRpc2FibGVkPXshbmV4dFBhZ2luYXRlVG9rZW59IHByaW1hcnkgb25DbGljaz17bG9hZE1vcmV9PlxuICAgICAgICBMb2FkIG1vcmVcbiAgICAgIDwvQnV0dG9uPlxuICAgIDwvPlxuICApXG59XG5cbmV4cG9ydCBkZWZhdWx0IERlY2xpbmVkUGF5bWVudFJlcXVlc3RcbiJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/DeclinedPaymentRequest.js\n");
 
 /***/ }),
 
-/***/ "z+8S":
-/***/ (function(module, exports) {
+/***/ "./components/Login.js":
+/*!*****************************!*\
+  !*** ./components/Login.js ***!
+  \*****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = require("@apollo/client");
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\nconst Profile = ({\n  setUser\n}) => {\n  const {\n    0: username,\n    1: setUsername\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: password,\n    1: setPassword\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const onChangeUsername = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setUsername(newValue);\n  }, []);\n  const onChangePassword = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(newValue => {\n    setPassword(newValue);\n  }, []);\n\n  const signIn = async e => {\n    e.preventDefault();\n    const signedInUser = await aws_amplify__WEBPACK_IMPORTED_MODULE_2__[\"Auth\"].signIn(username, password);\n    setUser(signedInUser);\n  };\n\n  return __jsx(\"div\", {\n    className: \"authentication-container\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"Card\"], {\n    title: \"Log into your branch\",\n    sectioned: true\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"Form\"], {\n    onSubmit: signIn\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"FormLayout\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"TextField\"], {\n    value: username,\n    onChange: onChangeUsername,\n    label: \"Username\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"TextField\"], {\n    type: \"password\",\n    value: password,\n    onChange: onChangePassword,\n    label: \"Password\"\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__[\"Button\"], {\n    primary: true,\n    submit: true\n  }, \"Login\")))));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (Profile);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL0xvZ2luLmpzPzRjZTkiXSwibmFtZXMiOlsiUHJvZmlsZSIsInNldFVzZXIiLCJ1c2VybmFtZSIsInNldFVzZXJuYW1lIiwidXNlU3RhdGUiLCJwYXNzd29yZCIsInNldFBhc3N3b3JkIiwib25DaGFuZ2VVc2VybmFtZSIsInVzZUNhbGxiYWNrIiwibmV3VmFsdWUiLCJvbkNoYW5nZVBhc3N3b3JkIiwic2lnbkluIiwiZSIsInByZXZlbnREZWZhdWx0Iiwic2lnbmVkSW5Vc2VyIiwiQXV0aCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQUFBO0FBQ0E7QUFDQTtBQUNBOztBQUVBLE1BQU1BLE9BQU8sR0FBRyxDQUFDO0FBQUVDO0FBQUYsQ0FBRCxLQUFpQjtBQUMvQixRQUFNO0FBQUEsT0FBQ0MsUUFBRDtBQUFBLE9BQVdDO0FBQVgsTUFBMEJDLHNEQUFRLENBQUMsRUFBRCxDQUF4QztBQUNBLFFBQU07QUFBQSxPQUFDQyxRQUFEO0FBQUEsT0FBV0M7QUFBWCxNQUEwQkYsc0RBQVEsQ0FBQyxFQUFELENBQXhDO0FBRUEsUUFBTUcsZ0JBQWdCLEdBQUdDLHlEQUFXLENBQUVDLFFBQUQsSUFBYztBQUNqRE4sZUFBVyxDQUFDTSxRQUFELENBQVg7QUFDRCxHQUZtQyxFQUVqQyxFQUZpQyxDQUFwQztBQUlBLFFBQU1DLGdCQUFnQixHQUFHRix5REFBVyxDQUFFQyxRQUFELElBQWM7QUFDakRILGVBQVcsQ0FBQ0csUUFBRCxDQUFYO0FBQ0QsR0FGbUMsRUFFakMsRUFGaUMsQ0FBcEM7O0FBSUEsUUFBTUUsTUFBTSxHQUFHLE1BQU9DLENBQVAsSUFBYTtBQUMxQkEsS0FBQyxDQUFDQyxjQUFGO0FBQ0EsVUFBTUMsWUFBWSxHQUFHLE1BQU1DLGdEQUFJLENBQUNKLE1BQUwsQ0FBWVQsUUFBWixFQUFzQkcsUUFBdEIsQ0FBM0I7QUFDQUosV0FBTyxDQUFDYSxZQUFELENBQVA7QUFDRCxHQUpEOztBQU1BLFNBQ0U7QUFBSyxhQUFTLEVBQUM7QUFBZixLQUNFLE1BQUMscURBQUQ7QUFBTSxTQUFLLEVBQUMsc0JBQVo7QUFBbUMsYUFBUztBQUE1QyxLQUNFLE1BQUMscURBQUQ7QUFBTSxZQUFRLEVBQUVIO0FBQWhCLEtBQ0UsTUFBQywyREFBRCxRQUNFLE1BQUMsMERBQUQ7QUFBVyxTQUFLLEVBQUVULFFBQWxCO0FBQTRCLFlBQVEsRUFBRUssZ0JBQXRDO0FBQXdELFNBQUssRUFBQztBQUE5RCxJQURGLEVBRUUsTUFBQywwREFBRDtBQUNFLFFBQUksRUFBQyxVQURQO0FBRUUsU0FBSyxFQUFFRixRQUZUO0FBR0UsWUFBUSxFQUFFSyxnQkFIWjtBQUlFLFNBQUssRUFBQztBQUpSLElBRkYsRUFRRSxNQUFDLHVEQUFEO0FBQVEsV0FBTyxNQUFmO0FBQWdCLFVBQU07QUFBdEIsYUFSRixDQURGLENBREYsQ0FERixDQURGO0FBb0JELENBdENEOztBQXdDZVYsc0VBQWYiLCJmaWxlIjoiLi9jb21wb25lbnRzL0xvZ2luLmpzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUsIHVzZUNhbGxiYWNrIH0gZnJvbSBcInJlYWN0XCJcbmltcG9ydCB7IENhcmQsIEJ1dHRvbiwgVGV4dEZpZWxkLCBGb3JtLCBGb3JtTGF5b3V0IH0gZnJvbSBcIkBzaG9waWZ5L3BvbGFyaXNcIlxuaW1wb3J0IHsgQXV0aCB9IGZyb20gXCJhd3MtYW1wbGlmeVwiXG5pbXBvcnQgY29uZmlnIGZyb20gXCIuLi9hd3MtZXhwb3J0c1wiXG5cbmNvbnN0IFByb2ZpbGUgPSAoeyBzZXRVc2VyIH0pID0+IHtcbiAgY29uc3QgW3VzZXJuYW1lLCBzZXRVc2VybmFtZV0gPSB1c2VTdGF0ZShcIlwiKVxuICBjb25zdCBbcGFzc3dvcmQsIHNldFBhc3N3b3JkXSA9IHVzZVN0YXRlKFwiXCIpXG5cbiAgY29uc3Qgb25DaGFuZ2VVc2VybmFtZSA9IHVzZUNhbGxiYWNrKChuZXdWYWx1ZSkgPT4ge1xuICAgIHNldFVzZXJuYW1lKG5ld1ZhbHVlKVxuICB9LCBbXSlcblxuICBjb25zdCBvbkNoYW5nZVBhc3N3b3JkID0gdXNlQ2FsbGJhY2soKG5ld1ZhbHVlKSA9PiB7XG4gICAgc2V0UGFzc3dvcmQobmV3VmFsdWUpXG4gIH0sIFtdKVxuXG4gIGNvbnN0IHNpZ25JbiA9IGFzeW5jIChlKSA9PiB7XG4gICAgZS5wcmV2ZW50RGVmYXVsdCgpXG4gICAgY29uc3Qgc2lnbmVkSW5Vc2VyID0gYXdhaXQgQXV0aC5zaWduSW4odXNlcm5hbWUsIHBhc3N3b3JkKVxuICAgIHNldFVzZXIoc2lnbmVkSW5Vc2VyKVxuICB9XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IGNsYXNzTmFtZT1cImF1dGhlbnRpY2F0aW9uLWNvbnRhaW5lclwiPlxuICAgICAgPENhcmQgdGl0bGU9XCJMb2cgaW50byB5b3VyIGJyYW5jaFwiIHNlY3Rpb25lZD5cbiAgICAgICAgPEZvcm0gb25TdWJtaXQ9e3NpZ25Jbn0+XG4gICAgICAgICAgPEZvcm1MYXlvdXQ+XG4gICAgICAgICAgICA8VGV4dEZpZWxkIHZhbHVlPXt1c2VybmFtZX0gb25DaGFuZ2U9e29uQ2hhbmdlVXNlcm5hbWV9IGxhYmVsPVwiVXNlcm5hbWVcIiAvPlxuICAgICAgICAgICAgPFRleHRGaWVsZFxuICAgICAgICAgICAgICB0eXBlPVwicGFzc3dvcmRcIlxuICAgICAgICAgICAgICB2YWx1ZT17cGFzc3dvcmR9XG4gICAgICAgICAgICAgIG9uQ2hhbmdlPXtvbkNoYW5nZVBhc3N3b3JkfVxuICAgICAgICAgICAgICBsYWJlbD1cIlBhc3N3b3JkXCJcbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgICA8QnV0dG9uIHByaW1hcnkgc3VibWl0PlxuICAgICAgICAgICAgICBMb2dpblxuICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgPC9Gb3JtTGF5b3V0PlxuICAgICAgICA8L0Zvcm0+XG4gICAgICA8L0NhcmQ+XG4gICAgPC9kaXY+XG4gIClcbn1cblxuZXhwb3J0IGRlZmF1bHQgUHJvZmlsZVxuIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/Login.js\n");
 
 /***/ }),
 
-/***/ "zr5I":
+/***/ "./components/PaymentRequest.js":
+/*!**************************************!*\
+  !*** ./components/PaymentRequest.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _components_AcceptedPaymentRequest__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/AcceptedPaymentRequest */ \"./components/AcceptedPaymentRequest.js\");\n/* harmony import */ var _components_PendingPaymentRequest__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/PendingPaymentRequest */ \"./components/PendingPaymentRequest.js\");\n/* harmony import */ var _components_DeclinedPaymentRequest__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/DeclinedPaymentRequest */ \"./components/DeclinedPaymentRequest.js\");\n/* harmony import */ var _graphql_subscriptions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../graphql/subscriptions */ \"./graphql/subscriptions.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_3__[\"default\"]);\n\nconst AcceptPayment = ({\n  branchId,\n  setShowPaymentRequest\n}) => {\n  const {\n    0: activeToast,\n    1: setActiveToast\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(false);\n  const {\n    0: selected,\n    1: setSelected\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(0);\n  const {\n    0: createUpdatePaymentSubscription,\n    1: setCreateUpdatePaymentSubscription\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const handleTabChange = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(selectedTabIndex => setSelected(selectedTabIndex), []);\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    const listener = aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_7__[\"paymentSubscription\"])).subscribe({\n      next: paymentResponse => {\n        setCreateUpdatePaymentSubscription(paymentResponse);\n      }\n    });\n    const onUpdatePayment = aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_subscriptions__WEBPACK_IMPORTED_MODULE_7__[\"onUpdatePaymentSubscription\"])).subscribe({\n      next: onUpdatePaymentResponse => {\n        setCreateUpdatePaymentSubscription(onUpdatePaymentResponse);\n      }\n    });\n    return () => {\n      listener.unsubscribe();\n      onUpdatePayment.unsubscribe();\n    };\n  }, []);\n  const tabs = [{\n    id: \"pending-payments\",\n    content: \"Pending Payment Requests\",\n    accessibilityLabel: \"Pending Requests\",\n    panelID: \"pending-payments-content\"\n  }, {\n    id: \"accepted-payments\",\n    content: \"Accepted Payment Requests\",\n    accessibilityLabel: \"Accepted Request\",\n    panelID: \"accepted-payments-content\"\n  }, {\n    id: \"declined-payments\",\n    content: \"Declined Payment Requests\",\n    accessibilityLabel: \"Declined Requests\",\n    panelID: \"declined-payments-content\"\n  }];\n  const toastMarkup = activeToast ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Toast\"], {\n    content: \"Order has been successfully created\",\n    onDismiss: () => setActiveToast(false)\n  }) : null;\n\n  const renderPaymentRequest = selected => {\n    switch (selected) {\n      case 0:\n        return __jsx(_components_PendingPaymentRequest__WEBPACK_IMPORTED_MODULE_5__[\"default\"], {\n          branchId: branchId,\n          createUpdatePaymentSubscription: createUpdatePaymentSubscription\n        });\n\n      case 1:\n        return __jsx(_components_AcceptedPaymentRequest__WEBPACK_IMPORTED_MODULE_4__[\"default\"], {\n          branchId: branchId\n        });\n\n      case 2:\n        return __jsx(_components_DeclinedPaymentRequest__WEBPACK_IMPORTED_MODULE_6__[\"default\"], {\n          branchId: branchId\n        });\n\n      default:\n        return;\n    }\n  };\n\n  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Frame\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Page\"], {\n    title: \"Payment Request\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Button\"], {\n    onClick: () => setShowPaymentRequest(false)\n  }, \"Go back\"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Card\"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Tabs\"], {\n    tabs: tabs,\n    selected: selected,\n    onSelect: handleTabChange\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__[\"Card\"].Section, {\n    title: tabs[selected].content\n  }, renderPaymentRequest(selected)))), toastMarkup));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (AcceptPayment);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL1BheW1lbnRSZXF1ZXN0LmpzPzM3MDgiXSwibmFtZXMiOlsiQVBJIiwiY29uZmlndXJlIiwiY29uZmlnIiwiQWNjZXB0UGF5bWVudCIsImJyYW5jaElkIiwic2V0U2hvd1BheW1lbnRSZXF1ZXN0IiwiYWN0aXZlVG9hc3QiLCJzZXRBY3RpdmVUb2FzdCIsInVzZVN0YXRlIiwic2VsZWN0ZWQiLCJzZXRTZWxlY3RlZCIsImNyZWF0ZVVwZGF0ZVBheW1lbnRTdWJzY3JpcHRpb24iLCJzZXRDcmVhdGVVcGRhdGVQYXltZW50U3Vic2NyaXB0aW9uIiwiaGFuZGxlVGFiQ2hhbmdlIiwidXNlQ2FsbGJhY2siLCJzZWxlY3RlZFRhYkluZGV4IiwidXNlRWZmZWN0IiwibGlzdGVuZXIiLCJncmFwaHFsIiwiZ3JhcGhxbE9wZXJhdGlvbiIsInBheW1lbnRTdWJzY3JpcHRpb24iLCJzdWJzY3JpYmUiLCJuZXh0IiwicGF5bWVudFJlc3BvbnNlIiwib25VcGRhdGVQYXltZW50Iiwib25VcGRhdGVQYXltZW50U3Vic2NyaXB0aW9uIiwib25VcGRhdGVQYXltZW50UmVzcG9uc2UiLCJ1bnN1YnNjcmliZSIsInRhYnMiLCJpZCIsImNvbnRlbnQiLCJhY2Nlc3NpYmlsaXR5TGFiZWwiLCJwYW5lbElEIiwidG9hc3RNYXJrdXAiLCJyZW5kZXJQYXltZW50UmVxdWVzdCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7OztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFFQUEsK0NBQUcsQ0FBQ0MsU0FBSixDQUFjQyxvREFBZDs7QUFFQSxNQUFNQyxhQUFhLEdBQUcsQ0FBQztBQUFFQyxVQUFGO0FBQVlDO0FBQVosQ0FBRCxLQUF5QztBQUM3RCxRQUFNO0FBQUEsT0FBQ0MsV0FBRDtBQUFBLE9BQWNDO0FBQWQsTUFBZ0NDLHNEQUFRLENBQUMsS0FBRCxDQUE5QztBQUNBLFFBQU07QUFBQSxPQUFDQyxRQUFEO0FB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QUFlRCxDQXBGRDs7QUFzRmU5Qiw0RUFBZiIsImZpbGUiOiIuL2NvbXBvbmVudHMvUGF5bWVudFJlcXVlc3QuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUsIHVzZUNhbGxiYWNrLCB1c2VFZmZlY3QgfSBmcm9tIFwicmVhY3RcIlxuaW1wb3J0IHsgQVBJLCBncmFwaHFsT3BlcmF0aW9uIH0gZnJvbSBcImF3cy1hbXBsaWZ5XCJcbmltcG9ydCB7IFBhZ2UsIENhcmQsIFRvYXN0LCBGcmFtZSwgVGFicywgQnV0dG9uIH0gZnJvbSBcIkBzaG9waWZ5L3BvbGFyaXNcIlxuaW1wb3J0IGNvbmZpZyBmcm9tIFwiLi4vYXdzLWV4cG9ydHNcIlxuaW1wb3J0IEFjY2VwdGVkUGF5bWVudFJlcXVlc3QgZnJvbSBcIi4uL2NvbXBvbmVudHMvQWNjZXB0ZWRQYXltZW50UmVxdWVzdFwiXG5pbXBvcnQgUGVuZGluZ1BheW1lbnRSZXF1ZXN0IGZyb20gXCIuLi9jb21wb25lbnRzL1BlbmRpbmdQYXltZW50UmVxdWVzdFwiXG5pbXBvcnQgRGVjbGluZWRQYXltZW50UmVxdWVzdCBmcm9tIFwiLi4vY29tcG9uZW50cy9EZWNsaW5lZFBheW1lbnRSZXF1ZXN0XCJcbmltcG9ydCB7IG9uVXBkYXRlUGF5bWVudFN1YnNjcmlwdGlvbiwgcGF5bWVudFN1YnNjcmlwdGlvbiB9IGZyb20gXCIuLi9ncmFwaHFsL3N1YnNjcmlwdGlvbnNcIlxuXG5BUEkuY29uZmlndXJlKGNvbmZpZylcblxuY29uc3QgQWNjZXB0UGF5bWVudCA9ICh7IGJyYW5jaElkLCBzZXRTaG93UGF5bWVudFJlcXVlc3QgfSkgPT4ge1xuICBjb25zdCBbYWN0aXZlVG9hc3QsIHNldEFjdGl2ZVRvYXN0XSA9IHVzZVN0YXRlKGZhbHNlKVxuICBjb25zdCBbc2VsZWN0ZWQsIHNldFNlbGVjdGVkXSA9IHVzZVN0YXRlKDApXG4gIGNvbnN0IFtjcmVhdGVVcGRhdGVQYXltZW50U3Vic2NyaXB0aW9uLCBzZXRDcmVhdGVVcGRhdGVQYXltZW50U3Vic2NyaXB0aW9uXSA9IHVzZVN0YXRlKFwiXCIpXG5cbiAgY29uc3QgaGFuZGxlVGFiQ2hhbmdlID0gdXNlQ2FsbGJhY2soKHNlbGVjdGVkVGFiSW5kZXgpID0+IHNldFNlbGVjdGVkKHNlbGVjdGVkVGFiSW5kZXgpLCBbXSlcblxuICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgIGNvbnN0IGxpc3RlbmVyID0gQVBJLmdyYXBocWwoZ3JhcGhxbE9wZXJhdGlvbihwYXltZW50U3Vic2NyaXB0aW9uKSkuc3Vic2NyaWJlKHtcbiAgICAgIG5leHQ6IChwYXltZW50UmVzcG9uc2UpID0+IHtcbiAgICAgICAgc2V0Q3JlYXRlVXBkYXRlUGF5bWVudFN1YnNjcmlwdGlvbihwYXltZW50UmVzcG9uc2UpXG4gICAgICB9LFxuICAgIH0pXG5cbiAgICBjb25zdCBvblVwZGF0ZVBheW1lbnQgPSBBUEkuZ3JhcGhxbChncmFwaHFsT3BlcmF0aW9uKG9uVXBkYXRlUGF5bWVudFN1YnNjcmlwdGlvbikpLnN1YnNjcmliZSh7XG4gICAgICBuZXh0OiAob25VcGRhdGVQYXltZW50UmVzcG9uc2UpID0+IHtcbiAgICAgICAgc2V0Q3JlYXRlVXBkYXRlUGF5bWVudFN1YnNjcmlwdGlvbihvblVwZGF0ZVBheW1lbnRSZXNwb25zZSlcbiAgICAgIH0sXG4gICAgfSlcblxuICAgIHJldHVybiAoKSA9PiB7XG4gICAgICBsaXN0ZW5lci51bnN1YnNjcmliZSgpXG4gICAgICBvblVwZGF0ZVBheW1lbnQudW5zdWJzY3JpYmUoKVxuICAgIH1cbiAgfSwgW10pXG5cbiAgY29uc3QgdGFicyA9IFtcbiAgICB7XG4gICAgICBpZDogXCJwZW5kaW5nLXBheW1lbnRzXCIsXG4gICAgICBjb250ZW50OiBcIlBlbmRpbmcgUGF5bWVudCBSZXF1ZXN0c1wiLFxuICAgICAgYWNjZXNzaWJpbGl0eUxhYmVsOiBcIlBlbmRpbmcgUmVxdWVzdHNcIixcbiAgICAgIHBhbmVsSUQ6IFwicGVuZGluZy1wYXltZW50cy1jb250ZW50XCIsXG4gICAgfSxcbiAgICB7XG4gICAgICBpZDogXCJhY2NlcHRlZC1wYXltZW50c1wiLFxuICAgICAgY29udGVudDogXCJBY2NlcHRlZCBQYXltZW50IFJlcXVlc3RzXCIsXG4gICAgICBhY2Nlc3NpYmlsaXR5TGFiZWw6IFwiQWNjZXB0ZWQgUmVxdWVzdFwiLFxuICAgICAgcGFuZWxJRDogXCJhY2NlcHRlZC1wYXltZW50cy1jb250ZW50XCIsXG4gICAgfSxcbiAgICB7XG4gICAgICBpZDogXCJkZWNsaW5lZC1wYXltZW50c1wiLFxuICAgICAgY29udGVudDogXCJEZWNsaW5lZCBQYXltZW50IFJlcXVlc3RzXCIsXG4gICAgICBhY2Nlc3NpYmlsaXR5TGFiZWw6IFwiRGVjbGluZWQgUmVxdWVzdHNcIixcbiAgICAgIHBhbmVsSUQ6IFwiZGVjbGluZWQtcGF5bWVudHMtY29udGVudFwiLFxuICAgIH0sXG4gIF1cblxuICBjb25zdCB0b2FzdE1hcmt1cCA9IGFjdGl2ZVRvYXN0ID8gKFxuICAgIDxUb2FzdCBjb250ZW50PVwiT3JkZXIgaGFzIGJlZW4gc3VjY2Vzc2Z1bGx5IGNyZWF0ZWRcIiBvbkRpc21pc3M9eygpID0+IHNldEFjdGl2ZVRvYXN0KGZhbHNlKX0gLz5cbiAgKSA6IG51bGxcblxuICBjb25zdCByZW5kZXJQYXltZW50UmVxdWVzdCA9IChzZWxlY3RlZCkgPT4ge1xuICAgIHN3aXRjaCAoc2VsZWN0ZWQpIHtcbiAgICAgIGNhc2UgMDpcbiAgICAgICAgcmV0dXJuIChcbiAgICAgICAgICA8UGVuZGluZ1BheW1lbnRSZXF1ZXN0XG4gICAgICAgICAgICBicmFuY2hJZD17YnJhbmNoSWR9XG4gICAgICAgICAgICBjcmVhdGVVcGRhdGVQYXltZW50U3Vic2NyaXB0aW9uPXtjcmVhdGVVcGRhdGVQYXltZW50U3Vic2NyaXB0aW9ufVxuICAgICAgICAgIC8+XG4gICAgICAgIClcbiAgICAgIGNhc2UgMTpcbiAgICAgICAgcmV0dXJuIDxBY2NlcHRlZFBheW1lbnRSZXF1ZXN0IGJyYW5jaElkPXticmFuY2hJZH0gLz5cbiAgICAgIGNhc2UgMjpcbiAgICAgICAgcmV0dXJuIDxEZWNsaW5lZFBheW1lbnRSZXF1ZXN0IGJyYW5jaElkPXticmFuY2hJZH0gLz5cbiAgICAgIGRlZmF1bHQ6XG4gICAgICAgIHJldHVyblxuICAgIH1cbiAgfVxuXG4gIHJldHVybiAoXG4gICAgPEZyYW1lPlxuICAgICAgPFBhZ2UgdGl0bGU9XCJQYXltZW50IFJlcXVlc3RcIj5cbiAgICAgICAgPEJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBzZXRTaG93UGF5bWVudFJlcXVlc3QoZmFsc2UpfT5HbyBiYWNrPC9CdXR0b24+XG4gICAgICAgIDxDYXJkPlxuICAgICAgICAgIDxUYWJzIHRhYnM9e3RhYnN9IHNlbGVjdGVkPXtzZWxlY3RlZH0gb25TZWxlY3Q9e2hhbmRsZVRhYkNoYW5nZX0+XG4gICAgICAgICAgICA8Q2FyZC5TZWN0aW9uIHRpdGxlPXt0YWJzW3NlbGVjdGVkXS5jb250ZW50fT5cbiAgICAgICAgICAgICAge3JlbmRlclBheW1lbnRSZXF1ZXN0KHNlbGVjdGVkKX1cbiAgICAgICAgICAgIDwvQ2FyZC5TZWN0aW9uPlxuICAgICAgICAgIDwvVGFicz5cbiAgICAgICAgPC9DYXJkPlxuICAgICAgICB7dG9hc3RNYXJrdXB9XG4gICAgICA8L1BhZ2U+XG4gICAgPC9GcmFtZT5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBBY2NlcHRQYXltZW50XG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/PaymentRequest.js\n");
+
+/***/ }),
+
+/***/ "./components/PendingPaymentRequest.js":
+/*!*********************************************!*\
+  !*** ./components/PendingPaymentRequest.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _ProductsList__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ProductsList */ \"./components/ProductsList.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _graphql_mutation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../graphql/mutation */ \"./graphql/mutation.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\n/* harmony import */ var _graphql_subscriptions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../graphql/subscriptions */ \"./graphql/subscriptions.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_6__[\"default\"]);\n\nconst PendingPaymentRequest = ({\n  createUpdatePaymentSubscription,\n  branchId\n}) => {\n  const {\n    0: paymentRequestId,\n    1: setPaymentRequestId\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(\"\");\n  const {\n    0: active,\n    1: setActive\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(false);\n  const {\n    0: paymentRequestItems,\n    1: setPaymentRequestItems\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])([]);\n  const handleChange = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(() => setActive(!active), [active]);\n  const fetchAcceptedPayments = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useCallback\"])(async () => {\n    try {\n      const res = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_8__[\"listPaymentRequest\"], {\n        branchId,\n        status: \"PENDING\"\n      }));\n      setPaymentRequestItems(res.data.listPaymentRequests.items);\n    } catch (error) {\n      console.log(error);\n    }\n  }, [createUpdatePaymentSubscription]);\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    fetchAcceptedPayments();\n  }, [fetchAcceptedPayments]);\n\n  const declinePayment = async paymentId => {\n    try {\n      const paymentResponse = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_7__[\"updatePaymentRequest\"], {\n        input: {\n          id: paymentId,\n          status: \"DECLINED\"\n        }\n      }));\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"], {\n    selectable: true,\n    celled: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Customer Id\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Bonus Amount\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Created At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Updated At\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Status\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].HeaderCell, null, \"Action\"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Body, null, paymentRequestItems && paymentRequestItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map(item => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Row, {\n    key: item.id\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\"\n  }, item.customerId)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"toCurrency\"])(item.bonusAmount)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(item.createdAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, Object(_utils_helper__WEBPACK_IMPORTED_MODULE_4__[\"formatDate\"])(item.updatedAt)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Badge\"], {\n    size: \"small\",\n    progress: \"partiallyComplete\",\n    status: \"attention\"\n  }, item.status)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Table\"].Cell, {\n    className: \"actions-cell\"\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Popup\"], {\n    content: \"Approve payment\",\n    trigger: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Icon\"], {\n      className: \"accept\",\n      name: \"check\",\n      onClick: () => {\n        setPaymentRequestId(item.id);\n        handleChange();\n      }\n    })\n  }), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Popup\"], {\n    content: \"Decline payment\",\n    trigger: __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_2__[\"Icon\"], {\n      className: \"decline\",\n      name: \"remove\",\n      onClick: async () => {\n        declinePayment(item.id);\n      }\n    })\n  })))))), __jsx(_ProductsList__WEBPACK_IMPORTED_MODULE_5__[\"default\"], {\n    paymentRequestId: paymentRequestId,\n    active: active,\n    handleChange: handleChange\n  }));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (PendingPaymentRequest);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL1BlbmRpbmdQYXltZW50UmVxdWVzdC5qcz9lZDdhIl0sIm5hbWVzIjpbIkFQSSIsImNvbmZpZ3VyZSIsImNvbmZpZyIsIlBlbmRpbmdQYXltZW50UmVxdWVzdCIsImNyZWF0ZVVwZGF0ZVBheW1lbnRTdWJzY3JpcHRpb24iLCJicmFuY2hJZCIsInBheW1lbnRSZXF1ZXN0SWQiLCJzZXRQYXltZW50UmVxdWVzdElkIiwidXNlU3RhdGUiLCJhY3RpdmUiLCJzZXRBY3RpdmUiLCJwYXltZW50UmVxdWVzdEl0ZW1zIiwic2V0UGF5bWVudFJlcXVlc3RJdGVtcyIsImhhbmRsZUNoYW5nZSIsInVzZUNhbGxiYWNrIiwiZmV0Y2hBY2NlcHRlZFBheW1lbnRzIiwicmVzIiwiZ3JhcGhxbCIsImdyYXBocWxPcGVyYXRpb24iLCJsaXN0UGF5bWVudFJlcXVlc3QiLCJzdGF0dXMiLCJkYXRhIiwibGlzdFBheW1lbnRSZXF1ZXN0cyIsIml0ZW1zIiwiZXJyb3IiLCJjb25zb2xlIiwibG9nIiwidXNlRWZmZWN0IiwiZGVjbGluZVBheW1lbnQiLCJwYXltZW50SWQiLCJwYXltZW50UmVzcG9uc2UiLCJ1cGRhdGVQYXltZW50UmVxdWVzdCIsImlucHV0IiwiaWQiLCJzb3J0IiwiYSIsImIiLCJEYXRlIiwidXBkYXRlZEF0IiwibWFwIiwiaXRlbSIsImN1c3RvbWVySWQiLCJ0b0N1cnJlbmN5IiwiYm9udXNBbW91bnQiLCJmb3JtYXREYXRlIiwiY3JlYXRlZEF0Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7O0FBQUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFFQUEsK0NBQUcsQ0FBQ0MsU0FBSixDQUFjQyxvREFBZDs7QUFFQSxNQUFNQyxxQkFBcUIsR0FBRyxDQUFDO0FBQUVDLGlDQUFGO0FBQW1DQztBQUFuQyxDQUFELEtBQW1EO0FBQy9FLFFBQU07QUFBQSxPQUFDQyxnQkFBRDtB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SyxTQUFOLENBQXZCLENBTEYsRUFNRSxNQUFDLHVEQUFELENBQU8sSUFBUCxRQUFhRCxnRUFBVSxDQUFDSixJQUFJLENBQUNGLFNBQU4sQ0FBdkIsQ0FORixFQU9FLE1BQUMsdURBQUQsQ0FBTyxJQUFQLFFBQ0UsTUFBQyxzREFBRDtBQUFPLFFBQUksRUFBQyxPQUFaO0FBQW9CLFlBQVEsRUFBQyxtQkFBN0I7QUFBaUQsVUFBTSxFQUFDO0FBQXhELEtBQ0dFLElBQUksQ0FBQ3BCLE1BRFIsQ0FERixDQVBGLEVBWUUsTUFBQyx1REFBRCxDQUFPLElBQVA7QUFBWSxhQUFTLEVBQUM7QUFBdEIsS0FDRSxNQUFDLHVEQUFEO0FBQ0UsV0FBTyxFQUFDLGlCQURWO0FBRUUsV0FBTyxFQUNMLE1BQUMsc0RBQUQ7QUFDRSxlQUFTLEVBQUMsUUFEWjtBQUVFLFVBQUksRUFBQyxPQUZQO0FBR0UsYUFBTyxFQUFFLE1BQU07QUFDYmIsMkJBQW1CLENBQUNpQyxJQUFJLENBQUNQLEVBQU4sQ0FBbkI7QUFDQXBCLG9CQUFZO0FBQ2I7QUFOSDtBQUhKLElBREYsRUFjRSxNQUFDLHVEQUFEO0FBQ0UsV0FBTyxFQUFDLGlCQURWO0FBRUUsV0FBTyxFQUNMLE1BQUMsc0RBQUQ7QUFDRSxlQUFTLEVBQUMsU0FEWjtBQUVFLFVBQUksRUFBQyxRQUZQO0FBR0UsYUFBTyxFQUFFLFlBQVk7QUFDbkJlLHNCQUFjLENBQUNZLElBQUksQ0FBQ1AsRUFBTixDQUFkO0FBQ0Q7QUFMSDtBQUhKLElBZEYsQ0FaRixDQUhKLENBRkosQ0FYRixDQURGLEVBNERFLE1BQUMscURBQUQ7QUFDRSxvQkFBZ0IsRUFBRTNCLGdCQURwQjtBQUVFLFVBQU0sRUFBRUcsTUFGVjtBQUdFLGdCQUFZLEVBQUVJO0FBSGhCLElBNURGLENBREY7QUFvRUQsQ0F6R0Q7O0FBMkdlVixvRkFBZiIsImZpbGUiOiIuL2NvbXBvbmVudHMvUGVuZGluZ1BheW1lbnRSZXF1ZXN0LmpzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlLCB1c2VDYWxsYmFjaywgdXNlRWZmZWN0IH0gZnJvbSBcInJlYWN0XCJcbmltcG9ydCB7IEFQSSwgZ3JhcGhxbE9wZXJhdGlvbiB9IGZyb20gXCJhd3MtYW1wbGlmeVwiXG5pbXBvcnQgeyBUYWJsZSwgSWNvbiwgUG9wdXAsIEhlYWRlciB9IGZyb20gXCJzZW1hbnRpYy11aS1yZWFjdFwiXG5pbXBvcnQgeyBCYWRnZSB9IGZyb20gXCJAc2hvcGlmeS9wb2xhcmlzXCJcbmltcG9ydCB7IHRvQ3VycmVuY3ksIGZvcm1hdERhdGUgfSBmcm9tIFwiLi4vdXRpbHMvaGVscGVyXCJcbmltcG9ydCBQcm9kdWN0TGlzdCBmcm9tIFwiLi9Qcm9kdWN0c0xpc3RcIlxuaW1wb3J0IGNvbmZpZyBmcm9tIFwiLi4vYXdzLWV4cG9ydHNcIlxuaW1wb3J0IHsgdXBkYXRlUGF5bWVudFJlcXVlc3QgfSBmcm9tIFwiLi4vZ3JhcGhxbC9tdXRhdGlvblwiXG5pbXBvcnQgeyBsaXN0UGF5bWVudFJlcXVlc3QgfSBmcm9tIFwiLi4vZ3JhcGhxbC9xdWVyaWVzXCJcbmltcG9ydCB7IHBheW1lbnRTdWJzY3JpcHRpb24gfSBmcm9tIFwiLi4vZ3JhcGhxbC9zdWJzY3JpcHRpb25zXCJcblxuQVBJLmNvbmZpZ3VyZShjb25maWcpXG5cbmNvbnN0IFBlbmRpbmdQYXltZW50UmVxdWVzdCA9ICh7IGNyZWF0ZVVwZGF0ZVBheW1lbnRTdWJzY3JpcHRpb24sIGJyYW5jaElkIH0pID0+IHtcbiAgY29uc3QgW3BheW1lbnRSZXF1ZXN0SWQsIHNldFBheW1lbnRSZXF1ZXN0SWRdID0gdXNlU3RhdGUoXCJcIilcbiAgY29uc3QgW2FjdGl2ZSwgc2V0QWN0aXZlXSA9IHVzZVN0YXRlKGZhbHNlKVxuICBjb25zdCBbcGF5bWVudFJlcXVlc3RJdGVtcywgc2V0UGF5bWVudFJlcXVlc3RJdGVtc10gPSB1c2VTdGF0ZShbXSlcblxuICBjb25zdCBoYW5kbGVDaGFuZ2UgPSB1c2VDYWxsYmFjaygoKSA9PiBzZXRBY3RpdmUoIWFjdGl2ZSksIFthY3RpdmVdKVxuXG4gIGNvbnN0IGZldGNoQWNjZXB0ZWRQYXltZW50cyA9IHVzZUNhbGxiYWNrKGFzeW5jICgpID0+IHtcbiAgICB0cnkge1xuICAgICAgY29uc3QgcmVzID0gYXdhaXQgQVBJLmdyYXBocWwoXG4gICAgICAgIGdyYXBocWxPcGVyYXRpb24obGlzdFBheW1lbnRSZXF1ZXN0LCB7IGJyYW5jaElkLCBzdGF0dXM6IFwiUEVORElOR1wiIH0pXG4gICAgICApXG4gICAgICBzZXRQYXltZW50UmVxdWVzdEl0ZW1zKHJlcy5kYXRhLmxpc3RQYXltZW50UmVxdWVzdHMuaXRlbXMpXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgIH1cbiAgfSwgW2NyZWF0ZVVwZGF0ZVBheW1lbnRTdWJzY3JpcHRpb25dKVxuXG4gIHVzZUVmZmVjdCgoKSA9PiB7XG4gICAgZmV0Y2hBY2NlcHRlZFBheW1lbnRzKClcbiAgfSwgW2ZldGNoQWNjZXB0ZWRQYXltZW50c10pXG5cbiAgY29uc3QgZGVjbGluZVBheW1lbnQgPSBhc3luYyAocGF5bWVudElkKSA9PiB7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IHBheW1lbnRSZXNwb25zZSA9IGF3YWl0IEFQSS5ncmFwaHFsKFxuICAgICAgICBncmFwaHFsT3BlcmF0aW9uKHVwZGF0ZVBheW1lbnRSZXF1ZXN0LCB7XG4gICAgICAgICAgaW5wdXQ6IHtcbiAgICAgICAgICAgIGlkOiBwYXltZW50SWQsXG4gICAgICAgICAgICBzdGF0dXM6IFwiREVDTElORURcIixcbiAgICAgICAgICB9LFxuICAgICAgICB9KVxuICAgICAgKVxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmxvZyhlcnJvcilcbiAgICB9XG4gIH1cblxuICByZXR1cm4gKFxuICAgIDw+XG4gICAgICA8VGFibGUgc2VsZWN0YWJsZSBjZWxsZWQ+XG4gICAgICAgIDxUYWJsZS5IZWFkZXI+XG4gICAgICAgICAgPFRhYmxlLlJvdz5cbiAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPkN1c3RvbWVyIElkPC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+Qm9udXMgQW1vdW50PC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+Q3JlYXRlZCBBdDwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPlVwZGF0ZWQgQXQ8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5TdGF0dXM8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbD5BY3Rpb248L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgPC9UYWJsZS5Sb3c+XG4gICAgICAgIDwvVGFibGUuSGVhZGVyPlxuICAgICAgICA8VGFibGUuQm9keT5cbiAgICAgICAgICB7cGF5bWVudFJlcXVlc3RJdGVtcyAmJlxuICAgICAgICAgICAgcGF5bWVudFJlcXVlc3RJdGVtc1xuICAgICAgICAgICAgICAuc29ydCgoYSwgYikgPT4gbmV3IERhdGUoYi51cGRhdGVkQXQpIC0gbmV3IERhdGUoYS51cGRhdGVkQXQpKVxuICAgICAgICAgICAgICAubWFwKChpdGVtKSA9PiAoXG4gICAgICAgICAgICAgICAgPFRhYmxlLlJvdyBrZXk9e2l0ZW0uaWR9PlxuICAgICAgICAgICAgICAgICAgPFRhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICAgIDxCYWRnZSBzaXplPVwic21hbGxcIj57aXRlbS5jdXN0b21lcklkfTwvQmFkZ2U+XG4gICAgICAgICAgICAgICAgICA8L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD57dG9DdXJyZW5jeShpdGVtLmJvbnVzQW1vdW50KX08L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD57Zm9ybWF0RGF0ZShpdGVtLmNyZWF0ZWRBdCl9PC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgPFRhYmxlLkNlbGw+e2Zvcm1hdERhdGUoaXRlbS51cGRhdGVkQXQpfTwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgICA8QmFkZ2Ugc2l6ZT1cInNtYWxsXCIgcHJvZ3Jlc3M9XCJwYXJ0aWFsbHlDb21wbGV0ZVwiIHN0YXR1cz1cImF0dGVudGlvblwiPlxuICAgICAgICAgICAgICAgICAgICAgIHtpdGVtLnN0YXR1c31cbiAgICAgICAgICAgICAgICAgICAgPC9CYWRnZT5cbiAgICAgICAgICAgICAgICAgIDwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZS5DZWxsIGNsYXNzTmFtZT1cImFjdGlvbnMtY2VsbFwiPlxuICAgICAgICAgICAgICAgICAgICA8UG9wdXBcbiAgICAgICAgICAgICAgICAgICAgICBjb250ZW50PVwiQXBwcm92ZSBwYXltZW50XCJcbiAgICAgICAgICAgICAgICAgICAgICB0cmlnZ2VyPXtcbiAgICAgICAgICAgICAgICAgICAgICAgIDxJY29uXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImFjY2VwdFwiXG4gICAgICAgICAgICAgICAgICAgICAgICAgIG5hbWU9XCJjaGVja1wiXG4gICAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBzZXRQYXltZW50UmVxdWVzdElkKGl0ZW0uaWQpXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgaGFuZGxlQ2hhbmdlKClcbiAgICAgICAgICAgICAgICAgICAgICAgICAgfX1cbiAgICAgICAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICA8UG9wdXBcbiAgICAgICAgICAgICAgICAgICAgICBjb250ZW50PVwiRGVjbGluZSBwYXltZW50XCJcbiAgICAgICAgICAgICAgICAgICAgICB0cmlnZ2VyPXtcbiAgICAgICAgICAgICAgICAgICAgICAgIDxJY29uXG4gICAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImRlY2xpbmVcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICBuYW1lPVwicmVtb3ZlXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgb25DbGljaz17YXN5bmMgKCkgPT4ge1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRlY2xpbmVQYXltZW50KGl0ZW0uaWQpXG4gICAgICAgICAgICAgICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgICAgIDwvVGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICA8L1RhYmxlLlJvdz5cbiAgICAgICAgICAgICAgKSl9XG4gICAgICAgIDwvVGFibGUuQm9keT5cbiAgICAgIDwvVGFibGU+XG4gICAgICA8UHJvZHVjdExpc3RcbiAgICAgICAgcGF5bWVudFJlcXVlc3RJZD17cGF5bWVudFJlcXVlc3RJZH1cbiAgICAgICAgYWN0aXZlPXthY3RpdmV9XG4gICAgICAgIGhhbmRsZUNoYW5nZT17aGFuZGxlQ2hhbmdlfVxuICAgICAgLz5cbiAgICA8Lz5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBQZW5kaW5nUGF5bWVudFJlcXVlc3RcbiJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./components/PendingPaymentRequest.js\n");
+
+/***/ }),
+
+/***/ "./components/ProductsList.js":
+/*!************************************!*\
+  !*** ./components/ProductsList.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _apollo_client__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @apollo/client */ \"@apollo/client\");\n/* harmony import */ var _apollo_client__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_apollo_client__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ \"@shopify/polaris\");\n/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! semantic-ui-react */ \"semantic-ui-react\");\n/* harmony import */ var semantic_ui_react__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _utils_helper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/helper */ \"./utils/helper.js\");\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _graphql_queries__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../graphql/queries */ \"./graphql/queries.js\");\n/* harmony import */ var _graphql_mutation__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../graphql/mutation */ \"./graphql/mutation.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\nfunction ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }\n\nfunction _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }\n\nfunction _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }\n\n\n\n\n\n\n\n\n\n\naws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].configure(_aws_exports__WEBPACK_IMPORTED_MODULE_6__[\"default\"]);\n\nconst ProductsList = ({\n  active,\n  handleChange,\n  paymentRequestId\n}) => {\n  const {\n    loading,\n    error,\n    data\n  } = Object(_apollo_client__WEBPACK_IMPORTED_MODULE_2__[\"useQuery\"])(_graphql_queries__WEBPACK_IMPORTED_MODULE_7__[\"listProducts\"]);\n  const {\n    0: rowId,\n    1: setRowId\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])([]);\n  const {\n    0: state,\n    1: setState\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])({\n    products: []\n  });\n\n  if (loading) {\n    return __jsx(\"div\", null, \"Loading products...\");\n  }\n\n  if (error) {\n    return __jsx(\"div\", null, \"Some error occured\");\n  }\n\n  const acceptPayment = async () => {\n    try {\n      const paymentResponse = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"API\"].graphql(Object(aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"graphqlOperation\"])(_graphql_mutation__WEBPACK_IMPORTED_MODULE_8__[\"updatePaymentRequest\"], {\n        input: {\n          id: paymentRequestId,\n          status: \"APPROVED\",\n          products: state.products.map(product => ({\n            originalUnitPrice: product.node.variants.edges[0].node.price,\n            quantity: 1,\n            variantId: product.node.variants.edges[0].node.id\n          }))\n        }\n      }));\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Modal\"], {\n    open: active,\n    onClose: handleChange,\n    title: \"Choose products\",\n    primaryAction: {\n      content: \"Proceed\",\n      onAction: () => {\n        acceptPayment();\n        handleChange();\n      }\n    }\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Modal\"].Section, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"], {\n    celled: true,\n    striped: true,\n    selectable: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Header, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Row, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].HeaderCell, null, \"Products\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].HeaderCell, null, \"Description\"), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].HeaderCell, {\n    textAlign: \"center\"\n  }, \"Price\"))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Body, null, data && data.products.edges.map(product => __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Row, {\n    key: product.node.id,\n    onClick: () => {\n      if (rowId.includes(product.node.id)) {\n        setRowId(rowId.filter(id => id !== product.node.id));\n        setState({\n          products: state.products.filter(filteredProduct => filteredProduct.node.id !== product.node.id)\n        });\n      } else {\n        setRowId([...rowId, product.node.id]);\n        setState(_objectSpread(_objectSpread({}, state), {}, {\n          products: [...state.products, product]\n        }));\n      }\n    }\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Cell, null, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Header\"], {\n    as: \"h4\",\n    image: true,\n    className: \"product-header\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Checkbox\"], {\n    checked: rowId.includes(product.node.id) && true\n  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"Thumbnail\"], {\n    source: product.node.images.edges[0] && product.node.images.edges[0].node.originalSrc,\n    size: \"small\",\n    alt: \"\"\n  }), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Header\"].Content, null, product.node.title))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Cell, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"TextStyle\"], {\n    variation: \"subdued\"\n  }, product.node.description)), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Cell, {\n    textAlign: \"center\"\n  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__[\"TextStyle\"], {\n    variation: \"subdued\"\n  }, product.node.variants.edges[0] && Object(_utils_helper__WEBPACK_IMPORTED_MODULE_5__[\"toCurrency\"])(product.node.variants.edges[0].node.price)))))), __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Footer, {\n    fullWidth: true\n  }, __jsx(semantic_ui_react__WEBPACK_IMPORTED_MODULE_4__[\"Table\"].Row, null)))));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (ProductsList);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9jb21wb25lbnRzL1Byb2R1Y3RzTGlzdC5qcz81NjJjIl0sIm5hbWVzIjpbIkFQSSIsImNvbmZpZ3VyZSIsImNvbmZpZyIsIlByb2R1Y3RzTGlzdCIsImFjdGl2ZSIsImhhbmRsZUNoYW5nZSIsInBheW1lbnRSZXF1ZXN0SWQiLCJsb2FkaW5nIiwiZXJyb3IiLCJkYXRhIiwidXNlUXVlcnkiLCJsaXN0UHJvZHVjdHMiLCJyb3dJZCIsInNldFJvd0lkIiwidXNlU3RhdGUiLCJzdGF0ZSIsInNldFN0YXRlIiwicHJvZHVjdHMiLCJhY2NlcHRQYXltZW50IiwicGF5bWVudFJlc3BvbnNlIiwiZ3JhcGhxbCIsImdyYXBocWxPcGVyYXRpb24iLCJ1cGRhdGVQYXltZW50UmVxdWVzdCIsImlucHV0IiwiaWQiLCJzdGF0dXMiLCJtYXAiLCJwcm9kdWN0Iiwib3JpZ2luYWxVbml0UHJpY2UiLCJub2RlIiwidmFyaWFudHMiLCJlZGdlcyIsInByaWNlIiwicXVhbnRpdHkiLCJ2YXJpYW50SWQiLCJjb25zb2xlIiwibG9nIiwiY29udGVudCIsIm9uQWN0aW9uIiwiaW5jbHVkZXMiLCJmaWx0ZXIiLCJmaWx0ZXJlZFByb2R1Y3QiLCJpbWFnZXMiLCJvcmlnaW5hbFNyYyIsInRpdGxlIiwiZGVzY3JpcHRpb24iLCJ0b0N1cnJlbmN5Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUVBQSwrQ0FBRyxDQUFDQyxTQUFKLENBQWNDLG9EQUFkOztBQUVBLE1BQU1DLFlBQVksR0FBRyxDQUFDO0FBQUVDLFFBQUY7QUFBVUMsY0FBVjtBQUF3QkM7QUFBeEIsQ0FBRCxLQUFnRDtBQUNuRSxRQUFNO0FBQUVDLFdBQUY7QUFBV0MsU0FBWDtBQUFrQkM7QUFBbEIsTUFBMkJDLCtEQUFRLENBQUNDLDZEQUFELENBQXpDO0FBQ0EsUUFBTTtBQUFBLE9BQUNDLEtB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QUFhQyxRQUFiLENBQXNCQyxLQUF0QixDQUE0QixDQUE1QixLQUNDZSxnRUFBVSxDQUFDbkIsT0FBTyxDQUFDRSxJQUFSLENBQWFDLFFBQWIsQ0FBc0JDLEtBQXRCLENBQTRCLENBQTVCLEVBQStCRixJQUEvQixDQUFvQ0csS0FBckMsQ0FGZCxDQURGLENBbkNGLENBREYsQ0FGSixDQVJGLEVBdURFLE1BQUMsdURBQUQsQ0FBTyxNQUFQO0FBQWMsYUFBUztBQUF2QixLQUNFLE1BQUMsdURBQUQsQ0FBTyxHQUFQLE9BREYsQ0F2REYsQ0FERixDQVhGLENBREY7QUEyRUQsQ0E5R0Q7O0FBZ0hlN0IsMkVBQWYiLCJmaWxlIjoiLi9jb21wb25lbnRzL1Byb2R1Y3RzTGlzdC5qcy5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCwgeyB1c2VTdGF0ZSB9IGZyb20gXCJyZWFjdFwiXG5pbXBvcnQgeyBBUEksIGdyYXBocWxPcGVyYXRpb24gfSBmcm9tIFwiYXdzLWFtcGxpZnlcIlxuaW1wb3J0IHsgdXNlUXVlcnkgfSBmcm9tIFwiQGFwb2xsby9jbGllbnRcIlxuaW1wb3J0IHsgTW9kYWwsIFRodW1ibmFpbCwgQ2hlY2tib3gsIFRleHRTdHlsZSB9IGZyb20gXCJAc2hvcGlmeS9wb2xhcmlzXCJcbmltcG9ydCB7IFRhYmxlLCBIZWFkZXIgfSBmcm9tIFwic2VtYW50aWMtdWktcmVhY3RcIlxuaW1wb3J0IHsgdG9DdXJyZW5jeSB9IGZyb20gXCIuLi91dGlscy9oZWxwZXJcIlxuaW1wb3J0IGNvbmZpZyBmcm9tIFwiLi4vYXdzLWV4cG9ydHNcIlxuaW1wb3J0IHsgbGlzdFByb2R1Y3RzIH0gZnJvbSBcIi4uL2dyYXBocWwvcXVlcmllc1wiXG5pbXBvcnQgeyB1cGRhdGVQYXltZW50UmVxdWVzdCB9IGZyb20gXCIuLi9ncmFwaHFsL211dGF0aW9uXCJcblxuQVBJLmNvbmZpZ3VyZShjb25maWcpXG5cbmNvbnN0IFByb2R1Y3RzTGlzdCA9ICh7IGFjdGl2ZSwgaGFuZGxlQ2hhbmdlLCBwYXltZW50UmVxdWVzdElkIH0pID0+IHtcbiAgY29uc3QgeyBsb2FkaW5nLCBlcnJvciwgZGF0YSB9ID0gdXNlUXVlcnkobGlzdFByb2R1Y3RzKVxuICBjb25zdCBbcm93SWQsIHNldFJvd0lkXSA9IHVzZVN0YXRlKFtdKVxuICBjb25zdCBbc3RhdGUsIHNldFN0YXRlXSA9IHVzZVN0YXRlKHtcbiAgICBwcm9kdWN0czogW10sXG4gIH0pXG5cbiAgaWYgKGxvYWRpbmcpIHtcbiAgICByZXR1cm4gPGRpdj5Mb2FkaW5nIHByb2R1Y3RzLi4uPC9kaXY+XG4gIH1cblxuICBpZiAoZXJyb3IpIHtcbiAgICByZXR1cm4gPGRpdj5Tb21lIGVycm9yIG9jY3VyZWQ8L2Rpdj5cbiAgfVxuXG4gIGNvbnN0IGFjY2VwdFBheW1lbnQgPSBhc3luYyAoKSA9PiB7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IHBheW1lbnRSZXNwb25zZSA9IGF3YWl0IEFQSS5ncmFwaHFsKFxuICAgICAgICBncmFwaHFsT3BlcmF0aW9uKHVwZGF0ZVBheW1lbnRSZXF1ZXN0LCB7XG4gICAgICAgICAgaW5wdXQ6IHtcbiAgICAgICAgICAgIGlkOiBwYXltZW50UmVxdWVzdElkLFxuICAgICAgICAgICAgc3RhdHVzOiBcIkFQUFJPVkVEXCIsXG4gICAgICAgICAgICBwcm9kdWN0czogc3RhdGUucHJvZHVjdHMubWFwKChwcm9kdWN0KSA9PiAoe1xuICAgICAgICAgICAgICBvcmlnaW5hbFVuaXRQcmljZTogcHJvZHVjdC5ub2RlLnZhcmlhbnRzLmVkZ2VzWzBdLm5vZGUucHJpY2UsXG4gICAgICAgICAgICAgIHF1YW50aXR5OiAxLFxuICAgICAgICAgICAgICB2YXJpYW50SWQ6IHByb2R1Y3Qubm9kZS52YXJpYW50cy5lZGdlc1swXS5ub2RlLmlkLFxuICAgICAgICAgICAgfSkpLFxuICAgICAgICAgIH0sXG4gICAgICAgIH0pXG4gICAgICApXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgIH1cbiAgfVxuXG4gIHJldHVybiAoXG4gICAgPE1vZGFsXG4gICAgICBvcGVuPXthY3RpdmV9XG4gICAgICBvbkNsb3NlPXtoYW5kbGVDaGFuZ2V9XG4gICAgICB0aXRsZT1cIkNob29zZSBwcm9kdWN0c1wiXG4gICAgICBwcmltYXJ5QWN0aW9uPXt7XG4gICAgICAgIGNvbnRlbnQ6IFwiUHJvY2VlZFwiLFxuICAgICAgICBvbkFjdGlvbjogKCkgPT4ge1xuICAgICAgICAgIGFjY2VwdFBheW1lbnQoKVxuICAgICAgICAgIGhhbmRsZUNoYW5nZSgpXG4gICAgICAgIH0sXG4gICAgICB9fT5cbiAgICAgIDxNb2RhbC5TZWN0aW9uPlxuICAgICAgICA8VGFibGUgY2VsbGVkIHN0cmlwZWQgc2VsZWN0YWJsZT5cbiAgICAgICAgICA8VGFibGUuSGVhZGVyPlxuICAgICAgICAgICAgPFRhYmxlLlJvdz5cbiAgICAgICAgICAgICAgPFRhYmxlLkhlYWRlckNlbGw+UHJvZHVjdHM8L1RhYmxlLkhlYWRlckNlbGw+XG4gICAgICAgICAgICAgIDxUYWJsZS5IZWFkZXJDZWxsPkRlc2NyaXB0aW9uPC9UYWJsZS5IZWFkZXJDZWxsPlxuICAgICAgICAgICAgICA8VGFibGUuSGVhZGVyQ2VsbCB0ZXh0QWxpZ249XCJjZW50ZXJcIj5QcmljZTwvVGFibGUuSGVhZGVyQ2VsbD5cbiAgICAgICAgICAgIDwvVGFibGUuUm93PlxuICAgICAgICAgIDwvVGFibGUuSGVhZGVyPlxuICAgICAgICAgIDxUYWJsZS5Cb2R5PlxuICAgICAgICAgICAge2RhdGEgJiZcbiAgICAgICAgICAgICAgZGF0YS5wcm9kdWN0cy5lZGdlcy5tYXAoKHByb2R1Y3QpID0+IChcbiAgICAgICAgICAgICAgICA8VGFibGUuUm93XG4gICAgICAgICAgICAgICAgICBrZXk9e3Byb2R1Y3Qubm9kZS5pZH1cbiAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHtcbiAgICAgICAgICAgICAgICAgICAgaWYgKHJvd0lkLmluY2x1ZGVzKHByb2R1Y3Qubm9kZS5pZCkpIHtcbiAgICAgICAgICAgICAgICAgICAgICBzZXRSb3dJZChyb3dJZC5maWx0ZXIoKGlkKSA9PiBpZCAhPT0gcHJvZHVjdC5ub2RlLmlkKSlcbiAgICAgICAgICAgICAgICAgICAgICBzZXRTdGF0ZSh7XG4gICAgICAgICAgICAgICAgICAgICAgICBwcm9kdWN0czogc3RhdGUucHJvZHVjdHMuZmlsdGVyKFxuICAgICAgICAgICAgICAgICAgICAgICAgICAoZmlsdGVyZWRQcm9kdWN0KSA9PiBmaWx0ZXJlZFByb2R1Y3Qubm9kZS5pZCAhPT0gcHJvZHVjdC5ub2RlLmlkXG4gICAgICAgICAgICAgICAgICAgICAgICApLFxuICAgICAgICAgICAgICAgICAgICAgIH0pXG4gICAgICAgICAgICAgICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgICAgICAgICAgICAgc2V0Um93SWQoWy4uLnJvd0lkLCBwcm9kdWN0Lm5vZGUuaWRdKVxuICAgICAgICAgICAgICAgICAgICAgIHNldFN0YXRlKHtcbiAgICAgICAgICAgICAgICAgICAgICAgIC4uLnN0YXRlLFxuICAgICAgICAgICAgICAgICAgICAgICAgcHJvZHVjdHM6IFsuLi5zdGF0ZS5wcm9kdWN0cywgcHJvZHVjdF0sXG4gICAgICAgICAgICAgICAgICAgICAgfSlcbiAgICAgICAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgICAgICAgfX0+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgPEhlYWRlciBhcz1cImg0XCIgaW1hZ2UgY2xhc3NOYW1lPVwicHJvZHVjdC1oZWFkZXJcIj5cbiAgICAgICAgICAgICAgICAgICAgICA8Q2hlY2tib3ggY2hlY2tlZD17cm93SWQuaW5jbHVkZXMocHJvZHVjdC5ub2RlLmlkKSAmJiB0cnVlfSAvPlxuICAgICAgICAgICAgICAgICAgICAgIDxUaHVtYm5haWxcbiAgICAgICAgICAgICAgICAgICAgICAgIHNvdXJjZT17XG4gICAgICAgICAgICAgICAgICAgICAgICAgIHByb2R1Y3Qubm9kZS5pbWFnZXMuZWRnZXNbMF0gJiZcbiAgICAgICAgICAgICAgICAgICAgICAgICAgcHJvZHVjdC5ub2RlLmltYWdlcy5lZGdlc1swXS5ub2RlLm9yaWdpbmFsU3JjXG4gICAgICAgICAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgICAgICAgICAgICBzaXplPVwic21hbGxcIlxuICAgICAgICAgICAgICAgICAgICAgICAgYWx0PVwiXCJcbiAgICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICAgIDxIZWFkZXIuQ29udGVudD57cHJvZHVjdC5ub2RlLnRpdGxlfTwvSGVhZGVyLkNvbnRlbnQ+XG4gICAgICAgICAgICAgICAgICAgIDwvSGVhZGVyPlxuICAgICAgICAgICAgICAgICAgPC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgICAgPFRhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICAgIDxUZXh0U3R5bGUgdmFyaWF0aW9uPVwic3ViZHVlZFwiPntwcm9kdWN0Lm5vZGUuZGVzY3JpcHRpb259PC9UZXh0U3R5bGU+XG4gICAgICAgICAgICAgICAgICA8L1RhYmxlLkNlbGw+XG4gICAgICAgICAgICAgICAgICA8VGFibGUuQ2VsbCB0ZXh0QWxpZ249XCJjZW50ZXJcIj5cbiAgICAgICAgICAgICAgICAgICAgPFRleHRTdHlsZSB2YXJpYXRpb249XCJzdWJkdWVkXCI+XG4gICAgICAgICAgICAgICAgICAgICAge3Byb2R1Y3Qubm9kZS52YXJpYW50cy5lZGdlc1swXSAmJlxuICAgICAgICAgICAgICAgICAgICAgICAgdG9DdXJyZW5jeShwcm9kdWN0Lm5vZGUudmFyaWFudHMuZWRnZXNbMF0ubm9kZS5wcmljZSl9XG4gICAgICAgICAgICAgICAgICAgIDwvVGV4dFN0eWxlPlxuICAgICAgICAgICAgICAgICAgPC9UYWJsZS5DZWxsPlxuICAgICAgICAgICAgICAgIDwvVGFibGUuUm93PlxuICAgICAgICAgICAgICApKX1cbiAgICAgICAgICA8L1RhYmxlLkJvZHk+XG4gICAgICAgICAgPFRhYmxlLkZvb3RlciBmdWxsV2lkdGg+XG4gICAgICAgICAgICA8VGFibGUuUm93PjwvVGFibGUuUm93PlxuICAgICAgICAgIDwvVGFibGUuRm9vdGVyPlxuICAgICAgICA8L1RhYmxlPlxuICAgICAgPC9Nb2RhbC5TZWN0aW9uPlxuICAgIDwvTW9kYWw+XG4gIClcbn1cblxuZXhwb3J0IGRlZmF1bHQgUHJvZHVjdHNMaXN0XG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./components/ProductsList.js\n");
+
+/***/ }),
+
+/***/ "./graphql/mutation.js":
+/*!*****************************!*\
+  !*** ./graphql/mutation.js ***!
+  \*****************************/
+/*! exports provided: completeOrder, updatePaymentRequest, createBranch, removeBranch, deleteTransaction, deleteBranchProduct, deletePaymentRequest, createBranchProduct, productUpdate, updateBranchProduct */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"completeOrder\", function() { return completeOrder; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"updatePaymentRequest\", function() { return updatePaymentRequest; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"createBranch\", function() { return createBranch; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"removeBranch\", function() { return removeBranch; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"deleteTransaction\", function() { return deleteTransaction; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"deleteBranchProduct\", function() { return deleteBranchProduct; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"deletePaymentRequest\", function() { return deletePaymentRequest; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"createBranchProduct\", function() { return createBranchProduct; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"productUpdate\", function() { return productUpdate; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"updateBranchProduct\", function() { return updateBranchProduct; });\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! graphql-tag */ \"graphql-tag\");\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_0__);\n\nconst createDraftOrder = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation CreateOrder($input: DraftOrderInput!) {\n    draftOrderCreate(input: $input) {\n      draftOrder {\n        id\n        customer {\n          id\n        }\n        email\n        lineItems(first: 10) {\n          edges {\n            node {\n              title\n              quantity\n              originalUnitPrice\n              variant {\n                id\n                price\n                title\n                product {\n                  tags\n                  title\n                  images(first: 5) {\n                    edges {\n                      node {\n                        originalSrc\n                      }\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n`;\nconst completeOrder = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation CompleteOrder($id: ID!) {\n    draftOrderComplete(id: $id, paymentPending: true) {\n      draftOrder {\n        customer {\n          id\n        }\n        email\n        name\n      }\n    }\n  }\n`;\nconst updatePaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation updatePaymentRequest($input: UpdatePaymentRequestInput!) {\n    updatePaymentRequest(input: $input) {\n      bonusAmount\n      customerId\n      id\n      orderId\n      status\n      products {\n        originalUnitPrice\n        quantity\n        variantId\n      }\n      createdAt\n      updatedAt\n    }\n  }\n`;\nconst createBranch = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation createBranch($input: CreateBranchInput!) {\n    createBranch(input: $input) {\n      id\n      adminId\n      branchName\n    }\n  }\n`;\nconst removeBranch = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation deleteBranch($input: DeleteBranchInput!) {\n    deleteBranch(input: $input) {\n      id\n    }\n  }\n`;\nconst deleteTransaction = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation deleteTransaction($input: DeleteTransactionInput!) {\n    deleteTransaction(input: $input) {\n      id\n    }\n  }\n`;\nconst deleteBranchProduct = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation deleteBranchProduct($input: DeleteBranchProductInput!) {\n    deleteBranchProduct(input: $input) {\n      id\n    }\n  }\n`;\nconst deletePaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation deletePaymentRequest($input: DeletePaymentRequestInput!) {\n    deletePaymentRequest(input: $input) {\n      id\n    }\n  }\n`;\nconst createBranchProduct = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation createBranchProduct($input: CreateBranchProductInput!) {\n    createBranchProduct(input: $input) {\n      id\n      branchId\n      productId\n      tags\n    }\n  }\n`;\nconst productUpdate = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation productUpdate($input: ProductInput!) {\n    productUpdate(input: $input) {\n      product {\n        id\n        metafields(first: 100) {\n          edges {\n            node {\n              namespace\n              key\n              value\n            }\n          }\n        }\n      }\n    }\n  }\n`;\nconst updateBranchProduct = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  mutation updateBranchProduct($input: UpdateBranchProductInput!) {\n    updateBranchProduct(input: $input) {\n      id\n      tags\n      branchId\n      productId\n    }\n  }\n`;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9ncmFwaHFsL211dGF0aW9uLmpzPzc3NjkiXSwibmFtZXMiOlsiY3JlYXRlRHJhZnRPcmRlciIsImdxbCIsImNvbXBsZXRlT3JkZXIiLCJ1cGRhdGVQYXltZW50UmVxdWVzdCIsImNyZWF0ZUJyYW5jaCIsInJlbW92ZUJyYW5jaCIsImRlbGV0ZVRyYW5zYWN0aW9uIiwiZGVsZXRlQnJhbmNoUHJvZHVjdCIsImRlbGV0ZVBheW1lbnRSZXF1ZXN0IiwiY3JlYXRlQnJhbmNoUHJvZHVjdCIsInByb2R1Y3RVcGRhdGUiLCJ1cGRhdGVCcmFuY2hQcm9kdWN0Il0sIm1hcHBpbmdzIjoiQUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBRUEsTUFBTUEsZ0JBQWdCLEdBQUdDLGtEQUFJOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBQTdCO0FBdUNPLE1BQU1DLGFBQWEsR0FBR0Qsa0RBQUk7Ozs7Ozs7Ozs7OztDQUExQjtBQWNBLE1BQU1FLG9CQUFvQixHQUFHRixrREFBSTs7Ozs7Ozs7Ozs7Ozs7Ozs7Q0FBakM7QUFrQkEsTUFBTUcsWUFBWSxHQUFHSCxrREFBSTs7Ozs7Ozs7Q0FBekI7QUFVQSxNQUFNSSxZQUFZLEdBQUdKLGtEQUFJOzs7Ozs7Q0FBekI7QUFRQSxNQUFNSyxpQkFBaUIsR0FBR0wsa0RBQUk7Ozs7OztDQUE5QjtBQVFBLE1BQU1NLG1CQUFtQixHQUFHTixrREFBSTs7Ozs7O0NBQWhDO0FBUUEsTUFBTU8sb0JBQW9CLEdBQUdQLGtEQUFJOzs7Ozs7Q0FBakM7QUFRQSxNQUFNUSxtQkFBbUIsR0FBR1Isa0RBQUk7Ozs7Ozs7OztDQUFoQztBQVdBLE1BQU1TLGFBQWEsR0FBR1Qsa0RBQUk7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBQTFCO0FBbUJBLE1BQU1VLG1CQUFtQixHQUFHVixrREFBSTs7Ozs7Ozs7O0NBQWhDIiwiZmlsZSI6Ii4vZ3JhcGhxbC9tdXRhdGlvbi5qcy5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBncWwgZnJvbSBcImdyYXBocWwtdGFnXCJcblxuY29uc3QgY3JlYXRlRHJhZnRPcmRlciA9IGdxbGBcbiAgbXV0YXRpb24gQ3JlYXRlT3JkZXIoJGlucHV0OiBEcmFmdE9yZGVySW5wdXQhKSB7XG4gICAgZHJhZnRPcmRlckNyZWF0ZShpbnB1dDogJGlucHV0KSB7XG4gICAgICBkcmFmdE9yZGVyIHtcbiAgICAgICAgaWRcbiAgICAgICAgY3VzdG9tZXIge1xuICAgICAgICAgIGlkXG4gICAgICAgIH1cbiAgICAgICAgZW1haWxcbiAgICAgICAgbGluZUl0ZW1zKGZpcnN0OiAxMCkge1xuICAgICAgICAgIGVkZ2VzIHtcbiAgICAgICAgICAgIG5vZGUge1xuICAgICAgICAgICAgICB0aXRsZVxuICAgICAgICAgICAgICBxdWFudGl0eVxuICAgICAgICAgICAgICBvcmlnaW5hbFVuaXRQcmljZVxuICAgICAgICAgICAgICB2YXJpYW50IHtcbiAgICAgICAgICAgICAgICBpZFxuICAgICAgICAgICAgICAgIHByaWNlXG4gICAgICAgICAgICAgICAgdGl0bGVcbiAgICAgICAgICAgICAgICBwcm9kdWN0IHtcbiAgICAgICAgICAgICAgICAgIHRhZ3NcbiAgICAgICAgICAgICAgICAgIHRpdGxlXG4gICAgICAgICAgICAgICAgICBpbWFnZXMoZmlyc3Q6IDUpIHtcbiAgICAgICAgICAgICAgICAgICAgZWRnZXMge1xuICAgICAgICAgICAgICAgICAgICAgIG5vZGUge1xuICAgICAgICAgICAgICAgICAgICAgICAgb3JpZ2luYWxTcmNcbiAgICAgICAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cbmBcblxuZXhwb3J0IGNvbnN0IGNvbXBsZXRlT3JkZXIgPSBncWxgXG4gIG11dGF0aW9uIENvbXBsZXRlT3JkZXIoJGlkOiBJRCEpIHtcbiAgICBkcmFmdE9yZGVyQ29tcGxldGUoaWQ6ICRpZCwgcGF5bWVudFBlbmRpbmc6IHRydWUpIHtcbiAgICAgIGRyYWZ0T3JkZXIge1xuICAgICAgICBjdXN0b21lciB7XG4gICAgICAgICAgaWRcbiAgICAgICAgfVxuICAgICAgICBlbWFpbFxuICAgICAgICBuYW1lXG4gICAgICB9XG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCB1cGRhdGVQYXltZW50UmVxdWVzdCA9IGdxbGBcbiAgbXV0YXRpb24gdXBkYXRlUGF5bWVudFJlcXVlc3QoJGlucHV0OiBVcGRhdGVQYXltZW50UmVxdWVzdElucHV0ISkge1xuICAgIHVwZGF0ZVBheW1lbnRSZXF1ZXN0KGlucHV0OiAkaW5wdXQpIHtcbiAgICAgIGJvbnVzQW1vdW50XG4gICAgICBjdXN0b21lcklkXG4gICAgICBpZFxuICAgICAgb3JkZXJJZFxuICAgICAgc3RhdHVzXG4gICAgICBwcm9kdWN0cyB7XG4gICAgICAgIG9yaWdpbmFsVW5pdFByaWNlXG4gICAgICAgIHF1YW50aXR5XG4gICAgICAgIHZhcmlhbnRJZFxuICAgICAgfVxuICAgICAgY3JlYXRlZEF0XG4gICAgICB1cGRhdGVkQXRcbiAgICB9XG4gIH1cbmBcbmV4cG9ydCBjb25zdCBjcmVhdGVCcmFuY2ggPSBncWxgXG4gIG11dGF0aW9uIGNyZWF0ZUJyYW5jaCgkaW5wdXQ6IENyZWF0ZUJyYW5jaElucHV0ISkge1xuICAgIGNyZWF0ZUJyYW5jaChpbnB1dDogJGlucHV0KSB7XG4gICAgICBpZFxuICAgICAgYWRtaW5JZFxuICAgICAgYnJhbmNoTmFtZVxuICAgIH1cbiAgfVxuYFxuXG5leHBvcnQgY29uc3QgcmVtb3ZlQnJhbmNoID0gZ3FsYFxuICBtdXRhdGlvbiBkZWxldGVCcmFuY2goJGlucHV0OiBEZWxldGVCcmFuY2hJbnB1dCEpIHtcbiAgICBkZWxldGVCcmFuY2goaW5wdXQ6ICRpbnB1dCkge1xuICAgICAgaWRcbiAgICB9XG4gIH1cbmBcblxuZXhwb3J0IGNvbnN0IGRlbGV0ZVRyYW5zYWN0aW9uID0gZ3FsYFxuICBtdXRhdGlvbiBkZWxldGVUcmFuc2FjdGlvbigkaW5wdXQ6IERlbGV0ZVRyYW5zYWN0aW9uSW5wdXQhKSB7XG4gICAgZGVsZXRlVHJhbnNhY3Rpb24oaW5wdXQ6ICRpbnB1dCkge1xuICAgICAgaWRcbiAgICB9XG4gIH1cbmBcblxuZXhwb3J0IGNvbnN0IGRlbGV0ZUJyYW5jaFByb2R1Y3QgPSBncWxgXG4gIG11dGF0aW9uIGRlbGV0ZUJyYW5jaFByb2R1Y3QoJGlucHV0OiBEZWxldGVCcmFuY2hQcm9kdWN0SW5wdXQhKSB7XG4gICAgZGVsZXRlQnJhbmNoUHJvZHVjdChpbnB1dDogJGlucHV0KSB7XG4gICAgICBpZFxuICAgIH1cbiAgfVxuYFxuXG5leHBvcnQgY29uc3QgZGVsZXRlUGF5bWVudFJlcXVlc3QgPSBncWxgXG4gIG11dGF0aW9uIGRlbGV0ZVBheW1lbnRSZXF1ZXN0KCRpbnB1dDogRGVsZXRlUGF5bWVudFJlcXVlc3RJbnB1dCEpIHtcbiAgICBkZWxldGVQYXltZW50UmVxdWVzdChpbnB1dDogJGlucHV0KSB7XG4gICAgICBpZFxuICAgIH1cbiAgfVxuYFxuXG5leHBvcnQgY29uc3QgY3JlYXRlQnJhbmNoUHJvZHVjdCA9IGdxbGBcbiAgbXV0YXRpb24gY3JlYXRlQnJhbmNoUHJvZHVjdCgkaW5wdXQ6IENyZWF0ZUJyYW5jaFByb2R1Y3RJbnB1dCEpIHtcbiAgICBjcmVhdGVCcmFuY2hQcm9kdWN0KGlucHV0OiAkaW5wdXQpIHtcbiAgICAgIGlkXG4gICAgICBicmFuY2hJZFxuICAgICAgcHJvZHVjdElkXG4gICAgICB0YWdzXG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCBwcm9kdWN0VXBkYXRlID0gZ3FsYFxuICBtdXRhdGlvbiBwcm9kdWN0VXBkYXRlKCRpbnB1dDogUHJvZHVjdElucHV0ISkge1xuICAgIHByb2R1Y3RVcGRhdGUoaW5wdXQ6ICRpbnB1dCkge1xuICAgICAgcHJvZHVjdCB7XG4gICAgICAgIGlkXG4gICAgICAgIG1ldGFmaWVsZHMoZmlyc3Q6IDEwMCkge1xuICAgICAgICAgIGVkZ2VzIHtcbiAgICAgICAgICAgIG5vZGUge1xuICAgICAgICAgICAgICBuYW1lc3BhY2VcbiAgICAgICAgICAgICAga2V5XG4gICAgICAgICAgICAgIHZhbHVlXG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCB1cGRhdGVCcmFuY2hQcm9kdWN0ID0gZ3FsYFxuICBtdXRhdGlvbiB1cGRhdGVCcmFuY2hQcm9kdWN0KCRpbnB1dDogVXBkYXRlQnJhbmNoUHJvZHVjdElucHV0ISkge1xuICAgIHVwZGF0ZUJyYW5jaFByb2R1Y3QoaW5wdXQ6ICRpbnB1dCkge1xuICAgICAgaWRcbiAgICAgIHRhZ3NcbiAgICAgIGJyYW5jaElkXG4gICAgICBwcm9kdWN0SWRcbiAgICB9XG4gIH1cbmBcbiJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./graphql/mutation.js\n");
+
+/***/ }),
+
+/***/ "./graphql/queries.js":
+/*!****************************!*\
+  !*** ./graphql/queries.js ***!
+  \****************************/
+/*! exports provided: listTransactions, listProducts, branchByAdminId, listPaymentRequest, getBranchById, listBranchs */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"listTransactions\", function() { return listTransactions; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"listProducts\", function() { return listProducts; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"branchByAdminId\", function() { return branchByAdminId; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"listPaymentRequest\", function() { return listPaymentRequest; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"getBranchById\", function() { return getBranchById; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"listBranchs\", function() { return listBranchs; });\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! graphql-tag */ \"graphql-tag\");\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_0__);\n\nconst listTransactions = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  query listTransactions($limit: Int, $nextToken: String) {\n    listTransactions(limit: $limit, nextToken: $nextToken) {\n      nextToken\n      items {\n        id\n        totalPrice\n        totalBonusAmount\n        note\n        currency\n        products {\n          id\n          title\n          bonusPercentage\n          priceAmount\n          priceCurrency\n          image\n        }\n        customer {\n          id\n          firstName\n          lastName\n          phone\n          email\n        }\n        createdAt\n      }\n    }\n  }\n`;\nconst listProducts = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  query Products {\n    products(first: 100) {\n      edges {\n        node {\n          id\n          title\n          tags\n          description(truncateAt: 100)\n          variants(first: 1) {\n            edges {\n              node {\n                id\n                price\n              }\n            }\n          }\n          images(first: 1) {\n            edges {\n              node {\n                originalSrc\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n`;\nconst branchByAdminId = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  query branchByAdminId($adminId: ID!) {\n    branchByAdminId(adminId: $adminId) {\n      items {\n        adminId\n        branchName\n        id\n        transactions {\n          items {\n            branchId\n            createdAt\n            currency\n            id\n            note\n            customer {\n              email\n              firstName\n              id\n              lastName\n              phone\n            }\n            products {\n              bonusPercentage\n              id\n              image\n              priceAmount\n              priceCurrency\n              title\n            }\n            sortDate\n            totalBonusAmount\n            totalPrice\n            updatedAt\n          }\n        }\n        branchProducts {\n          items {\n            branchId\n            createdAt\n            id\n            productId\n            tags\n          }\n        }\n      }\n    }\n  }\n`;\nconst listPaymentRequest = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  query listPaymentRequest($branchId: ID, $status: PaymentStatus, $limit: Int, $nextToken: String) {\n    listPaymentRequests(\n      limit: $limit\n      nextToken: $nextToken\n      filter: { branchId: { eq: $branchId }, status: { eq: $status } }\n    ) {\n      items {\n        bonusAmount\n        createdAt\n        customerId\n        id\n        orderId\n        status\n        updatedAt\n      }\n      nextToken\n    }\n  }\n`;\nconst getBranchById = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  query getBranch($id: ID!) {\n    getBranch(id: $id) {\n      transactions(sortDirection: DESC) {\n        items {\n          branchId\n          createdAt\n          currency\n          note\n          customer {\n            email\n            id\n            firstName\n            lastName\n            phone\n          }\n          totalBonusAmount\n          totalPrice\n          updatedAt\n          sortDate\n        }\n      }\n      branchName\n      adminId\n      id\n      branchProducts {\n        items {\n          branchId\n          createdAt\n          id\n          productId\n          tags\n          updatedAt\n        }\n      }\n    }\n  }\n`;\nconst listBranchs = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  query listBranchs {\n    listBranchs {\n      items {\n        adminId\n        branchName\n        branchUsername\n        createdAt\n        id\n        branchProducts {\n          items {\n            branchId\n            createdAt\n            id\n            productId\n            tags\n            updatedAt\n          }\n        }\n        branchPaymentRequests {\n          items {\n            branchId\n            id\n          }\n        }\n        transactions {\n          items {\n            branchId\n            id\n          }\n        }\n      }\n    }\n  }\n`;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9ncmFwaHFsL3F1ZXJpZXMuanM/MTM1MSJdLCJuYW1lcyI6WyJsaXN0VHJhbnNhY3Rpb25zIiwiZ3FsIiwibGlzdFByb2R1Y3RzIiwiYnJhbmNoQnlBZG1pbklkIiwibGlzdFBheW1lbnRSZXF1ZXN0IiwiZ2V0QnJhbmNoQnlJZCIsImxpc3RCcmFuY2hzIl0sIm1hcHBpbmdzIjoiQUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUVPLE1BQU1BLGdCQUFnQixHQUFHQyxrREFBSTs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Q0FBN0I7QUErQkEsTUFBTUMsWUFBWSxHQUFHRCxrREFBSTs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQUF6QjtBQThCQSxNQUFNRSxlQUFlLEdBQUdGLGtEQUFJOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQUE1QjtBQWdEQSxNQUFNRyxrQkFBa0IsR0FBR0gsa0RBQUk7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Q0FBL0I7QUFvQkEsTUFBTUksYUFBYSxHQUFHSixrREFBSTs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQUExQjtBQXVDQSxNQUFNSyxXQUFXLEdBQUdMLGtEQUFJOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBQXhCIiwiZmlsZSI6Ii4vZ3JhcGhxbC9xdWVyaWVzLmpzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGdxbCBmcm9tIFwiZ3JhcGhxbC10YWdcIlxuXG5leHBvcnQgY29uc3QgbGlzdFRyYW5zYWN0aW9ucyA9IGdxbGBcbiAgcXVlcnkgbGlzdFRyYW5zYWN0aW9ucygkbGltaXQ6IEludCwgJG5leHRUb2tlbjogU3RyaW5nKSB7XG4gICAgbGlzdFRyYW5zYWN0aW9ucyhsaW1pdDogJGxpbWl0LCBuZXh0VG9rZW46ICRuZXh0VG9rZW4pIHtcbiAgICAgIG5leHRUb2tlblxuICAgICAgaXRlbXMge1xuICAgICAgICBpZFxuICAgICAgICB0b3RhbFByaWNlXG4gICAgICAgIHRvdGFsQm9udXNBbW91bnRcbiAgICAgICAgbm90ZVxuICAgICAgICBjdXJyZW5jeVxuICAgICAgICBwcm9kdWN0cyB7XG4gICAgICAgICAgaWRcbiAgICAgICAgICB0aXRsZVxuICAgICAgICAgIGJvbnVzUGVyY2VudGFnZVxuICAgICAgICAgIHByaWNlQW1vdW50XG4gICAgICAgICAgcHJpY2VDdXJyZW5jeVxuICAgICAgICAgIGltYWdlXG4gICAgICAgIH1cbiAgICAgICAgY3VzdG9tZXIge1xuICAgICAgICAgIGlkXG4gICAgICAgICAgZmlyc3ROYW1lXG4gICAgICAgICAgbGFzdE5hbWVcbiAgICAgICAgICBwaG9uZVxuICAgICAgICAgIGVtYWlsXG4gICAgICAgIH1cbiAgICAgICAgY3JlYXRlZEF0XG4gICAgICB9XG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCBsaXN0UHJvZHVjdHMgPSBncWxgXG4gIHF1ZXJ5IFByb2R1Y3RzIHtcbiAgICBwcm9kdWN0cyhmaXJzdDogMTAwKSB7XG4gICAgICBlZGdlcyB7XG4gICAgICAgIG5vZGUge1xuICAgICAgICAgIGlkXG4gICAgICAgICAgdGl0bGVcbiAgICAgICAgICB0YWdzXG4gICAgICAgICAgZGVzY3JpcHRpb24odHJ1bmNhdGVBdDogMTAwKVxuICAgICAgICAgIHZhcmlhbnRzKGZpcnN0OiAxKSB7XG4gICAgICAgICAgICBlZGdlcyB7XG4gICAgICAgICAgICAgIG5vZGUge1xuICAgICAgICAgICAgICAgIGlkXG4gICAgICAgICAgICAgICAgcHJpY2VcbiAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgICBpbWFnZXMoZmlyc3Q6IDEpIHtcbiAgICAgICAgICAgIGVkZ2VzIHtcbiAgICAgICAgICAgICAgbm9kZSB7XG4gICAgICAgICAgICAgICAgb3JpZ2luYWxTcmNcbiAgICAgICAgICAgICAgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cbiAgfVxuYFxuXG5leHBvcnQgY29uc3QgYnJhbmNoQnlBZG1pbklkID0gZ3FsYFxuICBxdWVyeSBicmFuY2hCeUFkbWluSWQoJGFkbWluSWQ6IElEISkge1xuICAgIGJyYW5jaEJ5QWRtaW5JZChhZG1pbklkOiAkYWRtaW5JZCkge1xuICAgICAgaXRlbXMge1xuICAgICAgICBhZG1pbklkXG4gICAgICAgIGJyYW5jaE5hbWVcbiAgICAgICAgaWRcbiAgICAgICAgdHJhbnNhY3Rpb25zIHtcbiAgICAgICAgICBpdGVtcyB7XG4gICAgICAgICAgICBicmFuY2hJZFxuICAgICAgICAgICAgY3JlYXRlZEF0XG4gICAgICAgICAgICBjdXJyZW5jeVxuICAgICAgICAgICAgaWRcbiAgICAgICAgICAgIG5vdGVcbiAgICAgICAgICAgIGN1c3RvbWVyIHtcbiAgICAgICAgICAgICAgZW1haWxcbiAgICAgICAgICAgICAgZmlyc3ROYW1lXG4gICAgICAgICAgICAgIGlkXG4gICAgICAgICAgICAgIGxhc3ROYW1lXG4gICAgICAgICAgICAgIHBob25lXG4gICAgICAgICAgICB9XG4gICAgICAgICAgICBwcm9kdWN0cyB7XG4gICAgICAgICAgICAgIGJvbnVzUGVyY2VudGFnZVxuICAgICAgICAgICAgICBpZFxuICAgICAgICAgICAgICBpbWFnZVxuICAgICAgICAgICAgICBwcmljZUFtb3VudFxuICAgICAgICAgICAgICBwcmljZUN1cnJlbmN5XG4gICAgICAgICAgICAgIHRpdGxlXG4gICAgICAgICAgICB9XG4gICAgICAgICAgICBzb3J0RGF0ZVxuICAgICAgICAgICAgdG90YWxCb251c0Ftb3VudFxuICAgICAgICAgICAgdG90YWxQcmljZVxuICAgICAgICAgICAgdXBkYXRlZEF0XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICAgIGJyYW5jaFByb2R1Y3RzIHtcbiAgICAgICAgICBpdGVtcyB7XG4gICAgICAgICAgICBicmFuY2hJZFxuICAgICAgICAgICAgY3JlYXRlZEF0XG4gICAgICAgICAgICBpZFxuICAgICAgICAgICAgcHJvZHVjdElkXG4gICAgICAgICAgICB0YWdzXG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuICB9XG5gXG5leHBvcnQgY29uc3QgbGlzdFBheW1lbnRSZXF1ZXN0ID0gZ3FsYFxuICBxdWVyeSBsaXN0UGF5bWVudFJlcXVlc3QoJGJyYW5jaElkOiBJRCwgJHN0YXR1czogUGF5bWVudFN0YXR1cywgJGxpbWl0OiBJbnQsICRuZXh0VG9rZW46IFN0cmluZykge1xuICAgIGxpc3RQYXltZW50UmVxdWVzdHMoXG4gICAgICBsaW1pdDogJGxpbWl0XG4gICAgICBuZXh0VG9rZW46ICRuZXh0VG9rZW5cbiAgICAgIGZpbHRlcjogeyBicmFuY2hJZDogeyBlcTogJGJyYW5jaElkIH0sIHN0YXR1czogeyBlcTogJHN0YXR1cyB9IH1cbiAgICApIHtcbiAgICAgIGl0ZW1zIHtcbiAgICAgICAgYm9udXNBbW91bnRcbiAgICAgICAgY3JlYXRlZEF0XG4gICAgICAgIGN1c3RvbWVySWRcbiAgICAgICAgaWRcbiAgICAgICAgb3JkZXJJZFxuICAgICAgICBzdGF0dXNcbiAgICAgICAgdXBkYXRlZEF0XG4gICAgICB9XG4gICAgICBuZXh0VG9rZW5cbiAgICB9XG4gIH1cbmBcbmV4cG9ydCBjb25zdCBnZXRCcmFuY2hCeUlkID0gZ3FsYFxuICBxdWVyeSBnZXRCcmFuY2goJGlkOiBJRCEpIHtcbiAgICBnZXRCcmFuY2goaWQ6ICRpZCkge1xuICAgICAgdHJhbnNhY3Rpb25zKHNvcnREaXJlY3Rpb246IERFU0MpIHtcbiAgICAgICAgaXRlbXMge1xuICAgICAgICAgIGJyYW5jaElkXG4gICAgICAgICAgY3JlYXRlZEF0XG4gICAgICAgICAgY3VycmVuY3lcbiAgICAgICAgICBub3RlXG4gICAgICAgICAgY3VzdG9tZXIge1xuICAgICAgICAgICAgZW1haWxcbiAgICAgICAgICAgIGlkXG4gICAgICAgICAgICBmaXJzdE5hbWVcbiAgICAgICAgICAgIGxhc3ROYW1lXG4gICAgICAgICAgICBwaG9uZVxuICAgICAgICAgIH1cbiAgICAgICAgICB0b3RhbEJvbnVzQW1vdW50XG4gICAgICAgICAgdG90YWxQcmljZVxuICAgICAgICAgIHVwZGF0ZWRBdFxuICAgICAgICAgIHNvcnREYXRlXG4gICAgICAgIH1cbiAgICAgIH1cbiAgICAgIGJyYW5jaE5hbWVcbiAgICAgIGFkbWluSWRcbiAgICAgIGlkXG4gICAgICBicmFuY2hQcm9kdWN0cyB7XG4gICAgICAgIGl0ZW1zIHtcbiAgICAgICAgICBicmFuY2hJZFxuICAgICAgICAgIGNyZWF0ZWRBdFxuICAgICAgICAgIGlkXG4gICAgICAgICAgcHJvZHVjdElkXG4gICAgICAgICAgdGFnc1xuICAgICAgICAgIHVwZGF0ZWRBdFxuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCBsaXN0QnJhbmNocyA9IGdxbGBcbiAgcXVlcnkgbGlzdEJyYW5jaHMge1xuICAgIGxpc3RCcmFuY2hzIHtcbiAgICAgIGl0ZW1zIHtcbiAgICAgICAgYWRtaW5JZFxuICAgICAgICBicmFuY2hOYW1lXG4gICAgICAgIGJyYW5jaFVzZXJuYW1lXG4gICAgICAgIGNyZWF0ZWRBdFxuICAgICAgICBpZFxuICAgICAgICBicmFuY2hQcm9kdWN0cyB7XG4gICAgICAgICAgaXRlbXMge1xuICAgICAgICAgICAgYnJhbmNoSWRcbiAgICAgICAgICAgIGNyZWF0ZWRBdFxuICAgICAgICAgICAgaWRcbiAgICAgICAgICAgIHByb2R1Y3RJZFxuICAgICAgICAgICAgdGFnc1xuICAgICAgICAgICAgdXBkYXRlZEF0XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICAgIGJyYW5jaFBheW1lbnRSZXF1ZXN0cyB7XG4gICAgICAgICAgaXRlbXMge1xuICAgICAgICAgICAgYnJhbmNoSWRcbiAgICAgICAgICAgIGlkXG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICAgIHRyYW5zYWN0aW9ucyB7XG4gICAgICAgICAgaXRlbXMge1xuICAgICAgICAgICAgYnJhbmNoSWRcbiAgICAgICAgICAgIGlkXG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuICB9XG5gXG4iXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///./graphql/queries.js\n");
+
+/***/ }),
+
+/***/ "./graphql/subscriptions.js":
+/*!**********************************!*\
+  !*** ./graphql/subscriptions.js ***!
+  \**********************************/
+/*! exports provided: onUpdatePaymentSubscription, paymentSubscription, onCreateTransaction, onDeleteTransaction, onCreateBranchSubscription, onDeleteBranchSubscription, onCreateBranchProduct, onUpdateBranchProduct, onDeleteBranchProduct */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onUpdatePaymentSubscription\", function() { return onUpdatePaymentSubscription; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"paymentSubscription\", function() { return paymentSubscription; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onCreateTransaction\", function() { return onCreateTransaction; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onDeleteTransaction\", function() { return onDeleteTransaction; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onCreateBranchSubscription\", function() { return onCreateBranchSubscription; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onDeleteBranchSubscription\", function() { return onDeleteBranchSubscription; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onCreateBranchProduct\", function() { return onCreateBranchProduct; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onUpdateBranchProduct\", function() { return onUpdateBranchProduct; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"onDeleteBranchProduct\", function() { return onDeleteBranchProduct; });\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! graphql-tag */ \"graphql-tag\");\n/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_0__);\n\nconst onUpdatePaymentSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onUpdatePaymentRequest {\n    onUpdatePaymentRequest {\n      id\n      status\n    }\n  }\n`;\nconst paymentSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription paymentRequest {\n    onCreatePaymentRequest {\n      bonusAmount\n      createdAt\n      customerId\n      id\n      orderId\n      status\n      updatedAt\n    }\n  }\n`;\nconst onCreateTransaction = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onCreateTransaction {\n    onCreateTransaction {\n      id\n    }\n  }\n`;\nconst onDeleteTransaction = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onDeleteTransaction {\n    onDeleteTransaction {\n      id\n    }\n  }\n`;\nconst onCreateBranchSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onCreateBranch {\n    onCreateBranch {\n      adminId\n      branchName\n      id\n      createdAt\n    }\n  }\n`;\nconst onDeleteBranchSubscription = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onDeleteBranch {\n    onDeleteBranch {\n      id\n    }\n  }\n`;\nconst onCreateBranchProduct = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onCreateBranchProduct {\n    onCreateBranchProduct {\n      id\n    }\n  }\n`;\nconst onUpdateBranchProduct = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onUpdateBranchProduct {\n    onUpdateBranchProduct {\n      id\n    }\n  }\n`;\nconst onDeleteBranchProduct = graphql_tag__WEBPACK_IMPORTED_MODULE_0___default.a`\n  subscription onDeleteBranchProduct {\n    onDeleteBranchProduct {\n      id\n    }\n  }\n`;//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9ncmFwaHFsL3N1YnNjcmlwdGlvbnMuanM/NGE0NyJdLCJuYW1lcyI6WyJvblVwZGF0ZVBheW1lbnRTdWJzY3JpcHRpb24iLCJncWwiLCJwYXltZW50U3Vic2NyaXB0aW9uIiwib25DcmVhdGVUcmFuc2FjdGlvbiIsIm9uRGVsZXRlVHJhbnNhY3Rpb24iLCJvbkNyZWF0ZUJyYW5jaFN1YnNjcmlwdGlvbiIsIm9uRGVsZXRlQnJhbmNoU3Vic2NyaXB0aW9uIiwib25DcmVhdGVCcmFuY2hQcm9kdWN0Iiwib25VcGRhdGVCcmFuY2hQcm9kdWN0Iiwib25EZWxldGVCcmFuY2hQcm9kdWN0Il0sIm1hcHBpbmdzIjoiQUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUVPLE1BQU1BLDJCQUEyQixHQUFHQyxrREFBSTs7Ozs7OztDQUF4QztBQVNBLE1BQU1DLG1CQUFtQixHQUFHRCxrREFBSTs7Ozs7Ozs7Ozs7O0NBQWhDO0FBY0EsTUFBTUUsbUJBQW1CLEdBQUdGLGtEQUFJOzs7Ozs7Q0FBaEM7QUFRQSxNQUFNRyxtQkFBbUIsR0FBR0gsa0RBQUk7Ozs7OztDQUFoQztBQVFBLE1BQU1JLDBCQUEwQixHQUFHSixrREFBSTs7Ozs7Ozs7O0NBQXZDO0FBV0EsTUFBTUssMEJBQTBCLEdBQUdMLGtEQUFJOzs7Ozs7Q0FBdkM7QUFPQSxNQUFNTSxxQkFBcUIsR0FBR04sa0RBQUk7Ozs7OztDQUFsQztBQU9BLE1BQU1PLHFCQUFxQixHQUFHUCxrREFBSTs7Ozs7O0NBQWxDO0FBUUEsTUFBTVEscUJBQXFCLEdBQUdSLGtEQUFJOzs7Ozs7Q0FBbEMiLCJmaWxlIjoiLi9ncmFwaHFsL3N1YnNjcmlwdGlvbnMuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgZ3FsIGZyb20gXCJncmFwaHFsLXRhZ1wiXG5cbmV4cG9ydCBjb25zdCBvblVwZGF0ZVBheW1lbnRTdWJzY3JpcHRpb24gPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBvblVwZGF0ZVBheW1lbnRSZXF1ZXN0IHtcbiAgICBvblVwZGF0ZVBheW1lbnRSZXF1ZXN0IHtcbiAgICAgIGlkXG4gICAgICBzdGF0dXNcbiAgICB9XG4gIH1cbmBcblxuZXhwb3J0IGNvbnN0IHBheW1lbnRTdWJzY3JpcHRpb24gPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBwYXltZW50UmVxdWVzdCB7XG4gICAgb25DcmVhdGVQYXltZW50UmVxdWVzdCB7XG4gICAgICBib251c0Ftb3VudFxuICAgICAgY3JlYXRlZEF0XG4gICAgICBjdXN0b21lcklkXG4gICAgICBpZFxuICAgICAgb3JkZXJJZFxuICAgICAgc3RhdHVzXG4gICAgICB1cGRhdGVkQXRcbiAgICB9XG4gIH1cbmBcblxuZXhwb3J0IGNvbnN0IG9uQ3JlYXRlVHJhbnNhY3Rpb24gPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBvbkNyZWF0ZVRyYW5zYWN0aW9uIHtcbiAgICBvbkNyZWF0ZVRyYW5zYWN0aW9uIHtcbiAgICAgIGlkXG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCBvbkRlbGV0ZVRyYW5zYWN0aW9uID0gZ3FsYFxuICBzdWJzY3JpcHRpb24gb25EZWxldGVUcmFuc2FjdGlvbiB7XG4gICAgb25EZWxldGVUcmFuc2FjdGlvbiB7XG4gICAgICBpZFxuICAgIH1cbiAgfVxuYFxuXG5leHBvcnQgY29uc3Qgb25DcmVhdGVCcmFuY2hTdWJzY3JpcHRpb24gPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBvbkNyZWF0ZUJyYW5jaCB7XG4gICAgb25DcmVhdGVCcmFuY2gge1xuICAgICAgYWRtaW5JZFxuICAgICAgYnJhbmNoTmFtZVxuICAgICAgaWRcbiAgICAgIGNyZWF0ZWRBdFxuICAgIH1cbiAgfVxuYFxuXG5leHBvcnQgY29uc3Qgb25EZWxldGVCcmFuY2hTdWJzY3JpcHRpb24gPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBvbkRlbGV0ZUJyYW5jaCB7XG4gICAgb25EZWxldGVCcmFuY2gge1xuICAgICAgaWRcbiAgICB9XG4gIH1cbmBcbmV4cG9ydCBjb25zdCBvbkNyZWF0ZUJyYW5jaFByb2R1Y3QgPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBvbkNyZWF0ZUJyYW5jaFByb2R1Y3Qge1xuICAgIG9uQ3JlYXRlQnJhbmNoUHJvZHVjdCB7XG4gICAgICBpZFxuICAgIH1cbiAgfVxuYFxuZXhwb3J0IGNvbnN0IG9uVXBkYXRlQnJhbmNoUHJvZHVjdCA9IGdxbGBcbiAgc3Vic2NyaXB0aW9uIG9uVXBkYXRlQnJhbmNoUHJvZHVjdCB7XG4gICAgb25VcGRhdGVCcmFuY2hQcm9kdWN0IHtcbiAgICAgIGlkXG4gICAgfVxuICB9XG5gXG5cbmV4cG9ydCBjb25zdCBvbkRlbGV0ZUJyYW5jaFByb2R1Y3QgPSBncWxgXG4gIHN1YnNjcmlwdGlvbiBvbkRlbGV0ZUJyYW5jaFByb2R1Y3Qge1xuICAgIG9uRGVsZXRlQnJhbmNoUHJvZHVjdCB7XG4gICAgICBpZFxuICAgIH1cbiAgfVxuYFxuIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./graphql/subscriptions.js\n");
+
+/***/ }),
+
+/***/ "./pages/index.js":
+/*!************************!*\
+  !*** ./pages/index.js ***!
+  \************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! aws-amplify */ \"aws-amplify\");\n/* harmony import */ var aws_amplify__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(aws_amplify__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _aws_exports__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../aws-exports */ \"./aws-exports.js\");\n/* harmony import */ var _components_Login__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/Login */ \"./components/Login.js\");\n/* harmony import */ var _components_BranchConsole__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/BranchConsole */ \"./components/BranchConsole.js\");\n/* harmony import */ var _components_BranchData__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/BranchData */ \"./components/BranchData.js\");\nvar __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;\n\n\n\n\n\n\n\nconst Index = () => {\n  const {\n    0: user,\n    1: updateUser\n  } = Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useState\"])(null);\n\n  const checkUser = async () => {\n    try {\n      const user = await aws_amplify__WEBPACK_IMPORTED_MODULE_1__[\"Auth\"].currentAuthenticatedUser();\n\n      if (!user) {\n        return;\n      }\n\n      updateUser(user);\n    } catch (error) {\n      console.log(error);\n    }\n  };\n\n  Object(react__WEBPACK_IMPORTED_MODULE_0__[\"useEffect\"])(() => {\n    checkUser();\n  }, []);\n  return __jsx(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, user && user.username !== 'superadmin' && __jsx(_components_BranchData__WEBPACK_IMPORTED_MODULE_5__[\"default\"], {\n    updateUser: updateUser,\n    user: user\n  }), !user && __jsx(_components_Login__WEBPACK_IMPORTED_MODULE_3__[\"default\"], {\n    setUser: fetchedUser => updateUser(fetchedUser)\n  }), user && user.username === 'superadmin' && __jsx(_components_BranchConsole__WEBPACK_IMPORTED_MODULE_4__[\"default\"], {\n    updateUser: updateUser\n  }));\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (Index);//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi9wYWdlcy9pbmRleC5qcz80NGQ4Il0sIm5hbWVzIjpbIkluZGV4IiwidXNlciIsInVwZGF0ZVVzZXIiLCJ1c2VTdGF0ZSIsImNoZWNrVXNlciIsIkF1dGgiLCJjdXJyZW50QXV0aGVudGljYXRlZFVzZXIiLCJlcnJvciIsImNvbnNvbGUiLCJsb2ciLCJ1c2VFZmZlY3QiLCJ1c2VybmFtZSIsImZldGNoZWRVc2VyIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7O0FBQUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBOztBQUVBLE1BQU1BLEtBQUssR0FBRyxNQUFNO0FBQ2hCLFFBQU07QUFBQSxPQUFDQyxJQUFEO0FBQUEsT0FBT0M7QUFBUCxNQUFxQkMsc0RBQVEsQ0FBQyxJQUFELENBQW5DOztBQUVBLFFBQU1DLFNBQVMsR0FBRyxZQUFZO0FBQzFCLFFBQUk7QUFDQSxZQUFNSCxJQUFJLEdBQUcsTUFBTUksZ0RBQUksQ0FBQ0Msd0JBQUwsRUFBbkI7O0FBRUEsVUFBSSxDQUFDTCxJQUFMLEVBQVc7QUFDUDtBQUNIOztBQUNEQyxnQkFBVSxDQUFDRCxJQUFELENBQVY7QUFDSCxLQVBELENBT0UsT0FBT00sS0FBUCxFQUFjO0FBQ1pDLGFBQU8sQ0FBQ0MsR0FBUixDQUFZRixLQUFaO0FBQ0g7QUFDSixHQVhEOztBQWFBRyx5REFBUyxDQUFDLE1BQU07QUFDWk4sYUFBUztBQUNaLEdBRlEsRUFFTixFQUZNLENBQVQ7QUFJQSxTQUNJLG1FQUNLSCxJQUFJLElBQUlBLElBQUksQ0FBQ1UsUUFBTCxLQUFrQixZQUExQixJQUNHLE1BQUMsOERBQUQ7QUFBWSxjQUFVLEVBQUVULFVBQXhCO0FBQW9DLFFBQUksRUFBRUQ7QUFBMUMsSUFGUixFQUlLLENBQUNBLElBQUQsSUFBUyxNQUFDLHlEQUFEO0FBQU8sV0FBTyxFQUFHVyxXQUFELElBQWlCVixVQUFVLENBQUNVLFdBQUQ7QUFBM0MsSUFKZCxFQUtLWCxJQUFJLElBQUlBLElBQUksQ0FBQ1UsUUFBTCxLQUFrQixZQUExQixJQUEwQyxNQUFDLGlFQUFEO0FBQWUsY0FBVSxFQUFFVDtBQUEzQixJQUwvQyxDQURKO0FBU0gsQ0E3QkQ7O0FBK0JlRixvRUFBZiIsImZpbGUiOiIuL3BhZ2VzL2luZGV4LmpzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlLCB1c2VDYWxsYmFjaywgdXNlRWZmZWN0IH0gZnJvbSAncmVhY3QnXG5pbXBvcnQgeyBBdXRoIH0gZnJvbSAnYXdzLWFtcGxpZnknXG5pbXBvcnQgY29uZmlnIGZyb20gJy4uL2F3cy1leHBvcnRzJ1xuaW1wb3J0IExvZ2luIGZyb20gJy4uL2NvbXBvbmVudHMvTG9naW4nXG5pbXBvcnQgQnJhbmNoQ29uc29sZSBmcm9tICcuLi9jb21wb25lbnRzL0JyYW5jaENvbnNvbGUnXG5pbXBvcnQgQnJhbmNoRGF0YSBmcm9tICcuLi9jb21wb25lbnRzL0JyYW5jaERhdGEnXG5cbmNvbnN0IEluZGV4ID0gKCkgPT4ge1xuICAgIGNvbnN0IFt1c2VyLCB1cGRhdGVVc2VyXSA9IHVzZVN0YXRlKG51bGwpXG5cbiAgICBjb25zdCBjaGVja1VzZXIgPSBhc3luYyAoKSA9PiB7XG4gICAgICAgIHRyeSB7XG4gICAgICAgICAgICBjb25zdCB1c2VyID0gYXdhaXQgQXV0aC5jdXJyZW50QXV0aGVudGljYXRlZFVzZXIoKVxuXG4gICAgICAgICAgICBpZiAoIXVzZXIpIHtcbiAgICAgICAgICAgICAgICByZXR1cm5cbiAgICAgICAgICAgIH1cbiAgICAgICAgICAgIHVwZGF0ZVVzZXIodXNlcilcbiAgICAgICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgICAgICAgIGNvbnNvbGUubG9nKGVycm9yKVxuICAgICAgICB9XG4gICAgfVxuXG4gICAgdXNlRWZmZWN0KCgpID0+IHtcbiAgICAgICAgY2hlY2tVc2VyKClcbiAgICB9LCBbXSlcblxuICAgIHJldHVybiAoXG4gICAgICAgIDw+XG4gICAgICAgICAgICB7dXNlciAmJiB1c2VyLnVzZXJuYW1lICE9PSAnc3VwZXJhZG1pbicgJiYgKFxuICAgICAgICAgICAgICAgIDxCcmFuY2hEYXRhIHVwZGF0ZVVzZXI9e3VwZGF0ZVVzZXJ9IHVzZXI9e3VzZXJ9IC8+XG4gICAgICAgICAgICApfVxuICAgICAgICAgICAgeyF1c2VyICYmIDxMb2dpbiBzZXRVc2VyPXsoZmV0Y2hlZFVzZXIpID0+IHVwZGF0ZVVzZXIoZmV0Y2hlZFVzZXIpfSAvPn1cbiAgICAgICAgICAgIHt1c2VyICYmIHVzZXIudXNlcm5hbWUgPT09ICdzdXBlcmFkbWluJyAmJiA8QnJhbmNoQ29uc29sZSB1cGRhdGVVc2VyPXt1cGRhdGVVc2VyfSAvPn1cbiAgICAgICAgPC8+XG4gICAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBJbmRleFxuIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./pages/index.js\n");
+
+/***/ }),
+
+/***/ "./utils/helper.js":
+/*!*************************!*\
+  !*** ./utils/helper.js ***!
+  \*************************/
+/*! exports provided: toCurrency, formatDate, extractNumbersFromString */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"toCurrency\", function() { return toCurrency; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"formatDate\", function() { return formatDate; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"extractNumbersFromString\", function() { return extractNumbersFromString; });\nconst toCurrency = price => {\n  return new Intl.NumberFormat('hy-AM', {\n    currency: 'AMD',\n    style: 'currency'\n  }).format(price);\n};\nconst formatDate = rowDate => {\n  const date = new Date(rowDate);\n  const year = new Intl.DateTimeFormat('en', {\n    year: 'numeric'\n  }).format(date);\n  const month = new Intl.DateTimeFormat('en', {\n    month: 'short'\n  }).format(date);\n  const day = new Intl.DateTimeFormat('en', {\n    day: '2-digit'\n  }).format(date);\n  return `${day}-${month}-${year}`;\n};\nconst extractNumbersFromString = string => {\n  return Number(string.match(/\\d+/g));\n};//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vLi91dGlscy9oZWxwZXIuanM/MTU1MiJdLCJuYW1lcyI6WyJ0b0N1cnJlbmN5IiwicHJpY2UiLCJJbnRsIiwiTnVtYmVyRm9ybWF0IiwiY3VycmVuY3kiLCJzdHlsZSIsImZvcm1hdCIsImZvcm1hdERhdGUiLCJyb3dEYXRlIiwiZGF0ZSIsIkRhdGUiLCJ5ZWFyIiwiRGF0ZVRpbWVGb3JtYXQiLCJtb250aCIsImRheSIsImV4dHJhY3ROdW1iZXJzRnJvbVN0cmluZyIsInN0cmluZyIsIk51bWJlciIsIm1hdGNoIl0sIm1hcHBpbmdzIjoiQUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFPLE1BQU1BLFVBQVUsR0FBSUMsS0FBRCxJQUFXO0FBQ2pDLFNBQU8sSUFBSUMsSUFBSSxDQUFDQyxZQUFULENBQXNCLE9BQXRCLEVBQStCO0FBQ2xDQyxZQUFRLEVBQUUsS0FEd0I7QUFFbENDLFNBQUssRUFBRTtBQUYyQixHQUEvQixFQUdKQyxNQUhJLENBR0dMLEtBSEgsQ0FBUDtBQUlILENBTE07QUFPQSxNQUFNTSxVQUFVLEdBQUlDLE9BQUQsSUFBYTtBQUNuQyxRQUFNQyxJQUFJLEdBQUcsSUFBSUMsSUFBSixDQUFTRixPQUFULENBQWI7QUFDQSxRQUFNRyxJQUFJLEdBQUcsSUFBSVQsSUFBSSxDQUFDVSxjQUFULENBQXdCLElBQXhCLEVBQThCO0FBQUVELFFBQUksRUFBRTtBQUFSLEdBQTlCLEVBQW1ETCxNQUFuRCxDQUEwREcsSUFBMUQsQ0FBYjtBQUNBLFFBQU1JLEtBQUssR0FBRyxJQUFJWCxJQUFJLENBQUNVLGNBQVQsQ0FBd0IsSUFBeEIsRUFBOEI7QUFBRUMsU0FBSyxFQUFFO0FBQVQsR0FBOUIsRUFBa0RQLE1BQWxELENBQXlERyxJQUF6RCxDQUFkO0FBQ0EsUUFBTUssR0FBRyxHQUFHLElBQUlaLElBQUksQ0FBQ1UsY0FBVCxDQUF3QixJQUF4QixFQUE4QjtBQUFFRSxPQUFHLEVBQUU7QUFBUCxHQUE5QixFQUFrRFIsTUFBbEQsQ0FBeURHLElBQXpELENBQVo7QUFFQSxTQUFRLEdBQUVLLEdBQUksSUFBR0QsS0FBTSxJQUFHRixJQUFLLEVBQS9CO0FBQ0gsQ0FQTTtBQVNBLE1BQU1JLHdCQUF3QixHQUFJQyxNQUFELElBQVk7QUFDaEQsU0FBT0MsTUFBTSxDQUFDRCxNQUFNLENBQUNFLEtBQVAsQ0FBYSxNQUFiLENBQUQsQ0FBYjtBQUNILENBRk0iLCJmaWxlIjoiLi91dGlscy9oZWxwZXIuanMuanMiLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgY29uc3QgdG9DdXJyZW5jeSA9IChwcmljZSkgPT4ge1xuICAgIHJldHVybiBuZXcgSW50bC5OdW1iZXJGb3JtYXQoJ2h5LUFNJywge1xuICAgICAgICBjdXJyZW5jeTogJ0FNRCcsXG4gICAgICAgIHN0eWxlOiAnY3VycmVuY3knXG4gICAgfSkuZm9ybWF0KHByaWNlKVxufVxuXG5leHBvcnQgY29uc3QgZm9ybWF0RGF0ZSA9IChyb3dEYXRlKSA9PiB7XG4gICAgY29uc3QgZGF0ZSA9IG5ldyBEYXRlKHJvd0RhdGUpXG4gICAgY29uc3QgeWVhciA9IG5ldyBJbnRsLkRhdGVUaW1lRm9ybWF0KCdlbicsIHsgeWVhcjogJ251bWVyaWMnIH0pLmZvcm1hdChkYXRlKVxuICAgIGNvbnN0IG1vbnRoID0gbmV3IEludGwuRGF0ZVRpbWVGb3JtYXQoJ2VuJywgeyBtb250aDogJ3Nob3J0JyB9KS5mb3JtYXQoZGF0ZSlcbiAgICBjb25zdCBkYXkgPSBuZXcgSW50bC5EYXRlVGltZUZvcm1hdCgnZW4nLCB7IGRheTogJzItZGlnaXQnIH0pLmZvcm1hdChkYXRlKVxuXG4gICAgcmV0dXJuIGAke2RheX0tJHttb250aH0tJHt5ZWFyfWBcbn1cblxuZXhwb3J0IGNvbnN0IGV4dHJhY3ROdW1iZXJzRnJvbVN0cmluZyA9IChzdHJpbmcpID0+IHtcbiAgICByZXR1cm4gTnVtYmVyKHN0cmluZy5tYXRjaCgvXFxkKy9nKSlcbn1cbiJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./utils/helper.js\n");
+
+/***/ }),
+
+/***/ "@apollo/client":
+/*!*********************************!*\
+  !*** external "@apollo/client" ***!
+  \*********************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("axios");
+eval("module.exports = require(\"@apollo/client\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJAYXBvbGxvL2NsaWVudFwiPzRjMmQiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEiLCJmaWxlIjoiQGFwb2xsby9jbGllbnQuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHJlcXVpcmUoXCJAYXBvbGxvL2NsaWVudFwiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///@apollo/client\n");
+
+/***/ }),
+
+/***/ "@shopify/app-bridge":
+/*!**************************************!*\
+  !*** external "@shopify/app-bridge" ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"@shopify/app-bridge\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJAc2hvcGlmeS9hcHAtYnJpZGdlXCI/YzE5ZiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsImZpbGUiOiJAc2hvcGlmeS9hcHAtYnJpZGdlLmpzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSByZXF1aXJlKFwiQHNob3BpZnkvYXBwLWJyaWRnZVwiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///@shopify/app-bridge\n");
+
+/***/ }),
+
+/***/ "@shopify/app-bridge/actions":
+/*!**********************************************!*\
+  !*** external "@shopify/app-bridge/actions" ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"@shopify/app-bridge/actions\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJAc2hvcGlmeS9hcHAtYnJpZGdlL2FjdGlvbnNcIj8wNmMwIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBIiwiZmlsZSI6IkBzaG9waWZ5L2FwcC1icmlkZ2UvYWN0aW9ucy5qcyIsInNvdXJjZXNDb250ZW50IjpbIm1vZHVsZS5leHBvcnRzID0gcmVxdWlyZShcIkBzaG9waWZ5L2FwcC1icmlkZ2UvYWN0aW9uc1wiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///@shopify/app-bridge/actions\n");
+
+/***/ }),
+
+/***/ "@shopify/polaris":
+/*!***********************************!*\
+  !*** external "@shopify/polaris" ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"@shopify/polaris\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJAc2hvcGlmeS9wb2xhcmlzXCI/YTYyMyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsImZpbGUiOiJAc2hvcGlmeS9wb2xhcmlzLmpzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSByZXF1aXJlKFwiQHNob3BpZnkvcG9sYXJpc1wiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///@shopify/polaris\n");
+
+/***/ }),
+
+/***/ "@shopify/polaris-icons":
+/*!*****************************************!*\
+  !*** external "@shopify/polaris-icons" ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"@shopify/polaris-icons\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJAc2hvcGlmeS9wb2xhcmlzLWljb25zXCI/ZWNiNiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsImZpbGUiOiJAc2hvcGlmeS9wb2xhcmlzLWljb25zLmpzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSByZXF1aXJlKFwiQHNob3BpZnkvcG9sYXJpcy1pY29uc1wiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///@shopify/polaris-icons\n");
+
+/***/ }),
+
+/***/ "aws-amplify":
+/*!******************************!*\
+  !*** external "aws-amplify" ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"aws-amplify\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJhd3MtYW1wbGlmeVwiP2M3ZWMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEiLCJmaWxlIjoiYXdzLWFtcGxpZnkuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHJlcXVpcmUoXCJhd3MtYW1wbGlmeVwiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///aws-amplify\n");
+
+/***/ }),
+
+/***/ "aws-sdk":
+/*!**************************!*\
+  !*** external "aws-sdk" ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"aws-sdk\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJhd3Mtc2RrXCI/NTE0MiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsImZpbGUiOiJhd3Mtc2RrLmpzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSByZXF1aXJlKFwiYXdzLXNka1wiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///aws-sdk\n");
+
+/***/ }),
+
+/***/ "graphql-tag":
+/*!******************************!*\
+  !*** external "graphql-tag" ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"graphql-tag\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJncmFwaHFsLXRhZ1wiP2Y4YjciXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEiLCJmaWxlIjoiZ3JhcGhxbC10YWcuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHJlcXVpcmUoXCJncmFwaHFsLXRhZ1wiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///graphql-tag\n");
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "react" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"react\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJyZWFjdFwiPzU4OGUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEiLCJmaWxlIjoicmVhY3QuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHJlcXVpcmUoXCJyZWFjdFwiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///react\n");
+
+/***/ }),
+
+/***/ "semantic-ui-react":
+/*!************************************!*\
+  !*** external "semantic-ui-react" ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"semantic-ui-react\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJzZW1hbnRpYy11aS1yZWFjdFwiPzVjODIiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEiLCJmaWxlIjoic2VtYW50aWMtdWktcmVhY3QuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHJlcXVpcmUoXCJzZW1hbnRpYy11aS1yZWFjdFwiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///semantic-ui-react\n");
+
+/***/ }),
+
+/***/ "uuid":
+/*!***********************!*\
+  !*** external "uuid" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"uuid\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8vZXh0ZXJuYWwgXCJ1dWlkXCI/MzcxMiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSIsImZpbGUiOiJ1dWlkLmpzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSByZXF1aXJlKFwidXVpZFwiKTsiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///uuid\n");
 
 /***/ })
 
