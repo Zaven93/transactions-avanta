@@ -1,0 +1,76 @@
+type Transaction @model @key(name: "byBranch", fields: ["branchId", "sortDate"]) {
+    id: ID!
+    totalPrice: String
+    totalBonusAmount: Int
+    note: String
+    currency: String
+    sortDate: AWSDateTime!
+    products: [Product]
+    customer: [Customer]
+    branchId: ID!
+}
+
+type Branch
+    @model
+    @key(name: "branchByAdminId", fields: ["adminId"], queryField: "branchByAdminId") {
+    id: ID!
+    branchName: String!
+    branchUsername: String
+    adminId: ID!
+    transactions: [Transaction] @connection(keyName: "byBranch", fields: ["id"])
+    branchProducts: [BranchProduct] @connection(keyName: "productByBranch", fields: ["id"])
+    branchPaymentRequests: [PaymentRequest]
+        @connection(keyName: "paymentRequestsByBranch", fields: ["id"])
+}
+
+type BranchProduct @model @key(name: "productByBranch", fields: ["branchId"]) {
+    id: ID!
+    branchId: ID!
+    productId: ID!
+    tags: [String]
+}
+
+type Variant {
+    id: ID!
+    variantId: ID!
+    price: String
+}
+
+type Customer {
+    id: ID!
+    firstName: String
+    lastName: String
+    phone: String
+    email: String
+}
+
+type Product {
+    id: ID!
+    title: String
+    bonusPercentage: String
+    priceAmount: String
+    priceCurrency: String
+    image: String
+}
+
+type PaymentRequest @model @key(name: "paymentRequestsByBranch", fields: ["branchId"]) {
+    id: ID!
+    orderId: ID
+    customerId: ID
+    branchId: ID!
+    bonusAmount: Int
+    status: PaymentStatus
+    products: [PaymentProduct]
+}
+
+type PaymentProduct {
+    originalUnitPrice: Int
+    variantId: ID
+    quantity: Int
+}
+
+enum PaymentStatus {
+    PENDING
+    APPROVED
+    DECLINED
+}

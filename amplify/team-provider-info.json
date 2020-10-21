@@ -1,0 +1,20 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-avantaadminpanel-dev-151858-authRole",
+            "UnauthRoleArn": "arn:aws:iam::940053127516:role/amplify-avantaadminpanel-dev-151858-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::940053127516:role/amplify-avantaadminpanel-dev-151858-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-avantaadminpanel-dev-151858-deployment",
+            "UnauthRoleName": "amplify-avantaadminpanel-dev-151858-unauthRole",
+            "StackName": "amplify-avantaadminpanel-dev-151858",
+            "StackId": "arn:aws:cloudformation:us-east-1:940053127516:stack/amplify-avantaadminpanel-dev-151858/42941970-1322-11eb-9c7e-0e6115325dc3",
+            "AmplifyAppId": "d2jr8tazlowvhx"
+        },
+        "categories": {
+            "auth": {
+                "avantaadminpanelc65a159e": {}
+            }
+        }
+    }
+}

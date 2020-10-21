@@ -1,0 +1,71 @@
+{
+	"api": {
+		"paymentRequests": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"authConfig": {
+					"defaultAuthentication": {
+						"authenticationType": "API_KEY",
+						"apiKeyConfig": {
+							"apiKeyExpirationDays": 365,
+							"description": ""
+						}
+					},
+					"additionalAuthenticationProviders": []
+				}
+			}
+		},
+		"createTransaction": {
+			"service": "API Gateway",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [
+				{
+					"category": "function",
+					"resourceName": "createTransaction",
+					"attributes": [
+						"Name",
+						"Arn"
+					]
+				}
+			]
+		}
+	},
+	"function": {
+		"paymentRequest": {
+			"build": true,
+			"providerPlugin": "awscloudformation",
+			"service": "Lambda",
+			"dependsOn": []
+		},
+		"createTransaction": {
+			"build": true,
+			"providerPlugin": "awscloudformation",
+			"service": "Lambda",
+			"dependsOn": []
+		},
+		"dynamoDBTrigger": {
+			"build": true,
+			"providerPlugin": "awscloudformation",
+			"service": "Lambda",
+			"dependsOn": [
+				{
+					"category": "api",
+					"resourceName": "paymentRequests",
+					"attributes": [
+						"GraphQLAPIIdOutput",
+						"GraphQLAPIEndpointOutput"
+					]
+				}
+			]
+		}
+	},
+	"auth": {
+		"avantaadminpanelc65a159e": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [],
+			"customAuth": false
+		}
+	}
+}
