@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { default as usLogin } from \"./useLogin\";","map":{"version":3,"sources":["/var/www/transactions-avanta/core/hooks/index.js"],"names":["default","usLogin"],"mappings":"AAAA,SAASA,OAAO,IAAIC,OAApB,QAAmC,YAAnC","sourcesContent":["export { default as usLogin } from \"./useLogin\"\n"]},"metadata":{},"sourceType":"module"}

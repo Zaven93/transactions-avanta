@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { API, graphqlOperation } from "aws-amplify"
 import { Button, Icon, Card, DataTable, TextField } from "@shopify/polaris"
 import { SearchMajorMonotone } from "@shopify/polaris-icons"
+import { useBranchEntity } from "../core/hooks"
 import { toCurrency, formatDate } from "../utils/helper"
 import config from "../aws-exports"
 import { getBranchById } from "../graphql/queries"
@@ -12,20 +13,30 @@ const AdminBranchInfo = ({ branchId, setBranchId }) => {
   const [branchInfo, setBranchInfo] = useState("")
   const [searchValue, setSearchValue] = useState(null)
 
+  const { data: branchData, refetch: fetchBranch } = useBranchEntity(branchId)
+
   const handleSearchInput = useCallback((newValue) => setSearchValue(newValue), [])
 
-  const getBranch = async () => {
-    try {
-      const branch = await API.graphql(graphqlOperation(getBranchById, { id: branchId }))
-      setBranchInfo(branch.data.getBranch)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const getBranch = useCallback(() => {
+    fetchBranch()
+  }, [branchData])
+
+  // const getBranch = async () => {
+  //   try {
+  //     const branch = await API.graphql(graphqlOperation(getBranchById, { id: branchId }))
+  //     setBranchInfo(branch.data.getBranch)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
     getBranch()
-  }, [])
+  }, [getBranch])
+
+  useEffect(() => {
+    setBranchInfo(branchData && branchData.data.getBranch)
+  }, [branchData])
 
   return (
     <>

@@ -1,51 +1,35 @@
 import React, { useState, useCallback, useEffect } from "react"
-import { API, graphqlOperation } from "aws-amplify"
 import { Table, Icon, Popup, Header } from "semantic-ui-react"
 import { Badge } from "@shopify/polaris"
+import { useFetchPaymentRequest, useUpdatePaymentRequest } from "../core/hooks"
 import { toCurrency, formatDate } from "../utils/helper"
 import ProductList from "./ProductsList"
-import config from "../aws-exports"
 import { updatePaymentRequest } from "../graphql/mutation"
 import { listPaymentRequest } from "../graphql/queries"
 import { paymentSubscription } from "../graphql/subscriptions"
-
-API.configure(config)
 
 const PendingPaymentRequest = ({ createUpdatePaymentSubscription, branchId }) => {
   const [paymentRequestId, setPaymentRequestId] = useState("")
   const [active, setActive] = useState(false)
   const [paymentRequestItems, setPaymentRequestItems] = useState([])
+  const { data: paymentRequests, refetch: getPaymentRequests } = useFetchPaymentRequest(
+    branchId,
+    "PENDING"
+  )
+  const { updatePaymentRequest } = useUpdatePaymentRequest()
 
   const handleChange = useCallback(() => setActive(!active), [active])
 
-  const fetchAcceptedPayments = useCallback(async () => {
-    try {
-      const res = await API.graphql(
-        graphqlOperation(listPaymentRequest, { branchId, status: "PENDING" })
-      )
-      setPaymentRequestItems(res.data.listPaymentRequests.items)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [createUpdatePaymentSubscription])
+  useEffect(() => {
+    getPaymentRequests()
+  }, [branchId, createUpdatePaymentSubscription])
 
   useEffect(() => {
-    fetchAcceptedPayments()
-  }, [fetchAcceptedPayments])
+    setPaymentRequestItems(paymentRequests && paymentRequests.data.listPaymentRequests.items)
+  }, [paymentRequests])
 
-  const declinePayment = async (paymentId) => {
-    try {
-      const paymentResponse = await API.graphql(
-        graphqlOperation(updatePaymentRequest, {
-          input: {
-            id: paymentId,
-            status: "DECLINED",
-          },
-        })
-      )
-    } catch (error) {
-      console.log(error)
-    }
+  const declinePayment = (paymentId) => {
+    updatePaymentRequest({ paymentId, status: "DECLINED" })
   }
 
   return (

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { API, graphqlOperation } from "aws-amplify"
 import { Table } from "semantic-ui-react"
 import { Badge, Button } from "@shopify/polaris"
+import { useFetchPaymentRequest } from "../core/hooks"
 import { toCurrency, formatDate } from "../utils/helper"
 import config from "../aws-exports"
 import { listPaymentRequest } from "../graphql/queries"
@@ -11,22 +12,20 @@ API.configure(config)
 const AcceptedPaymentRequest = ({ branchId }) => {
   const [nextPaginateToken, setNextPaginateToken] = useState("")
   const [paymentRequestItems, setPaymentRequestItems] = useState([])
-
-  const fetchAcceptedPayments = useCallback(async () => {
-    try {
-      const res = await API.graphql(
-        graphqlOperation(listPaymentRequest, { limit: 20, branchId, status: "APPROVED" })
-      )
-      setNextPaginateToken(res.data.listPaymentRequests.nextToken)
-      setPaymentRequestItems(res.data.listPaymentRequests.items)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [])
+  const { data: paymentRequests, refetch: getPaymentRequests } = useFetchPaymentRequest(
+    branchId,
+    "APPROVED",
+    20
+  )
 
   useEffect(() => {
-    fetchAcceptedPayments()
-  }, [fetchAcceptedPayments])
+    getPaymentRequests()
+  }, [branchId])
+
+  useEffect(() => {
+    setNextPaginateToken(paymentRequests && paymentRequests.data.listPaymentRequests.nextToken)
+    setPaymentRequestItems(paymentRequests && paymentRequests.data.listPaymentRequests.items)
+  }, [paymentRequests])
 
   const loadMore = async () => {
     try {

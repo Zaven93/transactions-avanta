@@ -1,14 +1,11 @@
 import React, { useState } from "react"
-import { API, graphqlOperation } from "aws-amplify"
 import { useQuery } from "@apollo/client"
 import { Modal, Thumbnail, Checkbox, TextStyle } from "@shopify/polaris"
 import { Table, Header } from "semantic-ui-react"
+import { useUpdatePaymentRequest } from "../core/hooks"
 import { toCurrency } from "../utils/helper"
-import config from "../aws-exports"
 import { listProducts } from "../graphql/queries"
 import { updatePaymentRequest } from "../graphql/mutation"
-
-API.configure(config)
 
 const ProductsList = ({ active, handleChange, paymentRequestId }) => {
   const { loading, error, data } = useQuery(listProducts)
@@ -16,6 +13,8 @@ const ProductsList = ({ active, handleChange, paymentRequestId }) => {
   const [state, setState] = useState({
     products: [],
   })
+
+  const { updatePaymentRequest } = useUpdatePaymentRequest()
 
   if (loading) {
     return <div>Loading products...</div>
@@ -25,24 +24,16 @@ const ProductsList = ({ active, handleChange, paymentRequestId }) => {
     return <div>Some error occured</div>
   }
 
-  const acceptPayment = async () => {
-    try {
-      const paymentResponse = await API.graphql(
-        graphqlOperation(updatePaymentRequest, {
-          input: {
-            id: paymentRequestId,
-            status: "APPROVED",
-            products: state.products.map((product) => ({
-              originalUnitPrice: product.node.variants.edges[0].node.price,
-              quantity: 1,
-              variantId: product.node.variants.edges[0].node.id,
-            })),
-          },
-        })
-      )
-    } catch (error) {
-      console.log(error)
-    }
+  const acceptPayment = () => {
+    return updatePaymentRequest({
+      paymentId: paymentRequestId,
+      status: "APPROVED",
+      products: state.products.map((product) => ({
+        originalUnitPrice: product.node.variants.edges[0].node.price,
+        quantity: 1,
+        variantId: product.node.variants.edges[0].node.id,
+      })),
+    })
   }
 
   return (

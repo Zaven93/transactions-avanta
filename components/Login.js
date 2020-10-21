@@ -1,11 +1,14 @@
 import { useState, useCallback } from "react"
 import { Card, Button, TextField, Form, FormLayout } from "@shopify/polaris"
-import { Auth } from "aws-amplify"
-import config from "../aws-exports"
+import { useMutation } from "react-query"
+import { AuthService } from "../core/services"
+import { useLogin } from "../core/hooks"
 
-const Profile = ({ setUser }) => {
+const Profile = React.forwardRef(({ setUser }, ref) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+
+  const { login, status, data, error } = useLogin()
 
   const onChangeUsername = useCallback((newValue) => {
     setUsername(newValue)
@@ -15,16 +18,16 @@ const Profile = ({ setUser }) => {
     setPassword(newValue)
   }, [])
 
-  const signIn = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    const signedInUser = await Auth.signIn(username, password)
-    setUser(signedInUser)
+    login({ username, password })
+    setUser(data)
   }
 
   return (
     <div className="authentication-container">
       <Card title="Log into your branch" sectioned>
-        <Form onSubmit={signIn}>
+        <Form onSubmit={handleSubmit}>
           <FormLayout>
             <TextField value={username} onChange={onChangeUsername} label="Username" />
             <TextField
@@ -41,6 +44,6 @@ const Profile = ({ setUser }) => {
       </Card>
     </div>
   )
-}
+})
 
 export default Profile
