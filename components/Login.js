@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Card, Button, TextField, Form, FormLayout } from "@shopify/polaris"
 import { useMutation } from "react-query"
 import { AuthService } from "../core/services"
@@ -21,8 +21,12 @@ const Profile = React.forwardRef(({ setUser }, ref) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     login({ username, password })
-    setUser(data)
+    // setUser(data)
   }
+
+  useEffect(() => {
+    setUser(data)
+  }, [data])
 
   return (
     <div className="authentication-container">

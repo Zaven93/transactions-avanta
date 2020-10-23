@@ -4,6 +4,7 @@ import { API, graphqlOperation } from "aws-amplify"
 import { useQuery } from "@apollo/client"
 import { Modal } from "@shopify/polaris"
 import { Table } from "semantic-ui-react"
+import { useBranchEntity } from "../core/hooks"
 import config from "../aws-exports"
 import BranchRow from "./BranchRow"
 import { listProducts, getBranchById } from "../graphql/queries"
@@ -30,26 +31,7 @@ const ProductsList = ({ active, handleChange, branchId }) => {
   })
   const [branchInfo, setBranchInfo] = useState("")
 
-  const getBranch = async () => {
-    try {
-      const branch = await API.graphql(graphqlOperation(getBranchById, { id: branchId }))
-      setBranchInfo(branch.data.getBranch)
-      setRowId([
-        ...rowId,
-        ...branch.data.getBranch.branchProducts.items.map((item) => item.productId),
-      ])
-      setState({
-        products: [
-          ...state.products,
-          ...branch.data.getBranch.branchProducts.items.map((product) => ({
-            id: product.productId,
-          })),
-        ],
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const { data: branchData, refetch: getBranch } = useBranchEntity(branchId)
 
   useEffect(() => {
     getBranch()
@@ -70,6 +52,21 @@ const ProductsList = ({ active, handleChange, branchId }) => {
       deleteListener.unsubscribe()
     }
   }, [branchId, branchProductSubscription])
+
+  useEffect(() => {
+    if (!branchData) {
+      return
+    }
+    setBranchInfo(branchData.data.getBranch)
+    setRowId([...branchData.data.getBranch.branchProducts.items.map((item) => item.productId)])
+    setState({
+      products: [
+        ...branchData.data.getBranch.branchProducts.items.map((product) => ({
+          id: product.productId,
+        })),
+      ],
+    })
+  }, [branchData])
 
   if (loading) {
     return <div>Loading products...</div>

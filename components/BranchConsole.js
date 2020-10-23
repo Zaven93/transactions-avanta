@@ -4,6 +4,7 @@ import gql from "graphql-tag"
 import { v4 as uuidv4 } from "uuid"
 import { Page, Button, Modal, Form, FormLayout, TextField, Badge, Stack } from "@shopify/polaris"
 import { Table, Popup, Header, Icon } from "semantic-ui-react"
+import { useConfirmSignUp, useSignUp, useCreateBranch, useListBranches } from "../core/hooks"
 import ProductList from "./ProductsList"
 import { formatDate } from "../utils/helper"
 import config from "../aws-exports"
@@ -26,6 +27,11 @@ const BranchConsole = ({ updateUser }) => {
   const [userSub, setUserSub] = useState(null)
   const [branches, setBranches] = useState("")
   const [branchId, setBranchId] = useState(null)
+
+  const { signUserUp, data } = useSignUp()
+  const { confirmSignUp } = useConfirmSignUp()
+  const { createBranch, data: createdBranch } = useCreateBranch()
+  const { data: branchesData, refetch: listBranches } = useListBranches()
 
   const onChangeBranchName = useCallback((newValue) => {
     setBranchName(newValue)
@@ -51,31 +57,25 @@ const BranchConsole = ({ updateUser }) => {
     setActive(!active)
   }
 
-  const signUp = async (e) => {
+  const signUp = (e) => {
     e.preventDefault()
     try {
-      const user = await Auth.signUp({ username, password, attributes: { email } })
-      setUserSub(user.userSub)
+      signUserUp({ username, password, attributes: { email } })
       setFormType("confirm")
     } catch (error) {
       console.log(error)
     }
   }
 
+  useEffect(() => {
+    setUserSub(data && data.userSub)
+  }, [data])
+
   const confirm = async (e) => {
     e.preventDefault()
     try {
-      const confirmedUser = await Auth.confirmSignUp(username, code)
-      const branch = await API.graphql(
-        graphqlOperation(createBranch, {
-          input: {
-            adminId: userSub,
-            branchUsername: username,
-            branchName: branchName,
-            id: uuidv4(),
-          },
-        })
-      )
+      confirmSignUp({ username, code })
+      createBranch({ userSub, username, branchName })
       setFormType("signUp")
       handleChange()
     } catch (error) {
@@ -83,18 +83,13 @@ const BranchConsole = ({ updateUser }) => {
     }
   }
 
-  const fetchBranches = async () => {
-    try {
-      const getBranches = await API.graphql(graphqlOperation(listBranchs))
-      setBranches(getBranches.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  useEffect(() => {
+    listBranches()
+  }, [])
 
   useEffect(() => {
-    fetchBranches()
-  }, [])
+    setBranches(branchesData && branchesData.data)
+  }, [branchesData])
 
   return (
     <>
