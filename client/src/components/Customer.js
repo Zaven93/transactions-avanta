@@ -3,6 +3,7 @@ import axios from 'axios'
 import { API, graphqlOperation } from 'aws-amplify'
 import { Avatar, Card, Button, Thumbnail, TextStyle } from '@shopify/polaris'
 import { Table, Header } from 'semantic-ui-react'
+import { useSendOrder, useGetCustomer } from '../core/hooks'
 import { Context } from '../store/Store'
 import { CREATE_ORDER, GET_CUSTOMER } from '../store/actionTypes'
 import { toCurrency } from '../utils/helper'
@@ -17,6 +18,8 @@ const Customer = ({ history, match }) => {
     const customerId = avantaState.customerId
     const chosenProducts = avantaState.chosenProducts
     const [branchInfo, setBranchInfo] = useState('')
+    const { sendOrder, data: order } = useSendOrder()
+    const { data: customerData, refetch: getCustomer } = useGetCustomer(customerId)
 
     const bonusTotalAmount = () => {
         if (!branchInfo) {
@@ -49,7 +52,7 @@ const Customer = ({ history, match }) => {
         return totalBonusAmmount
     }
 
-    const sendOrder = async () => {
+    const submitOrder = () => {
         const data = {
             customerId,
             customAttributes: [
@@ -68,35 +71,19 @@ const Customer = ({ history, match }) => {
                 originalUnitPrice: Number(product.node.variants.edges[0].node.price)
             }))
         }
-
-        try {
-            const order = await axios({
-                method: 'POST',
-                url: 'https://kv470qnx24.execute-api.us-east-1.amazonaws.com/dev/api/order',
-                data: data
-            })
-
-            dispatch({ type: CREATE_ORDER, payload: order.data })
-        } catch (error) {
-            console.log(error)
-        }
-
-        history.push('/orders')
-        return
+        return sendOrder({ data })
     }
 
-    const getCustomer = useCallback(async () => {
-        try {
-            const customer = await axios.get(
-                `https://kv470qnx24.execute-api.us-east-1.amazonaws.com/dev/api/customer/${customerId}`
-            )
+    console.log('Order data', order)
 
-            dispatch({ type: GET_CUSTOMER, payload: customer.data.data.customer })
-        } catch (error) {
-            console.log(error)
+    useEffect(() => {
+        if (!order) {
+            return
         }
-        // eslint-disable-next-line
-    }, [dispatch])
+        dispatch({ type: CREATE_ORDER, payload: order.data })
+        history.push('/orders')
+        return
+    }, [order])
 
     const getBranch = async () => {
         try {
@@ -115,7 +102,14 @@ const Customer = ({ history, match }) => {
         getCustomer()
         getBranch()
         // eslint-disable-next-line
-    }, [getCustomer])
+    }, [])
+
+    useEffect(() => {
+        if (!customerData) {
+            return
+        }
+        dispatch({ type: GET_CUSTOMER, payload: customerData.data.data.customer })
+    }, [customerData])
 
     const productsTotalPrice = () => {
         const prices = chosenProducts.map((product) =>
@@ -220,7 +214,7 @@ const Customer = ({ history, match }) => {
                             <Table.HeaderCell />
                             <Table.HeaderCell />
                             <Table.HeaderCell>
-                                <Button primary onClick={sendOrder}>
+                                <Button primary onClick={submitOrder}>
                                     Confirm
                                 </Button>
                             </Table.HeaderCell>

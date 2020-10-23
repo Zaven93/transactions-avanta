@@ -1,0 +1,41 @@
+{
+    "paths": [
+        {
+            "name": "/api",
+            "lambdaFunction": "transactionCreationFlow",
+            "privacy": {
+                "open": true
+            }
+        },
+        {
+            "name": "/shopify",
+            "lambdaFunction": "transactionCreationFlow",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "transactionCreationFlow",
+    "apiName": "transactionCreationFlow",
+    "functionArns": [
+        {
+            "lambdaFunction": "transactionCreationFlow"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-avantaadminpanel-dev-151858-authRole",
+        "unAuthRoleName": "amplify-avantaadminpanel-dev-151858-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "transactionCreationFlow",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

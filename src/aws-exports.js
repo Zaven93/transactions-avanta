@@ -9,8 +9,8 @@ const awsmobile = {
     "aws_appsync_apiKey": "da2-sm7rhutlbrddnlhqm7tiuertxe",
     "aws_cloud_logic_custom": [
         {
-            "name": "createTransaction",
-            "endpoint": "https://wxq5bs58mj.execute-api.us-east-1.amazonaws.com/dev",
+            "name": "transactionCreationFlow",
+            "endpoint": "https://rrw0uo137l.execute-api.us-east-1.amazonaws.com/dev",
             "region": "us-east-1"
         }
     ],

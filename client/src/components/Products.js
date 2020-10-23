@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useCallback, useState } from 'react'
 import axios from 'axios'
-import { API, graphqlOperation } from 'aws-amplify'
 import {
     Thumbnail,
     Checkbox,
@@ -12,13 +11,11 @@ import {
 } from '@shopify/polaris'
 import QrScanner from 'react-qr-scanner'
 import { Table, Header, Icon } from 'semantic-ui-react'
+import { useFetchProducts, useBranchEntity } from '../core/hooks'
 import { toCurrency } from '../utils/helper'
 import { Context } from '../store/Store'
 import { GET_PRODUCTS, SET_CUSTOMER_ID, SET_CHOSEN_PRODUCTS } from '../store/actionTypes'
 import config from '../aws-exports'
-import { branchByAdminId } from '../graphql/query'
-
-API.configure(config)
 
 function App({ history, match }) {
     const { avantaState, dispatch } = useContext(Context)
@@ -30,6 +27,9 @@ function App({ history, match }) {
         products: []
     })
     const [branchInfo, setBranchInfo] = useState('')
+
+    const { data: productsData, refetch: fetchProducts } = useFetchProducts()
+    const { data: branchData, refetch: getBranch } = useBranchEntity(match.params.adminId)
 
     const handleChange = useCallback(() => setActive(!active), [active])
     const handleScan = (data) => {
@@ -46,35 +46,25 @@ function App({ history, match }) {
         }, 500)
     }
 
-    const getBranch = async () => {
-        try {
-            const fetchedBranch = await API.graphql(
-                graphqlOperation(branchByAdminId, {
-                    adminId: match.params.adminId
-                })
-            )
-            setBranchInfo(fetchedBranch.data.branchByAdminId.items[0])
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const fetchProducts = useCallback(async () => {
-        try {
-            const products = await axios.get(
-                'https://kv470qnx24.execute-api.us-east-1.amazonaws.com/dev/api/products'
-            )
-            dispatch({ type: GET_PRODUCTS, payload: products.data })
-        } catch (error) {
-            console.log(error)
-        }
-    }, [dispatch])
-
     useEffect(() => {
         fetchProducts()
         getBranch()
         // eslint-disable-next-line
-    }, [fetchProducts])
+    }, [fetchProducts, match])
+
+    useEffect(() => {
+        if (!branchData) {
+            return
+        }
+        setBranchInfo(branchData.data.branchByAdminId.items[0])
+    }, [branchData])
+
+    useEffect(() => {
+        if (!productsData) {
+            return
+        }
+        dispatch({ type: GET_PRODUCTS, payload: productsData.data })
+    }, [productsData])
 
     const previewStyle = {
         height: 500,
@@ -85,8 +75,6 @@ function App({ history, match }) {
     const branchProductsId = branchInfo
         ? branchInfo.branchProducts.items.map((product) => product.productId)
         : ''
-
-    console.log('Products from products', state.products)
 
     return (
         <div className="App">

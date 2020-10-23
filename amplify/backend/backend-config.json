@@ -16,13 +16,13 @@
 				}
 			}
 		},
-		"createTransaction": {
+		"transactionCreationFlow": {
 			"service": "API Gateway",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": [
 				{
 					"category": "function",
-					"resourceName": "createTransaction",
+					"resourceName": "transactionCreationFlow",
 					"attributes": [
 						"Name",
 						"Arn"
@@ -58,6 +58,12 @@
 					]
 				}
 			]
+		},
+		"transactionCreationFlow": {
+			"build": true,
+			"providerPlugin": "awscloudformation",
+			"service": "Lambda",
+			"dependsOn": []
 		}
 	},
 	"auth": {
