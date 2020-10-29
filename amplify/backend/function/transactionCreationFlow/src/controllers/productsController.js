@@ -1,159 +1,20 @@
 const axios = require('axios')
-const { shopifyBaseUrl, shopifyAccessToken } = require('../envVariables')
+const shopifyRequest = require('../helpers/shopifyRequest')
+const ProductService = require('../services/product.service')
 
 module.exports = {
-    getProducts: async (req, res) => {
-        try {
-            const result = await axios({
-                method: 'POST',
-                url: shopifyBaseUrl,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': shopifyAccessToken
-                },
-                data: {
-                    query: `{
-            products(first: 7){
-              pageInfo{
-                hasNextPage
-                hasPreviousPage
-              }
-                edges{
-                  cursor
-                  node{
-                    description(truncateAt: 100)
-                    id
-                    tags
-                    title
-                    variants(first:1){
-                      edges{
-                        node{
-                          price
-                        }
-                      }
-                    }
-                    images(first:1){
-                      edges{
-                        node{
-                          originalSrc
-                        }
-                      }
-                    }
-                  }
-                }
-              }
- }`
-                }
-            })
+    getProducts: (req, res) =>
+        shopifyRequest(ProductService.getProducts)
+            .then((result) => res.send(result.data))
+            .catch((e) => console.log(e)),
 
-            res.send(result.data)
-        } catch (error) {
-            console.log(error)
-        }
-    },
+    productsNext: (req, res) =>
+        shopifyRequest(ProductService.nextProducts, { cursor: req.body.nextCursor })
+            .then((result) => res.send(result.data))
+            .catch((e) => console.log(e)),
 
-    productsNext: async (req, res) => {
-        const nextCursor = req.body.nextCursor
-        try {
-            const result = await axios({
-                method: 'POST',
-                url: shopifyBaseUrl,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': shopifyAccessToken
-                },
-                data: {
-                    query: `
-      query nextProducts($cursor: String){
-      products(first: 7, after: $cursor){
-        pageInfo{
-          hasNextPage
-          hasPreviousPage
-        }
-          edges{
-            cursor
-            node{
-              description(truncateAt: 100)
-              id
-              tags
-              title
-              variants(first:1){
-                edges{
-                  node{
-                    price
-                  }
-                }
-              }
-              images(first:1){
-                edges{
-                  node{
-                    originalSrc
-                  }
-                }
-              }
-            }
-          }
-        }
-      }`,
-                    variables: { cursor: nextCursor }
-                }
-            })
-            res.send(result.data)
-        } catch (error) {
-            console.log(error)
-        }
-    },
-
-    productsPrevious: async (req, res) => {
-        const previousCursor = req.body.previousCursor
-        console.log('Next cursor from request', previousCursor)
-        try {
-            const result = await axios({
-                method: 'POST',
-                url: shopifyBaseUrl,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Shopify-Access-Token': shopifyAccessToken
-                },
-                data: {
-                    query: `
-                  query previousProducts($cursor: String){
-                  products(first: 7, before: $cursor){
-                    pageInfo{
-                      hasNextPage
-                      hasPreviousPage
-                    }
-                      edges{
-                        cursor
-                        node{
-                          description(truncateAt: 100)
-                          id
-                          tags
-                          title
-                          variants(first:1){
-                            edges{
-                              node{
-                                price
-                              }
-                            }
-                          }
-                          images(first:1){
-                            edges{
-                              node{
-                                originalSrc
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }`,
-                    variables: { cursor: previousCursor }
-                }
-            })
-            res.send(result.data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    productsPrevious: (req, res) =>
+        shopifyRequest(ProductService.previousProducts, { cursor: req.body.previousCursor })
+            .then((result) => res.send(result.data))
+            .catch((e) => console.log(e))
 }

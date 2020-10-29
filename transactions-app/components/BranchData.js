@@ -9,9 +9,10 @@ import {
   BalanceMajorMonotone,
   LogOutMinor,
 } from "@shopify/polaris-icons"
+import { useBranchByAdmin } from "../core/hooks"
 import { toCurrency, formatDate, extractNumbersFromString } from "../utils/helper"
 import config from "../aws-exports"
-import PaymentRequest from "../components/PaymentRequest"
+import PaymentRequest from "./PaymentRequest"
 import { branchByAdminId } from "../graphql/queries"
 import { onCreateTransaction, onDeleteTransaction } from "../graphql/subscriptions"
 
@@ -23,6 +24,8 @@ const BranchData = ({ user, updateUser }) => {
   const [newCreatedTransaction, setNewCreatedTransaction] = useState("")
   const [showPaymentRequest, setShowPaymentRequest] = useState(false)
 
+  const { data: branchData, refetch: getBranch } = useBranchByAdmin(user.attributes.sub)
+
   const handleSearchInput = useCallback((newValue) => setSearchValue(newValue), [])
 
   const app = createApp({
@@ -32,16 +35,16 @@ const BranchData = ({ user, updateUser }) => {
 
   const redirect = Redirect.create(app)
 
-  const getBranch = async () => {
-    try {
-      const fetchBranch = await API.graphql(
-        graphqlOperation(branchByAdminId, { adminId: user.attributes.sub })
-      )
-      setBranchInfo(fetchBranch.data.branchByAdminId.items[0])
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const getBranch = async () => {
+  //   try {
+  //     const fetchBranch = await API.graphql(
+  //       graphqlOperation(branchByAdminId, { adminId: user.attributes.sub })
+  //     )
+  //     setBranchInfo(fetchBranch.data.branchByAdminId.items[0])
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
     getBranch()
@@ -59,6 +62,10 @@ const BranchData = ({ user, updateUser }) => {
       deleteListener.unsubscribe()
     }
   }, [newCreatedTransaction])
+
+  useEffect(() => {
+    setBranchInfo(branchData && branchData.data.branchByAdminId.items[0])
+  }, [branchData])
 
   return (
     <>

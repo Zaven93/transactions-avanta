@@ -3,6 +3,7 @@ import AWS from "aws-sdk"
 import { API, graphqlOperation } from "aws-amplify"
 import { Button, Form } from "@shopify/polaris"
 import { Table, Popup, Icon } from "semantic-ui-react"
+import { useListBranches } from "../core/hooks"
 import { formatDate } from "../utils/helper"
 import config from "../aws-exports"
 import BranchProducts from "./BranchProducts"
@@ -32,18 +33,20 @@ const BranchList = ({ setBranchId, branchId }) => {
   const [productBranchId, setProductBranchId] = useState("")
   const [newCreatedBranch, setNewCreatedBranch] = useState("")
 
+  const { data: branchesData, refetch: fetchBranches } = useListBranches()
+
   const handleChange = () => {
     setActive(!active)
   }
 
-  const fetchBranches = async () => {
-    try {
-      const getBranches = await API.graphql(graphqlOperation(listBranchs))
-      setBranches(getBranches.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const fetchBranches = async () => {
+  //   try {
+  //     const getBranches = await API.graphql(graphqlOperation(listBranchs))
+  //     setBranches(getBranches.data)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   const deleteBranch = async (id) => {
     const branchToDelete = branches.listBranchs.items.filter((item) => item.id === id)[0]
@@ -118,6 +121,10 @@ const BranchList = ({ setBranchId, branchId }) => {
       deleteListener.unsubscribe()
     }
   }, [newCreatedBranch])
+
+  useEffect(() => {
+    setBranches(branchesData && branchesData.data)
+  }, [branchesData])
 
   return (
     <>

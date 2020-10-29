@@ -2,9 +2,9 @@ import React, { useState, useCallback, useEffect } from "react"
 import { API, graphqlOperation } from "aws-amplify"
 import { Page, Card, Toast, Frame, Tabs, Button } from "@shopify/polaris"
 import config from "../aws-exports"
-import AcceptedPaymentRequest from "../components/AcceptedPaymentRequest"
-import PendingPaymentRequest from "../components/PendingPaymentRequest"
-import DeclinedPaymentRequest from "../components/DeclinedPaymentRequest"
+import AcceptedPaymentRequest from "./AcceptedPaymentRequest"
+import PendingPaymentRequest from "./PendingPaymentRequest"
+import DeclinedPaymentRequest from "./DeclinedPaymentRequest"
 import { onUpdatePaymentSubscription, paymentSubscription } from "../graphql/subscriptions"
 
 API.configure(config)

@@ -35,19 +35,12 @@ const BranchRow = ({ product, state, setState, branchInfo, rowId, setRowId }) =>
       return
     }
 
-    setBonus(comparedProduct[0] ? comparedProduct[0].tags[0] : "")
+    setBonus(comparedProduct[0] ? comparedProduct[0].tags && comparedProduct[0].tags[0] : "")
 
     return
   }
 
   useEffect(() => {
-    console.log(
-      "Row id from useEffect",
-      branchInfo.branchProducts.items
-        .map((item) => item.productId)
-        .filter((productId) => productId === fetchedProduct.id)[0]
-    )
-
     compareProduct()
   }, [product, branchInfo])
 
@@ -68,7 +61,6 @@ const BranchRow = ({ product, state, setState, branchInfo, rowId, setRowId }) =>
               } else {
                 setRowId([...rowId, fetchedProduct.id])
                 setState({
-                  ...state,
                   products: [...state.products, fetchedProduct],
                 })
               }
