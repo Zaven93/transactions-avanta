@@ -1,12 +1,3 @@
-#Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text {
-    display: flex;
-    align-items: center;
-}
-
-#Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
-    margin-right: 10px;
-}
-
 #Accept-Payment > .Polaris-Button__Content > .Polaris-Button__Text {
     display: flex;
     align-items: center;
@@ -16,13 +7,10 @@
     margin-right: 10px;
 }
 
-#Logout > .Polaris-Button__Content > .Polaris-Button__Text {
-    display: flex;
-    align-items: center;
-}
-
-#Logout > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
-    margin-right: 10px;
+.authentication-container > .Polaris-Card {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .actions-cell {
@@ -31,22 +19,25 @@
     align-items: center;
 }
 
+.accept:hover {
+    color: green;
+    transform: scale(1.7);
+    transition: all 0.1s ease-in;
+}
+
 .branch-actions {
     display: flex;
     justify-content: space-around;
     align-items: center;
 }
 
-/* .accept-hovered,
-.decline-hovered {
-    transform: scale(1.2);
-    transition: all 0.3 ease-out;
-} */
+#Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text {
+    display: flex;
+    align-items: center;
+}
 
-.accept:hover {
-    color: green;
-    transform: scale(1.7);
-    transition: all 0.1s ease-in;
+#Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
+    margin-right: 10px;
 }
 
 .decline:hover {
@@ -60,6 +51,91 @@
     transform: scale(1.7);
     transition: all 0.1s ease-in;
     cursor: pointer;
+}
+
+.error-notification {
+    position: absolute;
+    color: red;
+}
+
+.form-controll {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.form-controll > label {
+    position: absolute;
+    top: 7px;
+    left: 36px;
+    pointer-events: none;
+    transition: all 0.2s ease-in;
+}
+
+.form-controll > input {
+    width: 100%;
+    height: 35px;
+    border-radius: 4px;
+    outline: none;
+    border: 0.2px solid rgba(0, 0, 0, 0.3);
+    padding-left: 36px;
+}
+
+.form-controll > i {
+    position: absolute;
+    top: 7px;
+    left: 10px;
+}
+
+.form-controll > i.show-eye {
+    display: inline-block;
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    left: unset;
+    transition: all 0.2s ease-in;
+}
+
+.form-controll > i.show-eye:hover {
+    cursor: pointer;
+    color: #6774c8;
+    transition: all 0.2s ease-in;
+}
+
+.form-controll > i.not-show-eye {
+    display: none;
+    position: absolute;
+    top: 7px;
+    left: unset;
+    right: 10px;
+    transition: all 0.2s ease-in;
+}
+
+.form-controll:focus-within label,
+.form-controll > label.active {
+    transform: scale(0.75);
+    top: -10px;
+    transition: all 0.2s ease-in;
+    background: #ffffff;
+    color: #6774c8;
+}
+
+.form-controll > input:focus {
+    border: 1px solid #6774c8;
+    transition: all 0.2s ease-in;
+}
+
+.form-controll > input:focus + i {
+    color: #6774c8;
+    transition: all 0.2s ease-in;
+}
+
+#Logout > .Polaris-Button__Content > .Polaris-Button__Text {
+    display: flex;
+    align-items: center;
+}
+
+#Logout > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
+    margin-right: 10px;
 }
 
 .remove-branch:hover {
@@ -77,13 +153,4 @@
 
 .product-header > .Polaris-Thumbnail {
     margin-right: 10px;
-}
-
-.authentication-container {
-}
-
-.authentication-container > .Polaris-Card {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
 }

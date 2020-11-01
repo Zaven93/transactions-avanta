@@ -1,53 +1,95 @@
-import { useState, useCallback, useEffect } from "react"
-import { Card, Button, TextField, Form, FormLayout } from "@shopify/polaris"
-import { useMutation } from "react-query"
-import { AuthService } from "../core/services"
-import { useLogin } from "../core/hooks"
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { useForm } from 'react-hook-form'
+import { Card, Button, TextField, Form, FormLayout } from '@shopify/polaris'
+import { Icon, Dimmer, Loader } from 'semantic-ui-react'
+import { useMutation } from 'react-query'
+import { AuthService } from '../core/services'
+import { useLogin } from '../core/hooks'
 
-const Profile = React.forwardRef(({ setUser }, ref) => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+const Login = ({ setUser }) => {
+    const [password, setPassword] = useState('')
+    const [activeUsername, setActiveUsername] = useState(false)
+    const [activePassword, setActivePassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
-  const { login, status, data, error } = useLogin()
+    const passwordRef = useRef(null)
+    const usernameRef = useRef(null)
 
-  const onChangeUsername = useCallback((newValue) => {
-    setUsername(newValue)
-  }, [])
+    const { handleSubmit, errors, register } = useForm()
 
-  const onChangePassword = useCallback((newValue) => {
-    setPassword(newValue)
-  }, [])
+    const { login, status, data, error } = useLogin()
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    login({ username, password })
-    // setUser(data)
-  }
+    const onChangeUsername = useCallback((newValue) => {
+        setUsername(newValue)
+    }, [])
 
-  useEffect(() => {
-    setUser(data)
-  }, [data])
+    const onChangePassword = useCallback((newValue) => {
+        setPassword(newValue)
+    }, [])
 
-  return (
-    <div className="authentication-container">
-      <Card title="Log into your branch" sectioned>
-        <Form onSubmit={handleSubmit}>
-          <FormLayout>
-            <TextField value={username} onChange={onChangeUsername} label="Username" />
-            <TextField
-              type="password"
-              value={password}
-              onChange={onChangePassword}
-              label="Password"
-            />
-            <Button primary submit>
-              Login
-            </Button>
-          </FormLayout>
-        </Form>
-      </Card>
-    </div>
-  )
-})
+    useEffect(() => {
+        setUser(data)
+    }, [data])
 
-export default Profile
+    console.log('Sign in status is', status)
+
+    return (
+        <div className="authentication-container">
+            <Card title="Log into your branch" sectioned>
+                <form onSubmit={handleSubmit(login)}>
+                    <div className="form-controll">
+                        <input
+                            name="username"
+                            ref={register({ required: 'Username is required!' })}
+                            onBlur={(e) => {
+                                if (e.target.value) {
+                                    return setActiveUsername(true)
+                                }
+                                return setActiveUsername(false)
+                            }}
+                        />
+                        <Icon name="user" />
+                        <label className={activeUsername ? 'active' : ''} htmlFor="username">
+                            Username
+                        </label>
+                        {errors.username && (
+                            <p className="error-notification">{errors.username.message}</p>
+                        )}
+                    </div>
+                    <div className="form-controll">
+                        <input
+                            name="password"
+                            type={showPassword ? 'text' : 'password'}
+                            ref={register({ required: 'Password is required!' })}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onBlur={(e) => {
+                                if (e.target.value) {
+                                    return setActivePassword(true)
+                                }
+                                return setActivePassword(false)
+                            }}
+                        />
+                        <Icon name="lock" />
+                        <label className={activePassword ? 'active' : ''} htmlFor="password">
+                            Password
+                        </label>
+                        <Icon
+                            className={password ? 'show-eye' : 'not-show-eye'}
+                            onClick={() => setShowPassword(!showPassword)}
+                            name={showPassword ? 'eye slash' : 'eye'}
+                            style={{ color: showPassword ? '#6774c8' : '' }}
+                        />
+                        {errors.password && (
+                            <p className="error-notification">{errors.password.message}</p>
+                        )}
+                    </div>
+                    <Button primary submit>
+                        <Icon name="sign-in" /> Login
+                    </Button>
+                </form>
+            </Card>
+        </div>
+    )
+}
+
+export default Login
