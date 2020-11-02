@@ -11,12 +11,9 @@ import {
 } from "@shopify/polaris-icons"
 import { useBranchByAdmin } from "../core/hooks"
 import { toCurrency, formatDate, extractNumbersFromString } from "../utils/helper"
-import config from "../aws-exports"
 import PaymentRequest from "./PaymentRequest"
 import { branchByAdminId } from "../graphql/queries"
 import { onCreateTransaction, onDeleteTransaction } from "../graphql/subscriptions"
-
-API.configure(config)
 
 const BranchData = ({ user, updateUser }) => {
   const [branchInfo, setBranchInfo] = useState("")
@@ -34,17 +31,6 @@ const BranchData = ({ user, updateUser }) => {
   })
 
   const redirect = Redirect.create(app)
-
-  // const getBranch = async () => {
-  //   try {
-  //     const fetchBranch = await API.graphql(
-  //       graphqlOperation(branchByAdminId, { adminId: user.attributes.sub })
-  //     )
-  //     setBranchInfo(fetchBranch.data.branchByAdminId.items[0])
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
 
   useEffect(() => {
     getBranch()

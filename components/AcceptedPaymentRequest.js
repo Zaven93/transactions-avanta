@@ -4,10 +4,7 @@ import { Table } from "semantic-ui-react"
 import { Badge, Button } from "@shopify/polaris"
 import { useFetchPaymentRequest } from "../core/hooks"
 import { toCurrency, formatDate } from "../utils/helper"
-import config from "../aws-exports"
 import { listPaymentRequest } from "../graphql/queries"
-
-API.configure(config)
 
 const AcceptedPaymentRequest = ({ branchId }) => {
   const [nextPaginateToken, setNextPaginateToken] = useState("")

@@ -3,7 +3,7 @@ import AWS from "aws-sdk"
 import { API, graphqlOperation } from "aws-amplify"
 import { Button, Form } from "@shopify/polaris"
 import { Table, Popup, Icon } from "semantic-ui-react"
-import { useListBranches } from "../core/hooks"
+import { useListBranches, useDeleteBranch } from "../core/hooks"
 import { formatDate } from "../utils/helper"
 import config from "../aws-exports"
 import BranchProducts from "./BranchProducts"
@@ -16,16 +16,6 @@ import {
   deletePaymentRequest,
 } from "../graphql/mutation"
 
-API.configure(config)
-
-AWS.config.update({
-  accessKeyId: "AKIAIF6WKVKSOTQCUREQ",
-  secretAccessKey: "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",
-  region: "us-east-1",
-})
-
-const cognito = new AWS.CognitoIdentityServiceProvider()
-
 const BranchList = ({ setBranchId, branchId }) => {
   const [active, setActive] = useState(false)
   const [branches, setBranches] = useState("")
@@ -34,71 +24,10 @@ const BranchList = ({ setBranchId, branchId }) => {
   const [newCreatedBranch, setNewCreatedBranch] = useState("")
 
   const { data: branchesData, refetch: fetchBranches } = useListBranches()
+  const { deleteBranch, isLoading, error, data } = useDeleteBranch()
 
   const handleChange = () => {
     setActive(!active)
-  }
-
-  // const fetchBranches = async () => {
-  //   try {
-  //     const getBranches = await API.graphql(graphqlOperation(listBranchs))
-  //     setBranches(getBranches.data)
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
-
-  const deleteBranch = async (id) => {
-    const branchToDelete = branches.listBranchs.items.filter((item) => item.id === id)[0]
-
-    const transactionsToDelete = branchToDelete.transactions.items
-      ? branchToDelete.transactions.items.map((transaction) => transaction.id)
-      : ""
-
-    const productsToDelete = branchToDelete.branchProducts.items
-      ? branchToDelete.branchProducts.items.map((product) => product.id)
-      : ""
-
-    const paymentRequestToDelete = branchToDelete.branchPaymentRequests.items
-      ? branchToDelete.branchPaymentRequests.items.map((paymentRequest) => paymentRequest.id)
-      : ""
-
-    try {
-      const deletedBranch = await API.graphql(graphqlOperation(removeBranch, { input: { id } }))
-
-      await Promise.all(
-        transactionsToDelete.map((transactionId) => {
-          API.graphql(graphqlOperation(deleteTransaction, { input: { id: transactionId } }))
-        })
-      ).catch((err) => console.log(err))
-
-      await Promise.all(
-        productsToDelete.map((productId) => {
-          API.graphql(graphqlOperation(deleteBranchProduct, { input: { id: productId } }))
-        })
-      ).catch((err) => console.log(err))
-
-      await Promise.all(
-        paymentRequestToDelete.map((paymentId) => {
-          API.graphql(graphqlOperation(deletePaymentRequest, { input: { id: paymentId } }))
-        })
-      )
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const deleteUserFromCognito = async (username) => {
-    try {
-      await cognito
-        .adminDeleteUser({
-          UserPoolId: "us-east-1_IfrnnzGFR",
-          Username: username,
-        })
-        .promise()
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   useEffect(() => {
@@ -172,8 +101,11 @@ const BranchList = ({ setBranchId, branchId }) => {
                         className="remove-branch"
                         name="trash alternate"
                         onClick={() => {
-                          deleteBranch(item.id)
-                          deleteUserFromCognito(item.branchUsername)
+                          deleteBranch({
+                            branches,
+                            username: item.branchUsername,
+                            id: item.id,
+                          })
                         }}
                       />
                     }

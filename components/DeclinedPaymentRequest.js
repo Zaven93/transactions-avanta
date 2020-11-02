@@ -4,10 +4,7 @@ import { API, graphqlOperation } from "aws-amplify"
 import { Badge, Button } from "@shopify/polaris"
 import { useFetchPaymentRequest } from "../core/hooks"
 import { toCurrency, formatDate } from "../utils/helper"
-import config from "aws-amplify"
 import { listPaymentRequest } from "../graphql/queries"
-
-API.configure(config)
 
 const DeclinedPaymentRequest = ({ branchId }) => {
   const [nextPaginateToken, setNextPaginateToken] = useState("")

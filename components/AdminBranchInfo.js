@@ -4,10 +4,7 @@ import { Button, Icon, Card, DataTable, TextField } from "@shopify/polaris"
 import { SearchMajorMonotone } from "@shopify/polaris-icons"
 import { useBranchEntity } from "../core/hooks"
 import { toCurrency, formatDate, extractNumbersFromString } from "../utils/helper"
-import config from "../aws-exports"
 import { getBranchById } from "../graphql/queries"
-
-API.configure(config)
 
 const AdminBranchInfo = ({ branchId, setBranchId }) => {
   const [branchInfo, setBranchInfo] = useState("")

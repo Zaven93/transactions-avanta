@@ -21,8 +21,6 @@ const Index = () => {
     }
   }
 
-  const ref = React.createRef()
-
   useEffect(() => {
     checkUser()
   }, [])
@@ -30,7 +28,7 @@ const Index = () => {
   return (
     <>
       {user && user.username !== "superadmin" && <BranchData updateUser={updateUser} user={user} />}
-      {!user && <Login ref={ref} setUser={(fetchedUser) => updateUser(fetchedUser)} />}
+      {!user && <Login setUser={(fetchedUser) => updateUser(fetchedUser)} />}
       {user && user.username === "superadmin" && <BranchConsole updateUser={updateUser} />}
     </>
   )

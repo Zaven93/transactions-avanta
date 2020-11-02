@@ -1,28 +1,28 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Auth, API, graphqlOperation } from "aws-amplify"
-import gql from "graphql-tag"
-import { v4 as uuidv4 } from "uuid"
-import { Page, Button, Modal, Form, FormLayout, TextField, Badge, Stack } from "@shopify/polaris"
+import { Page, Button, Modal, Badge, Stack } from "@shopify/polaris"
 import { Table, Popup, Header, Icon } from "semantic-ui-react"
+import { useForm } from "react-hook-form"
 import { useConfirmSignUp, useSignUp, useCreateBranch, useListBranches } from "../core/hooks"
 import ProductList from "./ProductsList"
 import { formatDate } from "../utils/helper"
-import config from "../aws-exports"
 import BranchProducts from "./BranchProducts"
 import BranchList from "./BranchList"
 import AdminBranchInfo from "./AdminBranchInfo"
 import { createBranch } from "../graphql/mutation"
 import { listBranchs } from "../graphql/queries"
 
-API.configure(config)
-
 const BranchConsole = ({ updateUser }) => {
   const [active, setActive] = useState(false)
+  const [activeBranchName, setActiveBranchName] = useState(false)
+  const [activeUsername, setActiveUsername] = useState(false)
+  const [activePassword, setActivePassword] = useState(false)
+  const [activeEmail, setActiveEmail] = useState(false)
+  const [activeCode, setActiveCode] = useState(false)
   const [branchName, setBranchName] = useState("")
   const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [code, setCode] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [formType, setFormType] = useState("signUp")
   const [userSub, setUserSub] = useState(null)
   const [branches, setBranches] = useState("")
@@ -32,47 +32,25 @@ const BranchConsole = ({ updateUser }) => {
   const { confirmSignUp } = useConfirmSignUp()
   const { createBranch, data: createdBranch } = useCreateBranch()
   const { data: branchesData, refetch: listBranches } = useListBranches()
-
-  const onChangeBranchName = useCallback((newValue) => {
-    setBranchName(newValue)
-  }, [])
-
-  const onChangeUsername = useCallback((newValue) => {
-    setUsername(newValue)
-  }, [])
-
-  const onChangePassword = useCallback((newValue) => {
-    setPassword(newValue)
-  }, [])
-
-  const onChangeEmail = useCallback((newValue) => {
-    setEmail(newValue)
-  }, [])
-
-  const onChangeCode = useCallback((newValue) => {
-    setCode(newValue)
-  }, [])
+  const { handleSubmit, errors, register } = useForm()
 
   const handleChange = () => {
     setActive(!active)
   }
 
-  const signUp = (e) => {
-    e.preventDefault()
+  const onSubmit = (data) => {
+    const { username, password, email } = data
+    console.log("Submitted data", data)
     try {
-      signUserUp({ username, password, attributes: { email } })
+      signUserUp({ username, password, email })
       setFormType("confirm")
     } catch (error) {
       console.log(error)
     }
   }
 
-  useEffect(() => {
-    setUserSub(data && data.userSub)
-  }, [data])
-
-  const confirm = async (e) => {
-    e.preventDefault()
+  const onConfirm = (data) => {
+    const { username, code } = data
     try {
       confirmSignUp({ username, code })
       createBranch({ userSub, username, branchName })
@@ -82,6 +60,10 @@ const BranchConsole = ({ updateUser }) => {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    setUserSub(data && data.userSub)
+  }, [data])
 
   useEffect(() => {
     listBranches()
@@ -118,45 +100,139 @@ const BranchConsole = ({ updateUser }) => {
           <Modal open={active} onClose={handleChange} title="Fill in Branch info">
             <Modal.Section>
               {formType === "signUp" && (
-                <Form onSubmit={signUp}>
-                  <FormLayout>
-                    <TextField
-                      value={branchName}
-                      onChange={onChangeBranchName}
-                      label="Branch Name"
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <div className="form-controll">
+                    <input
+                      name="branchName"
+                      onChange={(e) => setBranchName(e.target.value)}
+                      ref={register({ required: "Branch name is required!" })}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          return setActiveBranchName(true)
+                        }
+                        return setActiveBranchName(false)
+                      }}
                     />
-                    <TextField
-                      value={username}
-                      onChange={onChangeUsername}
-                      label="Branch admin username"
+                    <Icon name="code branch" />
+                    <label className={activeBranchName ? "active" : ""} htmlFor="branchName">
+                      Branch Name
+                    </label>
+                    {errors.branchName && (
+                      <p className="error-notification">{errors.branchName.message}</p>
+                    )}
+                  </div>
+                  <div className="form-controll">
+                    <input
+                      name="username"
+                      onChange={(e) => setUsername(e.target.value)}
+                      ref={register({ required: "Username is required!" })}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          return setActiveUsername(true)
+                        }
+                        return setActiveUsername(false)
+                      }}
                     />
-                    <TextField value={email} onChange={onChangeEmail} label="Branch admin email" />
-                    <TextField
-                      type="password"
-                      value={password}
-                      onChange={onChangePassword}
-                      label="Branch admin password"
+                    <Icon name="user" />
+                    <label className={activeUsername ? "active" : ""} htmlFor="username">
+                      Username
+                    </label>
+                    {errors.username && (
+                      <p className="error-notification">{errors.username.message}</p>
+                    )}
+                  </div>
+                  <div className="form-controll">
+                    <input
+                      name="email"
+                      ref={register({ required: "Email is required!" })}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          return setActiveEmail(true)
+                        }
+                        return setActiveEmail(false)
+                      }}
                     />
-                    <Button primary submit>
-                      Create Branch
-                    </Button>
-                  </FormLayout>
-                </Form>
+                    <Icon name="mail" />
+                    <label className={activeEmail ? "active" : ""} htmlFor="email">
+                      Email
+                    </label>
+                    {errors.email && <p className="error-notification">{errors.email.message}</p>}
+                  </div>
+                  <div className="form-controll">
+                    <input
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      ref={register({ required: "Password is required!" })}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          return setActivePassword(true)
+                        }
+                        return setActivePassword(false)
+                      }}
+                    />
+                    <Icon name="lock" />
+                    <label className={activePassword ? "active" : ""} htmlFor="password">
+                      Password
+                    </label>
+                    <Icon
+                      className={password ? "show-eye" : "not-show-eye"}
+                      onClick={() => setShowPassword(!showPassword)}
+                      name={showPassword ? "eye slash" : "eye"}
+                      style={{ color: showPassword ? "#6774c8" : "" }}
+                    />
+                    {errors.password && (
+                      <p className="error-notification">{errors.password.message}</p>
+                    )}
+                  </div>
+                  <Button primary submit>
+                    <Icon name="sign-in" /> Create Branch
+                  </Button>
+                </form>
               )}
               {formType === "confirm" && (
-                <Form onSubmit={confirm}>
-                  <FormLayout>
-                    <TextField
+                <form onSubmit={handleSubmit(onConfirm)}>
+                  <div className="form-controll">
+                    <input
+                      name="username"
                       value={username}
-                      onChange={onChangeUsername}
-                      label="Branch admin username"
+                      ref={register({ required: "Username is required!" })}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          return setActiveUsername(true)
+                        }
+                        return setActiveUsername(false)
+                      }}
                     />
-                    <TextField value={code} onChange={onChangeCode} label="Confirmation code" />
-                    <Button primary submit>
-                      Confirm
-                    </Button>
-                  </FormLayout>
-                </Form>
+                    <Icon name="user" />
+                    <label className={activeUsername ? "active" : ""} htmlFor="username">
+                      Username
+                    </label>
+                    {errors.username && (
+                      <p className="error-notification">{errors.username.message}</p>
+                    )}
+                  </div>
+                  <div className="form-controll">
+                    <input
+                      name="code"
+                      ref={register({ required: "Confirm code is required!" })}
+                      onBlur={(e) => {
+                        if (e.target.value) {
+                          return setActiveCode(true)
+                        }
+                        return setActiveCode(false)
+                      }}
+                    />
+                    <Icon name="unlock alternate" />
+                    <label className={activeCode ? "active" : ""} htmlFor="code">
+                      Confirm code
+                    </label>
+                    {errors.code && <p className="error-notification">{errors.code.message}</p>}
+                  </div>
+                  <Button primary submit>
+                    <Icon name="sign-in" /> Confirm
+                  </Button>
+                </form>
               )}
             </Modal.Section>
           </Modal>

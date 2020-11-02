@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client"
 import { Modal } from "@shopify/polaris"
 import { Table } from "semantic-ui-react"
 import { useBranchEntity } from "../core/hooks"
-import config from "../aws-exports"
 import BranchRow from "./BranchRow"
 import { listProducts, getBranchById } from "../graphql/queries"
 import {
@@ -20,9 +19,7 @@ import {
   onDeleteBranchProduct,
 } from "../graphql/subscriptions"
 
-API.configure(config)
-
-const ProductsList = ({ active, handleChange, branchId }) => {
+const BranchProducts = ({ active, handleChange, branchId }) => {
   const { loading, error, data } = useQuery(listProducts)
   const [branchProductSubscription, setBranchProductSubscription] = useState("")
   const [rowId, setRowId] = useState([])
@@ -170,4 +167,4 @@ const ProductsList = ({ active, handleChange, branchId }) => {
   )
 }
 
-export default ProductsList
+export default BranchProducts
