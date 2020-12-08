@@ -55,15 +55,35 @@ const BranchProducts = ({ active, handleChange, branchId }) => {
       return
     }
     setBranchInfo(branchData.data.getBranch)
-    setRowId([...branchData.data.getBranch.branchProducts.items.map((item) => item.productId)])
+    // setRowId(() => {
+    //   return branchData.data.getBranch
+    //     ? [...branchData.data.getBranch.branchProducts.items.map((item) => item.productId)]
+    //     : []
+    // })
+    setRowId(() => {
+      return branchData.data.getBranch
+        ? [...branchData.data.getBranch.branchProducts.items.map((item) => item.productId)]
+        : []
+    })
     setState({
       products: [
         ...branchData.data.getBranch.branchProducts.items.map((product) => ({
           id: product.productId,
+          tags: product.tags,
         })),
       ],
     })
-  }, [branchData])
+    // setState({
+    //   products: branchData.data.getBranch
+    //     ? [
+    //         ...branchData.data.getBranch.branchProducts.items.map((product) => ({
+    //           id: product.productId,
+    //           tags: product.tags,
+    //         })),
+    //       ]
+    //     : [],
+    // })
+  }, [branchData, active])
 
   if (loading) {
     return <div>Loading products...</div>
@@ -121,10 +141,15 @@ const BranchProducts = ({ active, handleChange, branchId }) => {
     return
   }
 
+  console.log("Products state from branch products", state)
+
   return (
     <Modal
       open={active}
-      onClose={() => handleChange()}
+      onClose={() => {
+        handleChange()
+        setRowId([])
+      }}
       title="Choose products"
       primaryAction={{
         content: "Save changes",

@@ -8,7 +8,11 @@ import { formatDate } from "../utils/helper"
 import config from "../aws-exports"
 import BranchProducts from "./BranchProducts"
 import { listBranchs } from "../graphql/queries"
-import { onCreateBranchSubscription, onDeleteBranchSubscription } from "../graphql/subscriptions"
+import {
+  onCreateBranchSubscription,
+  onDeleteBranchSubscription,
+  onCreateBranchProduct,
+} from "../graphql/subscriptions"
 import {
   removeBranch,
   deleteTransaction,
@@ -22,6 +26,7 @@ const BranchList = ({ setBranchId, branchId }) => {
   const [branchName, setBranchName] = useState("")
   const [productBranchId, setProductBranchId] = useState("")
   const [newCreatedBranch, setNewCreatedBranch] = useState("")
+  const [createdBranchProduct, setCreatedBranchProduct] = useState("")
 
   const { data: branchesData, refetch: fetchBranches } = useListBranches()
   const { deleteBranch, isLoading, error, data } = useDeleteBranch()
@@ -45,15 +50,25 @@ const BranchList = ({ setBranchId, branchId }) => {
       },
     })
 
+    const createBranchProductListener = API.graphql(
+      graphqlOperation(onCreateBranchProduct)
+    ).subscribe({
+      next: (created) => setCreatedBranchProduct(created),
+    })
+
     return () => {
       createListener.unsubscribe()
       deleteListener.unsubscribe()
+      createBranchProductListener.unsubscribe()
     }
-  }, [newCreatedBranch])
+  }, [newCreatedBranch, createdBranchProduct])
 
   useEffect(() => {
     setBranches(branchesData && branchesData.data)
   }, [branchesData])
+
+  console.log("Created branch product", createdBranchProduct)
+  console.log("New created branch", newCreatedBranch)
 
   return (
     <>

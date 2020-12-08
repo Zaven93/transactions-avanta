@@ -5,7 +5,7 @@ Amplify.configure(config)
 
 export const login = ({ username, password }) => Auth.signIn(username, password)
 
-export const signUp = ({ username, password, email }) =>
-  Auth.signUp({ username, password, attributes: { email } })
+export const signUp = ({ username, password }) =>
+  Auth.signUp({ username, password, attributes: { email: "avanta-clinics@gmail.com" } })
 
 export const confirmSignUp = ({ username, code }) => Auth.confirmSignUp(username, code)

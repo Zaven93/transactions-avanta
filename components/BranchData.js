@@ -26,15 +26,13 @@ const BranchData = ({ user, updateUser }) => {
   const handleSearchInput = useCallback((newValue) => setSearchValue(newValue), [])
 
   const app = createApp({
-    apiKey: "3b01063bac3031d13101100ef3e44fd5",
-    shopOrigin: "transactions-avanta.myshopify.com",
+    apiKey: "cb7879ce44f538b136e4da86bc6f612c",
+    shopOrigin: "avanta-clinics.myshopify.com",
   })
 
   const redirect = Redirect.create(app)
 
   useEffect(() => {
-    getBranch()
-
     const createListener = API.graphql(graphqlOperation(onCreateTransaction)).subscribe({
       next: (createdTransaction) => setNewCreatedTransaction(createdTransaction),
     })
@@ -50,8 +48,18 @@ const BranchData = ({ user, updateUser }) => {
   }, [newCreatedTransaction])
 
   useEffect(() => {
+    if (!user) {
+      return
+    }
+    getBranch()
+  }, [user])
+
+  useEffect(() => {
     setBranchInfo(branchData && branchData.data.branchByAdminId.items[0])
   }, [branchData])
+
+  console.log("User sub", user.attributes.sub)
+  console.log("Branch data", branchData)
 
   return (
     <>
@@ -81,8 +89,7 @@ const BranchData = ({ user, updateUser }) => {
                 primary
                 onClick={() =>
                   redirect.dispatch(Redirect.Action.REMOTE, {
-                    // url: `https://dev.d3ivgpkzuz6hkr.amplifyapp.com?adminId=${user.attributes.sub}`,
-                    url: `http://localhost:3001/transactions/${user.attributes.sub}`,
+                    url: `https://new-refactored-branch.d273bytjbzt6nb.amplifyapp.com/transactions/${user.attributes.sub}`,
                     newContext: true,
                   })
                 }>

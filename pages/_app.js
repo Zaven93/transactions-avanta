@@ -27,9 +27,9 @@ class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
     const config = {
-      apiKey: "3b01063bac3031d13101100ef3e44fd5",
+      apiKey: "cb7879ce44f538b136e4da86bc6f612c",
       shopOrigin: Cookies.get("shopOrigin"),
-      forceRedirect: false,
+      forceRedirect: true,
     }
     return (
       <React.Fragment>

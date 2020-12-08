@@ -25,6 +25,8 @@ const Index = () => {
     checkUser()
   }, [])
 
+  console.log("Logged in user", user)
+
   return (
     <>
       {user && user.username !== "superadmin" && <BranchData updateUser={updateUser} user={user} />}

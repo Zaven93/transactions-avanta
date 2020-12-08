@@ -203,3 +203,17 @@ export const listBranchs = gql`
     }
   }
 `
+
+export const getBranchByName = gql`
+  query branchByName($branchName: String!) {
+    branchByName(branchName: $branchName) {
+      items {
+        adminId
+        branchName
+        branchUsername
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`

@@ -42,11 +42,14 @@ export const onDeleteTransaction = gql`
 export const onCreateBranchSubscription = gql`
   subscription onCreateBranch {
     onCreateBranch {
-      adminId
-      branchName
       id
-      createdAt
     }
+  }
+`
+
+export const onUpdateBranchSubscription = gql`
+  subscription onUpdateBranch {
+    id
   }
 `
 

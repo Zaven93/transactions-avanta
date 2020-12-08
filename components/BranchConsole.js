@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
-import { Auth, API, graphqlOperation } from "aws-amplify"
+import AWS from "aws-sdk"
 import { Page, Button, Modal, Badge, Stack } from "@shopify/polaris"
 import { Table, Popup, Header, Icon } from "semantic-ui-react"
 import { useForm } from "react-hook-form"
-import { useConfirmSignUp, useSignUp, useCreateBranch, useListBranches } from "../core/hooks"
+import {
+  useConfirmSignUp,
+  useSignUp,
+  useCreateBranch,
+  useListBranches,
+  useCheckBranchName,
+} from "../core/hooks"
 import ProductList from "./ProductsList"
 import { formatDate } from "../utils/helper"
 import BranchProducts from "./BranchProducts"
@@ -14,6 +20,13 @@ import { listBranchs } from "../graphql/queries"
 
 const BranchConsole = ({ updateUser }) => {
   const [active, setActive] = useState(false)
+  const [activeFields, setActiveFields] = useState({
+    activeBranchName: false,
+    activeUsername: false,
+    activePassword: false,
+    activeEmail: false,
+    activeCode: false,
+  })
   const [activeBranchName, setActiveBranchName] = useState(false)
   const [activeUsername, setActiveUsername] = useState(false)
   const [activePassword, setActivePassword] = useState(false)
@@ -27,43 +40,108 @@ const BranchConsole = ({ updateUser }) => {
   const [userSub, setUserSub] = useState(null)
   const [branches, setBranches] = useState("")
   const [branchId, setBranchId] = useState(null)
+  const [confirmErrorMessage, setConfirmErrorMessage] = useState()
+  const [signUpErrorMessage, setSignUpErrorMessage] = useState("")
+  const [checkBranchNameErrorMessage, setCheckBranchNameErrorMessage] = useState("")
 
-  const { signUserUp, data } = useSignUp()
-  const { confirmSignUp } = useConfirmSignUp()
-  const { createBranch, data: createdBranch } = useCreateBranch()
+  const { signUserUp, data: signUpData, error: signUpError } = useSignUp()
+  const { confirmSignUp, data: confirmSignUpData, error: confirmSignUpError } = useConfirmSignUp()
+  const { createBranch, data: createdBranch, error: createdBranchError } = useCreateBranch()
   const { data: branchesData, refetch: listBranches } = useListBranches()
-  const { handleSubmit, errors, register } = useForm()
+  const { data: branchByNameData, refetch: getBranchByName } = useCheckBranchName(branchName)
+  const { handleSubmit, errors, register, reset, getValues } = useForm()
 
   const handleChange = () => {
     setActive(!active)
   }
 
-  const onSubmit = (data) => {
-    const { username, password, email } = data
-    console.log("Submitted data", data)
-    try {
-      signUserUp({ username, password, email })
-      setFormType("confirm")
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  // const onSubmit = (e) => {
+  //   e.preventDefault()
 
-  const onConfirm = (data) => {
-    const { username, code } = data
-    try {
-      confirmSignUp({ username, code })
-      createBranch({ userSub, username, branchName })
-      setFormType("signUp")
-      handleChange()
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  //   handleSubmit(() => {
+  //     // const { username, password } = data
+
+  //     // console.log("Submitted data", data)
+
+  //     getBranchByName()
+
+  //     console.log("Test Zaven")
+  //     // try {
+  //     //   await getBranchByName()
+  //     //   if (branchByNameData && branchByNameData.data.branchByName.items.length > 0) {
+  //     //     setCheckBranchNameErrorMessage("Branch with such a name already exists")
+  //     //     return
+  //     //   } else {
+  //     //     await signUserUp({ username, password })
+  //     //   }
+  //     //   // await signUserUp({ username, password })
+  //     //   if (signUpData === undefined && signUpError.code === "UsernameExistsException") {
+  //     //     setSignUpErrorMessage("Branch with such a username already exists")
+  //     //     return
+  //     //   } else {
+  //     //     await createBranch({ userSub, username, branchName })
+  //     //     setActiveFields((activeFields) => {
+  //     //       for (let key in activeFields) {
+  //     //         if (activeFields.hasOwnProperty(key)) {
+  //     //           activeFields[key] = false
+  //     //         }
+  //     //       }
+  //     //       return activeFields
+  //     //     })
+  //     //     handleChange()
+  //     //     reset()
+  //     //   }
+  //     // await createBranch({ userSub, username, branchName })
+  //     // setActiveFields((activeFields) => {
+  //     //   for (let key in activeFields) {
+  //     //     if (activeFields.hasOwnProperty(key)) {
+  //     //       activeFields[key] = false
+  //     //     }
+  //     //   }
+  //     //   return activeFields
+  //     // })
+  //     // handleChange()
+  //     // reset()
+  //     // } catch (error) {
+  //     //   console.log(error)
+  //     // }
+  //   })(e)
+  // }
 
   useEffect(() => {
-    setUserSub(data && data.userSub)
-  }, [data])
+    if (!branchByNameData) {
+      return
+    }
+    if (branchByNameData && branchByNameData.data.branchByName.items.length > 0) {
+      setCheckBranchNameErrorMessage("Branch with such a name already exists")
+      return
+    }
+    const { username, password } = getValues()
+    signUserUp({ username, password })
+  }, [branchByNameData])
+
+  useEffect(() => {
+    if (signUpData === undefined && signUpError && signUpError.code === "UsernameExistsException") {
+      setSignUpErrorMessage("Branch with such a username already exists")
+      return
+    }
+    const { username } = getValues()
+    createBranch({ userSub, username, branchName })
+    setActiveFields((activeFields) => {
+      for (let key in activeFields) {
+        if (activeFields.hasOwnProperty(key)) {
+          activeFields[key] = false
+        }
+      }
+      return activeFields
+    })
+    handleChange()
+    reset()
+  }, [signUpData, signUpError])
+
+  useEffect(() => {
+    setUserSub(signUpData && signUpData.userSub)
+  }, [signUpData])
 
   useEffect(() => {
     listBranches()
@@ -72,6 +150,11 @@ const BranchConsole = ({ updateUser }) => {
   useEffect(() => {
     setBranches(branchesData && branchesData.data)
   }, [branchesData])
+
+  console.log("Sign up error data", signUpError)
+  console.log("Sign up data", signUpData)
+  console.log("Branch name Data", branchByNameData)
+  console.log("Form values", getValues())
 
   return (
     <>
@@ -97,82 +180,129 @@ const BranchConsole = ({ updateUser }) => {
             </Stack.Item>
           </Stack>
           <BranchList setBranchId={setBranchId} />
-          <Modal open={active} onClose={handleChange} title="Fill in Branch info">
+          <Modal
+            open={active}
+            onClose={() => {
+              handleChange()
+              setActiveFields((activeFields) => {
+                for (let key in activeFields) {
+                  if (activeFields.hasOwnProperty(key)) {
+                    activeFields[key] = false
+                  }
+                }
+                return activeFields
+              })
+              setFormType("signUp")
+              setSignUpErrorMessage("")
+              setCheckBranchNameErrorMessage("")
+              reset()
+            }}
+            title="Fill in Branch info">
             <Modal.Section>
               {formType === "signUp" && (
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={onSubmit}>
                   <div className="form-controll">
                     <input
                       name="branchName"
-                      onChange={(e) => setBranchName(e.target.value)}
+                      onChange={(e) => {
+                        setBranchName(e.target.value)
+                        setCheckBranchNameErrorMessage("")
+                      }}
                       ref={register({ required: "Branch name is required!" })}
                       onBlur={(e) => {
                         if (e.target.value) {
-                          return setActiveBranchName(true)
+                          return setActiveFields({ ...activeFields, activeBranchName: true })
                         }
-                        return setActiveBranchName(false)
+                        return setActiveFields({ ...activeFields, activeBranchName: false })
                       }}
                     />
                     <Icon name="code branch" />
-                    <label className={activeBranchName ? "active" : ""} htmlFor="branchName">
+                    <label
+                      className={activeFields.activeBranchName ? "active" : ""}
+                      htmlFor="branchName">
                       Branch Name
                     </label>
-                    {errors.branchName && (
+                    {checkBranchNameErrorMessage && (
+                      <p className="error-notification">{checkBranchNameErrorMessage}</p>
+                    )}
+                    {!checkBranchNameErrorMessage && errors.branchName && (
                       <p className="error-notification">{errors.branchName.message}</p>
                     )}
                   </div>
                   <div className="form-controll">
                     <input
                       name="username"
-                      onChange={(e) => setUsername(e.target.value)}
+                      onChange={(e) => {
+                        setUsername(e.target.value)
+                        setSignUpErrorMessage("")
+                      }}
                       ref={register({ required: "Username is required!" })}
                       onBlur={(e) => {
                         if (e.target.value) {
-                          return setActiveUsername(true)
+                          return setActiveFields({ ...activeFields, activeUsername: true })
                         }
-                        return setActiveUsername(false)
+                        return setActiveFields({ ...activeFields, activeUsername: false })
                       }}
                     />
                     <Icon name="user" />
-                    <label className={activeUsername ? "active" : ""} htmlFor="username">
+                    <label
+                      className={activeFields.activeUsername ? "active" : ""}
+                      htmlFor="username">
                       Username
                     </label>
-                    {errors.username && (
+                    {signUpErrorMessage && (
+                      <p className="error-notification">{signUpErrorMessage}</p>
+                    )}
+                    {!signUpErrorMessage && errors.username && (
                       <p className="error-notification">{errors.username.message}</p>
                     )}
                   </div>
-                  <div className="form-controll">
+                  {/* <div className="form-controll">
                     <input
                       name="email"
-                      ref={register({ required: "Email is required!" })}
+                      ref={register({
+                        required: "Email is required!",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: "invalid email address",
+                        },
+                      })}
                       onBlur={(e) => {
                         if (e.target.value) {
-                          return setActiveEmail(true)
+                          return setActiveFields({ ...activeFields, activeEmail: true })
                         }
-                        return setActiveEmail(false)
+                        return setActiveFields({ ...activeFields, activeEmail: false })
                       }}
                     />
                     <Icon name="mail" />
-                    <label className={activeEmail ? "active" : ""} htmlFor="email">
+                    <label className={activeFields.activeEmail ? "active" : ""} htmlFor="email">
                       Email
                     </label>
                     {errors.email && <p className="error-notification">{errors.email.message}</p>}
-                  </div>
+                  </div> */}
                   <div className="form-controll">
                     <input
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      ref={register({ required: "Password is required!" })}
+                      ref={register({
+                        required: "Password is required!",
+                        minLength: {
+                          value: 8,
+                          message: "Password must be at least 8 characters long",
+                        },
+                      })}
                       onChange={(e) => setPassword(e.target.value)}
                       onBlur={(e) => {
                         if (e.target.value) {
-                          return setActivePassword(true)
+                          return setActiveFields({ ...activeFields, activePassword: true })
                         }
-                        return setActivePassword(false)
+                        return setActiveFields({ ...activeFields, activePassword: false })
                       }}
                     />
                     <Icon name="lock" />
-                    <label className={activePassword ? "active" : ""} htmlFor="password">
+                    <label
+                      className={activeFields.activePassword ? "active" : ""}
+                      htmlFor="password">
                       Password
                     </label>
                     <Icon
@@ -190,22 +320,25 @@ const BranchConsole = ({ updateUser }) => {
                   </Button>
                 </form>
               )}
-              {formType === "confirm" && (
+              {/* {formType === "confirm" && (
                 <form onSubmit={handleSubmit(onConfirm)}>
                   <div className="form-controll">
                     <input
                       name="username"
                       value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       ref={register({ required: "Username is required!" })}
                       onBlur={(e) => {
                         if (e.target.value) {
-                          return setActiveUsername(true)
+                          return setActiveFields({ ...activeFields, activeUsername: true })
                         }
-                        return setActiveUsername(false)
+                        return setActiveFields({ ...activeFields, activeUsername: false })
                       }}
                     />
                     <Icon name="user" />
-                    <label className={activeUsername ? "active" : ""} htmlFor="username">
+                    <label
+                      className={activeFields.activeUsername ? "active" : ""}
+                      htmlFor="username">
                       Username
                     </label>
                     {errors.username && (
@@ -216,24 +349,28 @@ const BranchConsole = ({ updateUser }) => {
                     <input
                       name="code"
                       ref={register({ required: "Confirm code is required!" })}
+                      onChange={() => setConfirmErrorMessage("")}
                       onBlur={(e) => {
                         if (e.target.value) {
-                          return setActiveCode(true)
+                          return setActiveFields({ ...activeFields, activeCode: true })
                         }
-                        return setActiveCode(false)
+                        return setActiveFields({ ...activeFields, activeCode: false })
                       }}
                     />
                     <Icon name="unlock alternate" />
-                    <label className={activeCode ? "active" : ""} htmlFor="code">
+                    <label className={activeFields.activeCode ? "active" : ""} htmlFor="code">
                       Confirm code
                     </label>
+                    {!errors.code && confirmErrorMessage && (
+                      <p className="error-notification">{confirmErrorMessage}</p>
+                    )}
                     {errors.code && <p className="error-notification">{errors.code.message}</p>}
                   </div>
                   <Button primary submit>
                     <Icon name="sign-in" /> Confirm
                   </Button>
                 </form>
-              )}
+              )} */}
             </Modal.Section>
           </Modal>
         </>

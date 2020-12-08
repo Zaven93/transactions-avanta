@@ -26,6 +26,14 @@ const BranchRow = ({ product, state, setState, branchInfo, rowId, setRowId }) =>
     setFetchedProduct(fetchedProduct)
   }, [])
 
+  const onBlur = () => {
+    const productsToUpdate = state.products.filter((product) => product.id !== fetchedProduct.id)
+    productsToUpdate.push(fetchedProduct)
+    setState({
+      products: [...productsToUpdate],
+    })
+  }
+
   const compareProduct = () => {
     const comparedProduct = branchInfo.branchProducts.items.filter(
       (branchProduct) => branchProduct.productId === fetchedProduct.id
@@ -43,6 +51,14 @@ const BranchRow = ({ product, state, setState, branchInfo, rowId, setRowId }) =>
   useEffect(() => {
     compareProduct()
   }, [product, branchInfo])
+
+  console.log("Fetched Product", fetchedProduct)
+  console.log("Product of the row", product)
+  console.log("Products from state", state.products)
+  console.log(
+    "Product to update bonus",
+    state.products.findIndex((product) => product.id === fetchedProduct.id)
+  )
 
   return (
     <Table.Row key={fetchedProduct.id}>
@@ -81,6 +97,7 @@ const BranchRow = ({ product, state, setState, branchInfo, rowId, setRowId }) =>
           placeholder="Bonus Percentage"
           value={bonus}
           onChange={handleBonus}
+          onBlur={onBlur}
           prefix={<Icon name="percent" />}
           disabled={!rowId.includes(fetchedProduct.id)}
         />

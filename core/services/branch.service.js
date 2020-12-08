@@ -1,7 +1,7 @@
 import AWS from "aws-sdk"
 import { API, graphqlOperation } from "aws-amplify"
 import { v4 as uuidv4 } from "uuid"
-import { getBranchById, listBranchs, branchByAdminId } from "../../graphql/queries"
+import { getBranchById, listBranchs, branchByAdminId, getBranchByName } from "../../graphql/queries"
 import {
   createBranch,
   removeBranch,
@@ -12,8 +12,8 @@ import {
 import config from "../../aws-exports"
 
 AWS.config.update({
-  accessKeyId: "AKIA5VX4IMFOFTVY5X57",
-  secretAccessKey: "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",
+  accessKeyId: "AKIA5VX4IMFOFHT7M2O2",
+  secretAccessKey: "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",
   region: "us-east-1",
 })
 
@@ -37,10 +37,20 @@ export const createBranchEntity = ({ userSub, username, branchName }) =>
     })
   )
 
+export const checkBranchName = (key, { branchName }) =>
+  API.graphql(
+    graphqlOperation(getBranchByName, {
+      branchName,
+    })
+  )
+
 export const listBranchEntities = (key) => API.graphql(graphqlOperation(listBranchs))
 
 export const deleteBranch = async ({ branches, username, id }) => {
+  console.log("Branch data that should be deleted", branches)
   const branchToDelete = branches.listBranchs.items.filter((item) => item.id === id)[0]
+
+  console.log("Branch to delete Zaven", branchToDelete)
 
   const transactionsToDelete = branchToDelete.transactions.items
     ? branchToDelete.transactions.items.map((transaction) => transaction.id)
@@ -54,6 +64,10 @@ export const deleteBranch = async ({ branches, username, id }) => {
     ? branchToDelete.branchPaymentRequests.items.map((paymentRequest) => paymentRequest.id)
     : ""
 
+  console.log("Transactions to Delete", transactionsToDelete)
+  console.log("Products to delete", productsToDelete)
+  console.log("PaymentRequests to delete", paymentRequestToDelete)
+  console.log("Username to delete", username)
   try {
     const deletedBranch = await API.graphql(graphqlOperation(removeBranch, { input: { id } }))
 
@@ -77,7 +91,7 @@ export const deleteBranch = async ({ branches, username, id }) => {
 
     await cognito
       .adminDeleteUser({
-        UserPoolId: "us-east-1_egI4Bi1bx",
+        UserPoolId: "us-east-1_xuc7kseKp",
         Username: username,
       })
       .promise()
