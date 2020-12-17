@@ -46,30 +46,30 @@ const AcceptedPaymentRequest = ({ branchId }) => {
       <Table celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Customer Id</Table.HeaderCell>
-            <Table.HeaderCell>Order Id</Table.HeaderCell>
-            <Table.HeaderCell>Bonus Amount</Table.HeaderCell>
-            <Table.HeaderCell>Created At</Table.HeaderCell>
-            <Table.HeaderCell>Updated At</Table.HeaderCell>
-            <Table.HeaderCell>Status</Table.HeaderCell>
+            <Table.HeaderCell textAlign="center">Customer Info</Table.HeaderCell>
+            <Table.HeaderCell textAlign="center">Order Id</Table.HeaderCell>
+            <Table.HeaderCell textAlign="center">Created At</Table.HeaderCell>
+            <Table.HeaderCell textAlign="center">Creation time</Table.HeaderCell>
+            <Table.HeaderCell textAlign="center">Updated At</Table.HeaderCell>
+            <Table.HeaderCell textAlign="center">Status</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {paymentRequestItems &&
             paymentRequestItems
-              .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+            .sort((a, b) => (a.createdAt.match(/\d\d:\d\d:\d\d/)[0] > b.createdAt.match(/\d\d:\d\d:\d\d/)[0]) ? -1 : ((a.createdAt.match(/\d\d:\d\d:\d\d/)[0] < b.createdAt.match(/\d\d:\d\d:\d\d/)[0]) ? 1 : 0))
               .map((item) => (
                 <Table.Row key={item.id}>
-                  <Table.Cell>
-                    <Badge size="small">{item.customerId}</Badge>
+                  <Table.Cell textAlign="center">
+                    <Badge size="small">{item.fullName}</Badge>
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell textAlign="center">
                     <Badge size="small">{item.orderId}</Badge>
                   </Table.Cell>
-                  <Table.Cell>{toCurrency(item.bonusAmount)}</Table.Cell>
-                  <Table.Cell>{formatDate(item.createdAt)}</Table.Cell>
-                  <Table.Cell>{formatDate(item.updatedAt)}</Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell textAlign="center">{formatDate(item.createdAt)}</Table.Cell>
+                  <Table.Cell textAlign="center">{item.createdAt.match(/\d\d:\d\d:\d\d/)[0]}</Table.Cell>
+                  <Table.Cell textAlign="center">{formatDate(item.updatedAt)}</Table.Cell>
+                  <Table.Cell textAlign="center">
                     <Badge size="small" progress="complete" status="success">
                       {item.status}
                     </Badge>

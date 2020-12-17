@@ -5,7 +5,7 @@ import config from "../../aws-exports"
 
 const useBranchEntity = (branchId) => {
   const branchInfo = useQuery(["branch-entity", { branchId }], BranchService.getBranch, {
-    enabled: false,
+    enabled: true,
   })
 
   return branchInfo

@@ -12,8 +12,9 @@ export const onUpdatePaymentSubscription = gql`
 export const paymentSubscription = gql`
   subscription paymentRequest {
     onCreatePaymentRequest {
-      bonusAmount
+      amount
       createdAt
+      bonusAmount
       customerId
       id
       orderId

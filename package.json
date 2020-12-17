@@ -44,6 +44,7 @@
     "next": "^9.5.3",
     "next-apollo-appsync": "0.0.7",
     "next-with-apollo": "^5.1.0",
+    "qrcode.react": "^1.0.0",
     "react": "^16.13.1",
     "react-apollo": "^3.1.5",
     "react-dom": "^16.13.1",

@@ -117,9 +117,11 @@ export const listPaymentRequest = gql`
       filter: { branchId: { eq: $branchId }, status: { eq: $status } }
     ) {
       items {
-        bonusAmount
+        amount
         createdAt
         customerId
+        branchId
+        fullName
         id
         orderId
         status
@@ -213,6 +215,28 @@ export const getBranchByName = gql`
         branchUsername
         createdAt
         updatedAt
+      }
+    }
+  }
+`
+
+export const getCustomer = /* GraphQL */ `
+  query Customer($id: ID!) {
+    customer(id: $id) {
+      firstName
+      lastName
+      email
+      phone
+    }
+  }
+`
+
+export const getUserByCustomerId = /* GraphQL */ `
+  query userByCustomerId($shopifyCustomerId: ID) {
+    userByCustomerId(shopifyCustomerId: $shopifyCustomerId) {
+      items {
+        id
+        bonusAmount
       }
     }
   }

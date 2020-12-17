@@ -12,7 +12,7 @@ import { createHttpLink } from "apollo-link-http"
 import "../styles/style.css"
 
 import { Amplify } from "aws-amplify"
-import config from "../src/aws-exports"
+import config from "../aws-exports"
 
 Amplify.configure({ ...config, ssr: true })
 

@@ -1,156 +1,343 @@
+#Accept-Payment {
+    background: rgb(0, 128, 96);
+    border: none;
+    color: #ffffff;
+}
+
 #Accept-Payment > .Polaris-Button__Content > .Polaris-Button__Text {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
 }
 
 #Accept-Payment > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
-  margin-right: 10px;
+    margin-right: 10px;
+}
+
+#Accept-Payment
+    > .Polaris-Button__Content
+    > .Polaris-Button__Text
+    > .Polaris-Icon
+    > .Polaris-Icon__Svg {
+    fill: #ffffff;
 }
 
 .authentication-container > .Polaris-Card {
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .actions-cell {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .accept:hover {
-  color: green;
-  transform: scale(1.7);
-  transition: all 0.1s ease-in;
+    color: green;
+    transition: all 0.1s ease-in;
 }
 
 .branch-actions {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.branches-buttons {
+    position: absolute;
+    bottom: 20p;
+    top: 3.2rem;
+    right: 3.2rem;
+}
+
+.buttons-stack {
+    margin-bottom: 20px;
+}
+
+#customer-info-button {
+    background: rgb(0, 128, 96);
+    border: none;
+    color: #ffffff;
 }
 
 #Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 #Create-Transaction > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .decline:hover {
-  color: red;
-  transform: scale(1.7);
-  transition: all 0.1s ease-in;
+    color: rgb(216, 44, 13);
+    transition: all 0.1s ease-in;
 }
 
 .edit-branch:hover {
-  color: green;
-  transform: scale(1.7);
-  transition: all 0.1s ease-in;
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .error-notification {
-  position: absolute;
-  color: red;
+    position: absolute;
+    color: rgb(216, 44, 13);
 }
 
 .form-controll {
-  position: relative;
-  margin-bottom: 30px;
+    position: relative;
+    margin-bottom: 30px;
 }
 
 .form-controll > label {
-  position: absolute;
-  top: 7px;
-  left: 36px;
-  pointer-events: none;
-  transition: all 0.2s ease-in;
+    position: absolute;
+    top: 7px;
+    left: 36px;
+    pointer-events: none;
+    transition: all 0.2s ease-in;
 }
 
 .form-controll > input {
-  width: 100%;
-  height: 35px;
-  border-radius: 4px;
-  outline: none;
-  border: 0.2px solid rgba(0, 0, 0, 0.3);
-  padding-left: 36px;
+    width: 100%;
+    height: 35px;
+    border-radius: 4px;
+    outline: none;
+    border: 0.2px solid rgba(0, 0, 0, 0.3);
+    padding-left: 36px;
 }
 
 .form-controll > i {
-  position: absolute;
-  top: 7px;
-  left: 10px;
+    position: absolute;
+    top: 7px;
+    left: 10px;
 }
 
 .form-controll > i.show-eye {
-  display: inline-block;
-  position: absolute;
-  top: 7px;
-  right: 10px;
-  left: unset;
-  transition: all 0.2s ease-in;
+    display: inline-block;
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    left: unset;
+    transition: all 0.2s ease-in;
 }
 
 .form-controll > i.show-eye:hover {
-  cursor: pointer;
-  color: #6774c8;
-  transition: all 0.2s ease-in;
+    cursor: pointer;
+    color: rgb(0, 128, 96);
+    transition: all 0.2s ease-in;
 }
 
 .form-controll > i.not-show-eye {
-  display: none;
-  position: absolute;
-  top: 7px;
-  left: unset;
-  right: 10px;
-  transition: all 0.2s ease-in;
+    display: none;
+    position: absolute;
+    top: 7px;
+    left: unset;
+    right: 10px;
+    transition: all 0.2s ease-in;
 }
 
 .form-controll:focus-within label,
 .form-controll > label.active {
-  transform: scale(0.75);
-  top: -10px;
-  transition: all 0.2s ease-in;
-  background: #ffffff;
-  color: #6774c8;
+    transform: scale(0.75);
+    top: -10px;
+    transition: all 0.2s ease-in;
+    background: #ffffff;
+    color: rgb(0, 128, 96);
 }
 
 .form-controll > input:focus {
-  border: 1px solid #6774c8;
-  transition: all 0.2s ease-in;
+    border: 1px solid rgb(0, 128, 96);
+    transition: all 0.2s ease-in;
 }
 
 .form-controll > input:focus + i {
-  color: #6774c8;
-  transition: all 0.2s ease-in;
+    color: rgb(0, 128, 96);
+    transition: all 0.2s ease-in;
 }
 
 #Logout > .Polaris-Button__Content > .Polaris-Button__Text {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 #Logout > .Polaris-Button__Content > .Polaris-Button__Text > .Polaris-Icon {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .remove-branch:hover {
-  color: red;
-  transform: scale(1.7);
-  transition: all 0.1s ease-in;
-  cursor: pointer;
+    transition: all 0.1s ease-in;
+    cursor: pointer;
+}
+
+#remove-branch-button {
+    background: rgb(216, 44, 13);
+    border: none;
+    color: #ffffff;
+    outline: none;
+}
+
+#remove-branch-button:hover {
+    background: rgba(216, 44, 13, 0.8);
+}
+
+.page-actions .Polaris-Stack__Item > button {
+    background: rgb(0, 128, 96);
+    border: none;
+}
+
+.page-actions .Polaris-Stack__Item > button.Polaris-Button--disabled {
+    opacity: 0.5;
+}
+
+.payment-requests-container {
+    margin-top: 20px;
+}
+
+.payed-with-bonus-input {
+    border-radius: 5px;
+    border: 0.5px solid rgba(0, 0, 0, 0.3);
+    outline: none;
+}
+
+.payed-with-bonus-input:focus {
+    border: 1px solid rgb(0, 128, 96);
 }
 
 .product-header {
-  display: flex !important;
-  align-items: center;
-  justify-content: flex-start;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .product-header > .Polaris-Thumbnail {
-  margin-right: 10px;
+    margin-right: 10px;
+}
+
+.Polaris-Modal-Dialog__Modal .Polaris-Button {
+    background: rgb(0, 128, 96);
+    border: none;
+}
+
+.Polaris-Checkbox__Backdrop {
+    background: rgb(0, 128, 96);
+}
+
+.Polaris-Icon__Svg {
+    fill: rgb(0, 128, 96);
+}
+
+.Polaris-Card__Subsection .Polaris-Stack__Item {
+    display: flex;
+    align-items: center;
+}
+
+.Polaris-Checkbox:not(.Polaris-Checkbox--newDesignLanguage)
+    .Polaris-Checkbox__Input:focus
+    + .Polaris-Checkbox__Backdrop,
+.Polaris-Checkbox:not(.Polaris-Checkbox--newDesignLanguage)
+    .Polaris-Checkbox__Input:active
+    + .Polaris-Checkbox__Backdrop {
+    background: rgb(0, 128, 96);
+    box-shadow: 0 0 0 1px rgb(0, 128, 96), 0 0 0 0 transparent;
+}
+
+.Polaris-Checkbox__Icon svg {
+    fill: rgb(0, 128, 96);
+}
+
+.Polaris-Checkbox:not(.Polaris-Checkbox--newDesignLanguage)
+    .Polaris-Checkbox__Input:checked
+    + .Polaris-Checkbox__Backdrop {
+    background: rgb(0, 128, 96);
+}
+
+.Polaris-Tabs__Tab.Polaris-Tabs__Tab--selected .Polaris-Tabs__Title {
+    border-color: rgb(0, 128, 96);
+}
+
+.Polaris-Button--primary,
+.Polaris-Button--primary:hover,
+.Polaris-Button--primary:active {
+    background: linear-gradient(to bottom, rgb(0, 128, 96), rgb(0, 128, 96));
+    border-color: rgb(0, 128, 96);
+    box-shadow: inset 0 0 0 0 transparent, 0 1px 0 0 rgba(22, 29, 37, 0.05),
+        0 0 1px 0 rgb(0, 128, 96);
+}
+
+.Polaris-DataTable__Cell--verticalAlignMiddle {
+    text-align: center;
+}
+
+.Polaris-DatePicker__Day--selected {
+    background: rgb(0, 128, 96);
+}
+
+.Polaris-DatePicker__Day:hover {
+    background: rgba(0, 128, 96, 0.5);
+}
+
+.Polaris-DatePicker__Day--inRange {
+    background: rgba(0, 128, 96, 0.5);
+}
+
+.Polaris-DatePicker__DayCell--selected {
+    border: 0.1rem solid rgb(0, 128, 96);
+}
+
+.Polaris-DatePicker__Day--selected:focus {
+    box-shadow: inset 0 0 0 2px rgb(0, 128, 96);
+}
+
+.Polaris-Button--plain.Polaris-Button--iconOnly svg {
+    fill: white;
+}
+
+.Polaris-Link {
+    padding-top: 8px;
+}
+
+.quantity-input {
+    margin-left: auto;
+}
+
+.quantity-input > input {
+    border: 0.5px solid rgba(0, 0, 0, 0.3);
+    outline: none;
+    border-radius: 5px;
+}
+
+.quantity-input > input:focus {
+    border: 1px solid rgb(0, 128, 96);
+}
+
+.search-order-products-input {
+    width: 100%;
+    height: 36px;
+    position: relative;
+}
+
+.search-order-products-input > .Polaris-Icon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.search-order-products-input > i {
+    position: absolute;
+    top: 8px;
+    left: 15px;
+}
+
+.search-order-products-input > input {
+    height: 100%;
+    width: 100%;
+    padding-left: 40px;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.search-order-products-input > input:focus {
+    border: 2px solid rgb(0, 128, 96);
 }

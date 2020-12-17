@@ -1,105 +1,232 @@
-import React, { useState, useCallback, useEffect } from "react"
-import { Table, Icon, Popup, Header } from "semantic-ui-react"
-import { Badge } from "@shopify/polaris"
-import { useFetchPaymentRequest, useUpdatePaymentRequest } from "../core/hooks"
-import { toCurrency, formatDate } from "../utils/helper"
-import ProductList from "./ProductsList"
-import { updatePaymentRequest } from "../graphql/mutation"
-import { listPaymentRequest } from "../graphql/queries"
-import { paymentSubscription } from "../graphql/subscriptions"
+import React, { useState, useCallback, useEffect } from 'react'
+import axios from 'axios'
+import { API, graphqlOperation } from 'aws-amplify'
+import { Table, Icon, Popup, Header } from 'semantic-ui-react'
+import { Badge } from '@shopify/polaris'
+import {
+    useFetchPaymentRequest,
+    useUpdatePaymentRequest,
+    useCreateOrder,
+    useGetShopifyCustomer
+} from '../core/hooks'
+import { toCurrency, formatDate } from '../utils/helper'
+import ProductList from './ProductsList'
+import { updatePaymentRequest } from '../graphql/mutation'
+import { listPaymentRequest, getUserByCustomerId } from '../graphql/queries'
+import { paymentSubscription } from '../graphql/subscriptions'
+import { createDraftOrder, updateUser } from '../graphql/mutation'
 
-const PendingPaymentRequest = ({ createUpdatePaymentSubscription, branchId }) => {
-  const [paymentRequestId, setPaymentRequestId] = useState("")
-  const [active, setActive] = useState(false)
-  const [paymentRequestItems, setPaymentRequestItems] = useState([])
-  const { data: paymentRequests, refetch: getPaymentRequests } = useFetchPaymentRequest(
+const PendingPaymentRequest = ({
+    rejectedPaymentRequestItems,
+    setRejectedPaymentRequestItems,
+    paymentRequestItem,
+    setPaymentRequestItem,
+    createUpdatePaymentSubscription,
     branchId,
-    "PENDING"
-  )
-  const { updatePaymentRequest } = useUpdatePaymentRequest()
+    orderProducts,
+    setCustomerId,
+    setBonusAmount
+}) => {
+    const [paymentRequestId, setPaymentRequestId] = useState('')
+    const [active, setActive] = useState(false)
+    const [paymentRequestItems, setPaymentRequestItems] = useState([])
+    const [acceptedPaymentRequestId, setAcceptedPaymentRequestId] = useState('')
+    const [rejectedPaymentRequestId, setRejectedPaymentRequestId] = useState([])
+    const { data: paymentRequests, refetch: getPaymentRequests } = useFetchPaymentRequest(
+        branchId,
+        'PENDING'
+    )
+    const { updatePaymentRequest } = useUpdatePaymentRequest()
 
-  const handleChange = useCallback(() => setActive(!active), [active])
+    const { createOrder } = useCreateOrder()
 
-  useEffect(() => {
-    getPaymentRequests()
-  }, [branchId, createUpdatePaymentSubscription])
+    const handleChange = useCallback(() => setActive(!active), [active])
 
-  useEffect(() => {
-    setPaymentRequestItems(paymentRequests && paymentRequests.data.listPaymentRequests.items)
-  }, [paymentRequests])
+    useEffect(() => {
+        getPaymentRequests()
+    }, [branchId, createUpdatePaymentSubscription])
 
-  const declinePayment = (paymentId) => {
-    updatePaymentRequest({ paymentId, status: "DECLINED" })
-  }
+    useEffect(() => {
+        setPaymentRequestItems(paymentRequests && paymentRequests.data.listPaymentRequests.items)
+    }, [paymentRequests])
 
-  return (
-    <>
-      <Table selectable celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Customer Id</Table.HeaderCell>
-            <Table.HeaderCell>Bonus Amount</Table.HeaderCell>
-            <Table.HeaderCell>Created At</Table.HeaderCell>
-            <Table.HeaderCell>Updated At</Table.HeaderCell>
-            <Table.HeaderCell>Status</Table.HeaderCell>
-            <Table.HeaderCell>Action</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {paymentRequestItems &&
-            paymentRequestItems
-              .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-              .map((item) => (
-                <Table.Row key={item.id}>
-                  <Table.Cell>
-                    <Badge size="small">{item.customerId}</Badge>
-                  </Table.Cell>
-                  <Table.Cell>{toCurrency(item.bonusAmount)}</Table.Cell>
-                  <Table.Cell>{formatDate(item.createdAt)}</Table.Cell>
-                  <Table.Cell>{formatDate(item.updatedAt)}</Table.Cell>
-                  <Table.Cell>
-                    <Badge size="small" progress="partiallyComplete" status="attention">
-                      {item.status}
-                    </Badge>
-                  </Table.Cell>
-                  <Table.Cell className="actions-cell">
-                    <Popup
-                      content="Approve payment"
-                      trigger={
-                        <Icon
-                          className="accept"
-                          name="check"
-                          onClick={() => {
-                            setPaymentRequestId(item.id)
-                            handleChange()
-                          }}
-                        />
-                      }
-                    />
-                    <Popup
-                      content="Decline payment"
-                      trigger={
-                        <Icon
-                          className="decline"
-                          name="remove"
-                          onClick={async () => {
-                            declinePayment(item.id)
-                          }}
-                        />
-                      }
-                    />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-        </Table.Body>
-      </Table>
-      <ProductList
-        paymentRequestId={paymentRequestId}
-        active={active}
-        handleChange={handleChange}
-      />
-    </>
-  )
+    const declinePayment = (paymentId) => {
+        updatePaymentRequest({ paymentId, status: 'DECLINED' })
+    }
+
+    const acceptPayment = async (item, orderProducts) => {
+        try {
+            setCustomerId(item.customerId)
+
+            setBonusAmount(item.amount)
+
+            const orderId = await createOrder({
+                input: {
+                    customerId: item.customerId,
+                    lineItems: orderProducts.map((orderProduct) => ({
+                        quantity: orderProduct.quantity,
+                        variantId: orderProduct.variantId
+                    }))
+                }
+            })
+
+            await updatePaymentRequest({
+                paymentId: item.id,
+                orderId: orderId.data.draftOrderComplete.draftOrder.order.id,
+                status: 'APPROVED'
+            })
+
+            const userId = await API.graphql(
+                graphqlOperation(getUserByCustomerId, {
+                    shopifyCustomerId: item.customerId
+                })
+            )
+
+            console.log('User id from pending payments', userId)
+
+            const updatedUser = await API.graphql(
+                graphqlOperation(updateUser, {
+                    input: {
+                        id: userId.data.userByCustomerId.items[0].id,
+                        bonusAmount:
+                            userId.data.userByCustomerId.items[0].bonusAmount -
+                            item.amount +
+                            orderProducts.reduce(
+                                (accumulator, currentValue) =>
+                                    accumulator +
+                                    Number(
+                                        currentValue.price *
+                                            currentValue.quantity *
+                                            currentValue.bonus
+                                    ) /
+                                        100,
+                                0
+                            )
+                    }
+                })
+            )
+
+            console.log('Updated user', updatedUser)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return (
+        <>
+            <Table celled>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell textAlign="center">Customer Info</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Created At</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Creation time</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Status</Table.HeaderCell>
+                        <Table.HeaderCell textAlign="center">Action</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {paymentRequestItems &&
+                        paymentRequestItems
+                            .sort((a, b) =>
+                                a.createdAt.match(/\d\d:\d\d:\d\d/)[0] >
+                                b.createdAt.match(/\d\d:\d\d:\d\d/)[0]
+                                    ? -1
+                                    : a.createdAt.match(/\d\d:\d\d:\d\d/)[0] <
+                                      b.createdAt.match(/\d\d:\d\d:\d\d/)[0]
+                                    ? 1
+                                    : 0
+                            )
+                            .map((item) => (
+                                <Table.Row
+                                    key={item.id}
+                                    style={{
+                                        background:
+                                            paymentRequestItem && paymentRequestItem.id === item.id
+                                                ? '#F8FFEE'
+                                                : rejectedPaymentRequestItems.includes(item.id)
+                                                ? '#FAEEED'
+                                                : ''
+                                    }}>
+                                    <Table.Cell textAlign="center">
+                                        <Badge size="small">{item.fullName}</Badge>
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        {formatDate(item.createdAt)}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        {item.createdAt.match(/\d\d:\d\d:\d\d/)[0]}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="center">
+                                        <Badge
+                                            size="small"
+                                            progress="partiallyComplete"
+                                            status="attention">
+                                            {item.status}
+                                        </Badge>
+                                    </Table.Cell>
+                                    <Table.Cell textAlign="center" className="actions-cell">
+                                        <Popup
+                                            content="Approve payment"
+                                            trigger={
+                                                <Icon
+                                                    className="accept"
+                                                    name="check"
+                                                    onClick={() => {
+                                                        setCustomerId(item.customerId)
+                                                        setPaymentRequestItem(item)
+                                                        setRejectedPaymentRequestItems(
+                                                            rejectedPaymentRequestItems.filter(
+                                                                (rejectedItem) =>
+                                                                    rejectedItem !== item.id
+                                                            )
+                                                        )
+                                                    }}
+                                                    disabled={
+                                                        orderProducts.length <= 0 ||
+                                                        (paymentRequestItem &&
+                                                            paymentRequestItem.id === item.id)
+                                                    }
+                                                />
+                                            }
+                                        />
+                                        <Popup
+                                            content="Decline payment"
+                                            trigger={
+                                                <Icon
+                                                    className="decline"
+                                                    name="remove"
+                                                    onClick={() => {
+                                                        if (
+                                                            paymentRequestItem &&
+                                                            paymentRequestItem.id === item.id
+                                                        ) {
+                                                            setPaymentRequestItem(null)
+                                                        }
+
+                                                        if (
+                                                            !rejectedPaymentRequestItems.includes(
+                                                                item.id
+                                                            )
+                                                        ) {
+                                                            setRejectedPaymentRequestItems([
+                                                                ...rejectedPaymentRequestItems,
+                                                                item.id
+                                                            ])
+                                                        }
+                                                    }}
+                                                    disabled={rejectedPaymentRequestItems.includes(
+                                                        item.id
+                                                    )}
+                                                />
+                                            }
+                                        />
+                                    </Table.Cell>
+                                </Table.Row>
+                            ))}
+                </Table.Body>
+            </Table>
+        </>
+    )
 }
 
 export default PendingPaymentRequest

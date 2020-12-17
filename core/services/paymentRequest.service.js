@@ -8,24 +8,15 @@ API.configure(config)
 export const fetchPaymentRequest = (key, { branchId, status, limit, nextToken }) =>
   API.graphql(graphqlOperation(listPaymentRequest, { branchId, status, limit, nextToken }))
 
-export const updatePayment = ({ paymentId, status, products }) => {
-  if (products) {
-    return API.graphql(
-      graphqlOperation(updatePaymentRequest, {
-        input: {
-          id: paymentId,
-          status,
-          products,
-        },
-      })
-    )
-  }
-
+export const updatePayment = ({ paymentId, bonusAmount, amount, status, orderId }) => {
   return API.graphql(
     graphqlOperation(updatePaymentRequest, {
       input: {
         id: paymentId,
+        bonusAmount,
+        amount,
         status,
+        orderId,
       },
     })
   )

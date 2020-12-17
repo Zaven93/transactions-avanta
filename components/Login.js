@@ -5,6 +5,7 @@ import { Icon, Dimmer, Loader } from "semantic-ui-react"
 import { useMutation } from "react-query"
 import { AuthService } from "../core/services"
 import { useLogin } from "../core/hooks"
+import config from "../aws-exports"
 
 const Login = ({ setUser }) => {
   const [password, setPassword] = useState("")

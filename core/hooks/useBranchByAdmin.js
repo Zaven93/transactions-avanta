@@ -4,7 +4,7 @@ import { BranchService } from "../services"
 
 const useBranchByAdmin = (adminId) => {
   const branchByAdmin = useQuery(["branch-by-admin", { adminId }], BranchService.getBranchByAdmin, {
-    enabled: false,
+    enabled: true,
   })
 
   return branchByAdmin

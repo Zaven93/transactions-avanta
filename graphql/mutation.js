@@ -1,48 +1,23 @@
 import gql from "graphql-tag"
 
-const createDraftOrder = gql`
-  mutation CreateOrder($input: DraftOrderInput!) {
+export const createDraftOrder = /* GraphQL */ `
+  mutation CreateDraftOrder($input: DraftOrderInput!) {
     draftOrderCreate(input: $input) {
       draftOrder {
         id
-        customer {
-          id
-        }
-        email
-        lineItems(first: 10) {
-          edges {
-            node {
-              title
-              quantity
-              originalUnitPrice
-              variant {
-                id
-                price
-                title
-                product {
-                  tags
-                  title
-                  images(first: 5) {
-                    edges {
-                      node {
-                        originalSrc
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
 `
 
-export const completeOrder = gql`
+export const markDraftOrderComplete = /* GraphQL */ `
   mutation CompleteOrder($id: ID!) {
     draftOrderComplete(id: $id, paymentPending: true) {
       draftOrder {
+        id
+        order {
+          id
+        }
         customer {
           id
         }
@@ -56,8 +31,10 @@ export const completeOrder = gql`
 export const updatePaymentRequest = gql`
   mutation updatePaymentRequest($input: UpdatePaymentRequestInput!) {
     updatePaymentRequest(input: $input) {
-      bonusAmount
+      amount
       customerId
+      branchId
+      bonusAmount
       id
       orderId
       status
@@ -150,6 +127,15 @@ export const updateBranchProduct = gql`
       tags
       branchId
       productId
+    }
+  }
+`
+
+export const updateUser = /* GraphQL */ `
+  mutation updateUser($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      id
+      bonusAmount
     }
   }
 `
